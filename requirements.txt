@@ -1,0 +1,3 @@
+anthropic
+neris_api_client
+python-dotenv
