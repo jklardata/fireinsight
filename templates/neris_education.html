@@ -216,6 +216,112 @@
     .faq-answer li { margin-bottom: 5px; }
     .faq-answer strong { color: var(--ink); }
 
+    /* ── NERIS 101 ── */
+    .neris101-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+    .neris101-visual {
+      background: var(--ink);
+      border-radius: 20px; padding: 40px;
+      color: #fff; position: relative; overflow: hidden;
+    }
+    .neris101-visual::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 32px 32px; pointer-events: none;
+    }
+    .neris101-vis-inner { position: relative; z-index: 1; }
+    .neris101-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.35); margin-bottom: 8px; }
+    .neris101-big { font-size: 56px; font-weight: 900; letter-spacing: -2px; line-height: 1; color: #fff; margin-bottom: 4px; }
+    .neris101-sub { font-size: 13px; color: rgba(255,255,255,.45); margin-bottom: 28px; }
+    .neris101-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid rgba(255,255,255,.07); }
+    .neris101-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .neris101-row span { font-size: 13px; color: rgba(255,255,255,.7); }
+    .neris101-row strong { font-size: 13px; color: #fff; margin-left: auto; }
+    .neris101-text h3 { font-family: 'Lora', serif; font-size: 26px; font-weight: 600; color: var(--ink); margin-bottom: 14px; line-height: 1.25; }
+    .neris101-text p { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 14px; }
+    .neris101-text ul { margin: 0 0 14px 18px; }
+    .neris101-text li { font-size: 14px; color: var(--ink2); line-height: 1.65; margin-bottom: 6px; }
+    .neris101-text strong { color: var(--ink); }
+
+    /* ── SPEC SECTION ── */
+    .spec-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .spec-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .spec-card:hover { border-color: var(--ink2); box-shadow: 0 4px 20px rgba(0,0,0,.06); }
+    .spec-icon { font-size: 28px; margin-bottom: 14px; }
+    .spec-card h3 { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .spec-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .spec-card code { display: inline-block; font-family: 'Courier New', monospace; font-size: 11px; background: var(--bg2); color: var(--indigo); padding: 2px 6px; border-radius: 4px; margin-top: 8px; }
+
+    /* ── DEPT IDs ── */
+    .dept-layout { display: grid; grid-template-columns: 1fr 380px; gap: 56px; align-items: start; }
+    .dept-text h3 { font-family: 'Lora', serif; font-size: 24px; font-weight: 600; color: var(--ink); margin-bottom: 12px; }
+    .dept-text p { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 14px; }
+    .dept-text ul { margin: 0 0 14px 18px; }
+    .dept-text li { font-size: 14px; color: var(--ink2); line-height: 1.65; margin-bottom: 6px; }
+    .dept-text strong { color: var(--ink); }
+    .dept-compare { display: flex; flex-direction: column; gap: 12px; }
+    .compare-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+    .compare-card.new-card { border-color: var(--indigo); background: rgba(79,70,229,.03); }
+    .compare-tag { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+    .compare-tag.old { color: var(--muted); }
+    .compare-tag.new { color: var(--indigo); }
+    .compare-card h4 { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+    .compare-list { display: flex; flex-direction: column; gap: 6px; }
+    .compare-row { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--ink2); }
+    .compare-row::before { content: '•'; color: var(--muted); flex-shrink: 0; margin-top: 1px; }
+    .compare-row.pro::before { content: '✓'; color: var(--green); font-weight: 700; }
+    .compare-row.con::before { content: '✗'; color: var(--red); }
+    .dept-id-example {
+      margin-top: 14px;
+      background: var(--ink); border-radius: 10px; padding: 16px 20px;
+      font-family: 'Courier New', monospace;
+    }
+    .dept-id-example .id-label { font-size: 10px; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .dept-id-example .id-value { font-size: 22px; font-weight: 700; color: #93C5FD; letter-spacing: 2px; }
+    .dept-id-example .id-desc { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 4px; }
+
+    /* ── CODES SECTION ── */
+    .codes-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; margin-bottom: 40px; }
+    .codes-text p { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 14px; }
+    .code-example-block {
+      background: var(--ink); border-radius: 14px; padding: 24px;
+      font-family: 'Courier New', monospace;
+    }
+    .code-ex-label { font-size: 10px; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; }
+    .code-ex-tier { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .code-ex-num { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.3); min-width: 20px; }
+    .code-ex-pill { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 6px; }
+    .tier-1 { background: rgba(200,57,43,.25); color: #FCA5A5; }
+    .tier-2 { background: rgba(245,158,11,.2); color: #FCD34D; }
+    .tier-3 { background: rgba(34,197,94,.2); color: #86EFAC; }
+    .code-ex-arrow { color: rgba(255,255,255,.2); font-size: 11px; }
+
+    .codes-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .code-group {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .code-group:hover { border-color: var(--ink2); box-shadow: 0 4px 20px rgba(0,0,0,.06); }
+    .code-group-header {
+      padding: 16px 18px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .code-group-icon { font-size: 18px; }
+    .code-group-name { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+    .code-group-tag { font-family: 'Courier New', monospace; font-size: 10px; color: var(--muted); font-weight: 400; display: block; }
+    .code-items { padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; }
+    .code-item { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .code-item:last-child { border-bottom: none; }
+    .code-item-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+    .code-item-code { font-family: 'Courier New', monospace; font-size: 10px; color: var(--muted); }
+    .code-note { font-size: 11px; color: var(--muted); font-style: italic; padding: 10px 18px; border-top: 1px solid var(--border); }
+
     /* ── ARTICLES ── */
     .neris-articles { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
     .neris-art-card {
@@ -301,7 +407,7 @@
       <p>What it is, what changed, what your department must do now, and how to stay ahead of grant deadlines — in plain language.</p>
       <div class="hero-actions">
         <a href="/app" class="btn-hero-primary">Run Compliance Check →</a>
-        <a href="#faq" class="btn-hero-ghost">Jump to FAQ</a>
+        <a href="#neris-101" class="btn-hero-ghost">What is NERIS? ↓</a>
       </div>
     </div>
     <div class="hero-stats">
@@ -347,6 +453,72 @@
     </div>
   </div>
 </div>
+
+<!-- PAGE NAV -->
+<div style="background:var(--white);border-bottom:1px solid var(--border);padding:0 48px;position:sticky;top:64px;z-index:40;overflow-x:auto;">
+  <div style="display:flex;gap:0;max-width:1100px;margin:0 auto;white-space:nowrap;">
+    <a href="#neris-101"     style="font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:14px 18px;border-bottom:2px solid transparent;display:inline-block;transition:all .15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">NERIS 101</a>
+    <a href="#modules"       style="font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:14px 18px;border-bottom:2px solid transparent;display:inline-block;transition:all .15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">6 Modules</a>
+    <a href="#specification" style="font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:14px 18px;border-bottom:2px solid transparent;display:inline-block;transition:all .15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">Specification</a>
+    <a href="#department-ids" style="font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:14px 18px;border-bottom:2px solid transparent;display:inline-block;transition:all .15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">Department IDs</a>
+    <a href="#codes"         style="font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:14px 18px;border-bottom:2px solid transparent;display:inline-block;transition:all .15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">NERIS Codes</a>
+    <a href="#timeline"      style="font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:14px 18px;border-bottom:2px solid transparent;display:inline-block;transition:all .15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">Timeline</a>
+    <a href="#faq"           style="font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:14px 18px;border-bottom:2px solid transparent;display:inline-block;transition:all .15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">FAQ</a>
+  </div>
+</div>
+
+<!-- NERIS 101 -->
+<section class="section" id="neris-101">
+  <div class="section-inner">
+    <div class="eyebrow">NERIS 101</div>
+    <div class="neris101-grid">
+      <div class="neris101-visual">
+        <div class="neris101-vis-inner">
+          <div class="neris101-label">Replacing</div>
+          <div class="neris101-big">NFIRS</div>
+          <div class="neris101-sub">30 years of patch-on-patch reporting — retired Jan 2025</div>
+          <div class="neris101-row">
+            <span class="neris101-dot" style="background:#ef4444"></span>
+            <span>Static incident codes</span>
+            <strong>→ Dynamic hierarchy</strong>
+          </div>
+          <div class="neris101-row">
+            <span class="neris101-dot" style="background:#f59e0b"></span>
+            <span>No geocoding required</span>
+            <strong>→ GPS mandatory</strong>
+          </div>
+          <div class="neris101-row">
+            <span class="neris101-dot" style="background:#f59e0b"></span>
+            <span>State-scoped FDIDs</span>
+            <strong>→ National NERIS IDs</strong>
+          </div>
+          <div class="neris101-row">
+            <span class="neris101-dot" style="background:#ef4444"></span>
+            <span>File-upload submissions</span>
+            <strong>→ API-first</strong>
+          </div>
+          <div class="neris101-row">
+            <span class="neris101-dot" style="background:#22c55e"></span>
+            <span>Optional life safety fields</span>
+            <strong>→ Mandatory zeros</strong>
+          </div>
+        </div>
+      </div>
+      <div class="neris101-text">
+        <h3>What is NERIS, really?</h3>
+        <p>NERIS — the <strong>National Emergency Response Information System</strong> — is the new federal standard for emergency incident reporting, developed by the Fire Safety Research Institute (FSRI) on behalf of the U.S. Fire Administration.</p>
+        <p>It isn't an NFIRS upgrade. It's a complete rebuild around three things NFIRS could never do well:</p>
+        <ul>
+          <li><strong>Modern incident taxonomy</strong> — a 3-tier code hierarchy that handles EV fires, WUI incidents, and expanded EMS categories that NFIRS numeric codes couldn't classify</li>
+          <li><strong>Geocoded location data</strong> — GPS coordinates are mandatory on every record, enabling real geographic analysis for the first time at scale</li>
+          <li><strong>API-first architecture</strong> — data flows via REST API with OAuth2, not file uploads, enabling RMS systems to submit in real time</li>
+        </ul>
+        <p>Every department that reports to the USFA, applies for AFG/SAFER grants, or participates in state fire reporting programs is subject to NERIS. The mandate has been in effect since <strong>January 1, 2026</strong>.</p>
+        <a href="/resources/neris-101" style="font-size:14px;font-weight:700;color:var(--red);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">Read the full NERIS 101 guide →</a>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- 6 MODULES -->
 <section class="section" id="modules">
@@ -469,6 +641,373 @@
           <div class="tl-label">Data Quality Scored</div>
           <div class="tl-body">NERIS data quality expected to become a formal AFG/SAFER scoring criterion.</div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NERIS SPECIFICATION -->
+<section class="section alt-bg" id="specification">
+  <div class="section-inner">
+    <div class="eyebrow">Technical Specification</div>
+    <h2 class="section-title">How NERIS works under the hood</h2>
+    <p class="section-sub">The data model, API, and submission process — what your RMS vendor implements, and what you need to know.</p>
+
+    <div class="spec-grid">
+      <div class="spec-card">
+        <div class="spec-icon">🔌</div>
+        <h3>REST API Submission</h3>
+        <p>Unlike NFIRS file uploads, NERIS uses a REST API. Your RMS submits incident records as structured JSON payloads in real time or in batch. You don't upload CSV exports — the RMS talks directly to the NERIS endpoint.</p>
+        <code>POST /api/v1/incidents</code>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon">🔐</div>
+        <h3>OAuth2 Authentication</h3>
+        <p>API access uses OAuth2 client credentials flow. Each department gets a <strong>Client ID</strong> and <strong>Client Secret</strong> from the USFA/FSRI portal. Your RMS uses these to obtain an access token before submitting records.</p>
+        <code>grant_type: client_credentials</code>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon">📦</div>
+        <h3>JSON Data Format</h3>
+        <p>Records are structured JSON objects, not flat CSV rows. Each incident is a nested document containing the 6 mandatory module objects as sub-fields, making the data schema self-describing and easier to validate.</p>
+        <code>Content-Type: application/json</code>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon">📍</div>
+        <h3>Geocoding Requirement</h3>
+        <p>Every incident must include a geocoded location — street address plus GPS latitude/longitude. NERIS validates coordinate precision. This is the single biggest data collection change from NFIRS for most departments.</p>
+        <code>"lat": 38.897, "lon": -77.037</code>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon">🏗️</div>
+        <h3>3-Tier Code Hierarchy</h3>
+        <p>Incident types follow a hierarchical code system: <em>Group → Sub-group → Incident type</em>. This allows precise classification without rigid numeric codes. EV fires, WUI incidents, and new EMS types all fit naturally.</p>
+        <code>FIRE / STRUCTURE_FIRE / ...</code>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon">🏛️</div>
+        <h3>National Department Registry</h3>
+        <p>Every reporting department is assigned a unique NERIS ID — a countrywide unique identifier that replaces state-scoped NFIRS FDIDs. Your NERIS ID is tied to your API credentials and attached to every record you submit.</p>
+        <code>neris_id_agency: "NERIS-XXXXX"</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPARTMENT IDs -->
+<section class="section" id="department-ids">
+  <div class="section-inner">
+    <div class="eyebrow">Department Identification</div>
+    <h2 class="section-title">NERIS Department IDs</h2>
+    <p class="section-sub" style="margin-bottom:40px;">How departments are identified in NERIS — and why it matters for your data, your grants, and your API credentials.</p>
+
+    <div class="dept-layout">
+      <div class="dept-text">
+        <h3>What is a NERIS Department ID?</h3>
+        <p>A NERIS Department ID (sometimes called a NERIS Agency ID) is a <strong>countrywide unique identifier</strong> assigned to every fire and emergency services department that reports through NERIS. It replaces the NFIRS FDID (Fire Department ID), which was only unique within a single state.</p>
+        <p>This is a meaningful change. Because NFIRS FDIDs were state-scoped, the same number could refer to different departments in different states — making national data aggregation unreliable. NERIS IDs are globally unique across all 50 states and territories.</p>
+
+        <h3 style="margin-top:28px">What your NERIS ID is used for</h3>
+        <ul>
+          <li><strong>API authentication</strong> — your NERIS ID is attached to your OAuth2 credentials and embedded in every incident record you submit</li>
+          <li><strong>Grant tracking</strong> — FEMA uses your NERIS ID to associate submitted incident data with AFG/SAFER applications</li>
+          <li><strong>Inter-agency aid records</strong> — mutual aid incident records reference both the requesting and assisting agency by NERIS ID</li>
+          <li><strong>National reporting</strong> — USFA aggregates data by NERIS ID for national trend analysis and resource allocation</li>
+          <li><strong>ISO PPC evidence</strong> — when presenting response time records, your NERIS ID anchors the data to your department</li>
+        </ul>
+
+        <h3 style="margin-top:28px">How to find your department's NERIS ID</h3>
+        <p>Your NERIS ID is assigned when your department registers in the NERIS portal at <strong>neris.fsri.org</strong>. If your department is already registered (via your RMS vendor), your ID appears in your portal credentials and in your RMS configuration. If you're unsure, contact your state fire reporting coordinator or your RMS vendor — they handle registration for most departments.</p>
+
+        <div style="margin-top:20px; padding:18px 22px; background:var(--red-lt); border-left:4px solid var(--red); border-radius:0 10px 10px 0; font-size:14px; color:var(--ink2); line-height:1.7;">
+          <strong style="color:var(--ink)">Important:</strong> Do not confuse your NERIS ID with your NFIRS FDID. They are different identifiers with different scopes. If you are converting NFIRS historical data to NERIS format, you will need to map your old FDID records to your new NERIS ID.
+        </div>
+      </div>
+
+      <div class="dept-compare">
+        <div class="compare-card">
+          <div class="compare-tag old">Old System — NFIRS FDID</div>
+          <h4>State-Scoped Fire Department ID</h4>
+          <div class="dept-id-example" style="margin-bottom:14px;">
+            <div class="id-label">Example NFIRS FDID</div>
+            <div class="id-value">12345</div>
+            <div class="id-desc">Unique within Virginia only</div>
+          </div>
+          <div class="compare-list">
+            <div class="compare-row con">Unique only within one state</div>
+            <div class="compare-row con">Same number exists in every state</div>
+            <div class="compare-row con">No national lookup possible</div>
+            <div class="compare-row con">Not tied to API credentials</div>
+          </div>
+        </div>
+
+        <div class="compare-card new-card">
+          <div class="compare-tag new">New System — NERIS Agency ID</div>
+          <h4>Countrywide Unique Identifier</h4>
+          <div class="dept-id-example" style="margin-bottom:14px;">
+            <div class="id-label">Example NERIS ID</div>
+            <div class="id-value">NERIS-04821</div>
+            <div class="id-desc">Unique across all 50 states &amp; territories</div>
+          </div>
+          <div class="compare-list">
+            <div class="compare-row pro">Globally unique — no duplicates</div>
+            <div class="compare-row pro">Tied to OAuth2 API credentials</div>
+            <div class="compare-row pro">Enables national data aggregation</div>
+            <div class="compare-row pro">Links to FEMA grant records</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NERIS CODES -->
+<section class="section alt-bg" id="codes">
+  <div class="section-inner">
+    <div class="eyebrow">Incident Classification</div>
+    <h2 class="section-title">Understanding NERIS Codes</h2>
+
+    <div class="codes-intro">
+      <div class="codes-text">
+        <p>NERIS uses a <strong>3-tier hierarchical code system</strong> to classify every incident. Rather than the fixed numeric codes NFIRS used for 30 years, NERIS codes are human-readable strings organized in a tree: <em>Group → Sub-group → Incident type</em>.</p>
+        <p>This structure allows precise classification across a much wider range of incident types — including EV battery fires, wildland-urban interface calls, and nuanced EMS categories — without forcing everything into a rigid legacy taxonomy.</p>
+        <p>The coding principle: <strong>classify by what actually happened, not the worst-case outcome you feared.</strong> A smoke investigation that turned out to be nothing is a hazardous situation investigation, not a fire. A lift assist is public service, not medical, unless the patient required transport.</p>
+        <a href="/resources/neris-codes" style="font-size:14px;font-weight:700;color:var(--red);text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-top:6px;">Read the full codes guide →</a>
+      </div>
+      <div class="code-example-block">
+        <div class="code-ex-label">3-Tier Code Structure — Examples</div>
+        <div class="code-ex-tier">
+          <span class="code-ex-num">①</span>
+          <span class="code-ex-pill tier-1">FIRE</span>
+          <span class="code-ex-arrow">→</span>
+          <span class="code-ex-pill tier-2">STRUCTURE_FIRE</span>
+          <span class="code-ex-arrow">→</span>
+          <span class="code-ex-pill tier-3">STRUCTURAL_INVOLVEMENT_FIRE</span>
+        </div>
+        <div class="code-ex-tier">
+          <span class="code-ex-num">②</span>
+          <span class="code-ex-pill tier-1">MEDICAL</span>
+          <span class="code-ex-arrow">→</span>
+          <span class="code-ex-pill tier-2">ILLNESS</span>
+          <span class="code-ex-arrow">→</span>
+          <span class="code-ex-pill tier-3">STROKE_CVA</span>
+        </div>
+        <div class="code-ex-tier">
+          <span class="code-ex-num">③</span>
+          <span class="code-ex-pill tier-1">HAZSIT</span>
+          <span class="code-ex-arrow">→</span>
+          <span class="code-ex-pill tier-2">INVESTIGATION</span>
+          <span class="code-ex-arrow">→</span>
+          <span class="code-ex-pill tier-3">SMOKE_INVESTIGATION</span>
+        </div>
+        <div class="code-ex-tier">
+          <span class="code-ex-num">④</span>
+          <span class="code-ex-pill tier-1">RESCUE</span>
+          <span class="code-ex-arrow">→</span>
+          <span class="code-ex-pill tier-2">TRANSPORTATION</span>
+          <span class="code-ex-arrow">→</span>
+          <span class="code-ex-pill tier-3">MOTOR_VEHICLE_EXTRICATION_ENTRAPPED</span>
+        </div>
+        <div class="code-ex-tier">
+          <span class="code-ex-num">⑤</span>
+          <span class="code-ex-pill tier-1">PUBLIC_SERVICE</span>
+          <span class="code-ex-arrow">→</span>
+          <span class="code-ex-pill tier-2">ALARMS</span>
+          <span class="code-ex-arrow">→</span>
+          <span class="code-ex-pill tier-3">SMOKE_ALARM_ACTIVATION</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="codes-grid">
+      <div class="code-group">
+        <div class="code-group-header" style="background:rgba(200,57,43,.06);">
+          <span class="code-group-icon">🔥</span>
+          <div>
+            <div class="code-group-name" style="color:var(--red);">Fire</div>
+            <span class="code-group-tag">Group: FIRE</span>
+          </div>
+        </div>
+        <div class="code-items">
+          <div class="code-item">
+            <span class="code-item-name">Structure Fire — Structural Involvement</span>
+            <span class="code-item-code">FIRE / STRUCTURE_FIRE / STRUCTURAL_INVOLVEMENT_FIRE</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Structure Fire — Confined</span>
+            <span class="code-item-code">FIRE / STRUCTURE_FIRE / CONFINED_FIRE</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Vehicle Fire</span>
+            <span class="code-item-code">FIRE / VEHICLE_FIRE / CAR_FIRE</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Wildland / Grass Fire</span>
+            <span class="code-item-code">FIRE / WILDLAND_FIRE / GRASS_FIRE</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Dumpster / Outside Fire</span>
+            <span class="code-item-code">FIRE / OTHER_FIRE / DUMPSTER_FIRE</span>
+          </div>
+        </div>
+        <div class="code-note">Includes EV battery fires under VEHICLE_FIRE</div>
+      </div>
+
+      <div class="code-group">
+        <div class="code-group-header" style="background:rgba(220,38,38,.05);">
+          <span class="code-group-icon">🚑</span>
+          <div>
+            <div class="code-group-name" style="color:#DC2626;">Medical</div>
+            <span class="code-group-tag">Group: MEDICAL</span>
+          </div>
+        </div>
+        <div class="code-items">
+          <div class="code-item">
+            <span class="code-item-name">Cardiac Arrest</span>
+            <span class="code-item-code">MEDICAL / ILLNESS / CARDIAC_ARREST</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Stroke / CVA</span>
+            <span class="code-item-code">MEDICAL / ILLNESS / STROKE_CVA</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Respiratory Distress</span>
+            <span class="code-item-code">MEDICAL / ILLNESS / RESPIRATORY</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">MVC with Injury</span>
+            <span class="code-item-code">MEDICAL / INJURY / MOTOR_VEHICLE_COLLISION</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Fall / Traumatic Injury</span>
+            <span class="code-item-code">MEDICAL / INJURY / TRAUMATIC_INJURY</span>
+          </div>
+        </div>
+        <div class="code-note">Lift assists are PUBLIC_SERVICE, not MEDICAL</div>
+      </div>
+
+      <div class="code-group">
+        <div class="code-group-header" style="background:rgba(234,179,8,.05);">
+          <span class="code-group-icon">🚨</span>
+          <div>
+            <div class="code-group-name" style="color:#D97706;">Hazardous Situation</div>
+            <span class="code-group-tag">Group: HAZSIT</span>
+          </div>
+        </div>
+        <div class="code-items">
+          <div class="code-item">
+            <span class="code-item-name">Gas Leak</span>
+            <span class="code-item-code">HAZSIT / HAZARD_MATERIAL / GAS_LEAK</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Fuel Spill</span>
+            <span class="code-item-code">HAZSIT / HAZARD_MATERIAL / FUEL_SPILL</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">MVC (no injury)</span>
+            <span class="code-item-code">HAZSIT / HAZARD_NONCHEM / MOTOR_VEHICLE_COLLISION</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Smoke Investigation</span>
+            <span class="code-item-code">HAZSIT / INVESTIGATION / SMOKE_INVESTIGATION</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Gas Odor</span>
+            <span class="code-item-code">HAZSIT / INVESTIGATION / GAS_ODOR</span>
+          </div>
+        </div>
+        <div class="code-note">Smoke investigations are HAZSIT, not FIRE</div>
+      </div>
+
+      <div class="code-group">
+        <div class="code-group-header" style="background:rgba(79,70,229,.05);">
+          <span class="code-group-icon">🪝</span>
+          <div>
+            <div class="code-group-name" style="color:var(--indigo);">Rescue</div>
+            <span class="code-group-tag">Group: RESCUE</span>
+          </div>
+        </div>
+        <div class="code-items">
+          <div class="code-item">
+            <span class="code-item-name">Vehicle Extrication — Entrapped</span>
+            <span class="code-item-code">RESCUE / TRANSPORTATION / MOTOR_VEHICLE_EXTRICATION_ENTRAPPED</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Water Rescue</span>
+            <span class="code-item-code">RESCUE / WATER_RESCUE / SWIFT_WATER</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Confined Space</span>
+            <span class="code-item-code">RESCUE / CONFINED_SPACE / INDUSTRIAL</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">High Angle / Rope</span>
+            <span class="code-item-code">RESCUE / HIGH_ANGLE / CLIFF_RESCUE</span>
+          </div>
+        </div>
+        <div class="code-note">MVC with entrapment → RESCUE, not HAZSIT</div>
+      </div>
+
+      <div class="code-group">
+        <div class="code-group-header" style="background:rgba(22,163,74,.05);">
+          <span class="code-group-icon">🤝</span>
+          <div>
+            <div class="code-group-name" style="color:var(--green);">Public Service</div>
+            <span class="code-group-tag">Group: PUBLIC_SERVICE</span>
+          </div>
+        </div>
+        <div class="code-items">
+          <div class="code-item">
+            <span class="code-item-name">Lift Assist</span>
+            <span class="code-item-code">PUBLIC_SERVICE / LIFT_ASSIST</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Smoke Alarm Activation</span>
+            <span class="code-item-code">PUBLIC_SERVICE / ALARMS / SMOKE_ALARM_ACTIVATION</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">CO Alarm</span>
+            <span class="code-item-code">PUBLIC_SERVICE / ALARMS / CO_ALARM</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Lost Person</span>
+            <span class="code-item-code">PUBLIC_SERVICE / LOST_PERSON</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Weather Response</span>
+            <span class="code-item-code">PUBLIC_SERVICE / WEATHER_RESPONSE</span>
+          </div>
+        </div>
+        <div class="code-note">Welfare checks = PERSON_IN_DISTRESS</div>
+      </div>
+
+      <div class="code-group">
+        <div class="code-group-header" style="background:rgba(107,122,133,.06);">
+          <span class="code-group-icon">❌</span>
+          <div>
+            <div class="code-group-name" style="color:var(--muted);">No Emergency</div>
+            <span class="code-group-tag">Group: NO_EMERGENCY</span>
+          </div>
+        </div>
+        <div class="code-items">
+          <div class="code-item">
+            <span class="code-item-name">False Alarm — Malicious</span>
+            <span class="code-item-code">NO_EMERGENCY / FALSE_ALARM / MALICIOUS</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">False Alarm — Accidental</span>
+            <span class="code-item-code">NO_EMERGENCY / FALSE_ALARM / ACCIDENTAL</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Good Intent — Cancelled</span>
+            <span class="code-item-code">NO_EMERGENCY / GOOD_INTENT / CANCELLED</span>
+          </div>
+          <div class="code-item">
+            <span class="code-item-name">Good Intent — Wrong Location</span>
+            <span class="code-item-code">NO_EMERGENCY / GOOD_INTENT / WRONG_LOCATION</span>
+          </div>
+        </div>
+        <div class="code-note">All cancelled calls must still be reported</div>
       </div>
     </div>
   </div>

@@ -397,6 +397,177 @@ ARTICLES = [
 """
     },
     {
+        "slug":      "neris-department-ids",
+        "title":     "NERIS Department IDs: What They Are and How to Find Yours",
+        "category":  "NERIS",
+        "color":     "#6366F1",
+        "bg":        "rgba(99,102,241,.1)",
+        "date":      "March 2026",
+        "read_time": 4,
+        "excerpt":   "NERIS replaces state-scoped NFIRS FDIDs with countrywide unique department identifiers. Here's what that means for your data, your API credentials, and your grant submissions.",
+        "content":   """
+<h2>What Is a NERIS Department ID?</h2>
+<p>A NERIS Department ID (also called a NERIS Agency ID) is a <strong>countrywide unique identifier</strong> assigned to every fire and emergency services department that reports through NERIS. It replaces the old NFIRS FDID (Fire Department Identifier), which was only unique within a single state.</p>
+<p>This distinction matters more than it sounds. Because NFIRS FDIDs were state-scoped, the number "12345" could refer to a different department in Virginia, California, and Texas simultaneously. That made national data aggregation unreliable and created persistent problems in grant data, research datasets, and mutual aid records.</p>
+<p>NERIS IDs are globally unique. No two departments in the country share the same NERIS ID, regardless of state or territory.</p>
+
+<div class="article-callout">
+<strong>Key difference:</strong> Your NFIRS FDID was assigned by your state. Your NERIS ID is assigned by the national NERIS registry and is unique across all 50 states and territories.
+</div>
+
+<h2>What Your NERIS ID Is Used For</h2>
+<p>Your NERIS ID is embedded in everything your department does within the NERIS ecosystem:</p>
+<ul>
+  <li><strong>API authentication</strong> — your NERIS ID is attached to your OAuth2 credentials. Every incident record you submit is tagged with your department's NERIS ID automatically.</li>
+  <li><strong>Grant submissions</strong> — FEMA uses your NERIS ID to link your incident data to AFG and SAFER applications. Reviewers can verify your reported call volume and response times directly against NERIS records.</li>
+  <li><strong>Mutual aid records</strong> — when your department provides or receives mutual aid, both agencies are identified by NERIS ID in the Aid Classification module.</li>
+  <li><strong>National trend analysis</strong> — USFA aggregates incident data by NERIS ID for national reports, resource planning, and research datasets that inform future federal funding priorities.</li>
+  <li><strong>ISO PPC evidence</strong> — if you present incident data to support your ISO rating, your NERIS ID anchors the records to your specific department.</li>
+</ul>
+
+<h2>How to Find Your Department's NERIS ID</h2>
+<p>Your NERIS ID is assigned during department registration in the NERIS portal. There are three ways to find it:</p>
+<ol>
+  <li><strong>Check your RMS configuration</strong> — if your RMS is already submitting NERIS data, your NERIS ID is in the system configuration, usually under "Agency Settings" or "NERIS Integration."</li>
+  <li><strong>Check your NERIS portal credentials</strong> — log in to neris.fsri.org with your department's account. Your agency ID appears in your profile and credential settings.</li>
+  <li><strong>Contact your state fire reporting coordinator</strong> — if your department hasn't completed NERIS registration, your state coordinator can help initiate registration and obtain your ID.</li>
+</ol>
+
+<h2>NERIS ID vs. NFIRS FDID — The Conversion Problem</h2>
+<p>If your department is converting historical NFIRS data to NERIS format, you cannot simply carry over your FDID. The two systems use completely different identifier schemes.</p>
+<p>When converting historical NFIRS records:</p>
+<ul>
+  <li>Replace the FDID in converted records with your NERIS ID in the <code>neris_id_agency</code> field</li>
+  <li>Note in your data documentation that converted records used the NFIRS FDID <em>[your state]-[your FDID]</em> prior to conversion</li>
+  <li>Do not submit converted records without a valid NERIS ID — the API will reject them</li>
+</ul>
+<p>FireInsight's NFIRS-to-NERIS converter automatically prompts for your NERIS ID and populates the correct field in converted records.</p>
+
+<h2>What If Your Department Isn't Registered Yet?</h2>
+<p>If your department hasn't obtained a NERIS ID, you are not submitting NERIS-compliant data — even if your RMS has a NERIS module installed. Registration is required before any data can be submitted to the national NERIS API.</p>
+<p>To register:</p>
+<ol>
+  <li>Visit neris.fsri.org and create a department account</li>
+  <li>Provide your department's legal name, state, county, and jurisdiction type</li>
+  <li>Receive your NERIS ID and OAuth2 credentials (Client ID and Client Secret)</li>
+  <li>Configure your RMS with the credentials — your vendor's support team can usually complete this in one session</li>
+</ol>
+
+<div class="article-callout">
+<strong>Bottom line:</strong> Your NERIS ID is the anchor for all of your department's data in the national system. Without it, your incidents aren't tied to your department — they don't exist in NERIS. If you're uncertain whether your department is registered, check with your RMS vendor or state coordinator before your next grant cycle.
+</div>
+""",
+    },
+    {
+        "slug":      "neris-codes",
+        "title":     "Understanding NERIS Incident Type Codes",
+        "category":  "NERIS",
+        "color":     "#6366F1",
+        "bg":        "rgba(99,102,241,.1)",
+        "date":      "March 2026",
+        "read_time": 6,
+        "excerpt":   "NERIS uses a 3-tier hierarchical code system that replaces NFIRS numeric codes. Here's how the structure works, what the major categories contain, and the coding rules that trip departments up most often.",
+        "content":   """
+<h2>How NERIS Codes Work</h2>
+<p>NERIS incident type codes follow a <strong>3-tier hierarchical structure</strong>: Group → Sub-group → Incident Type. Unlike NFIRS, which used a fixed set of numeric codes like "111" for "Structure Fire," NERIS codes are human-readable strings that describe exactly what happened.</p>
+<p>The full code for a structure fire with structural involvement looks like this:</p>
+
+<div class="article-callout" style="font-family: 'Courier New', monospace; font-size: 14px;">
+FIRE / STRUCTURE_FIRE / STRUCTURAL_INVOLVEMENT_FIRE
+</div>
+
+<p>This three-part structure means you always know exactly what you're looking at — no code lookup table required. It also means the system can accommodate new incident types (like EV battery fires or drone incidents) by adding new codes within existing groups, without breaking the entire taxonomy.</p>
+
+<h2>The Core Coding Principle</h2>
+<p>Before walking through each group, there's one rule that shapes every coding decision in NERIS:</p>
+<p><strong>Code the incident for what actually happened — not the worst case you feared when you dispatched.</strong></p>
+<p>Examples of what this means in practice:</p>
+<ul>
+  <li>A smoke investigation that turned out to be cooking smoke → <code>HAZSIT / INVESTIGATION / SMOKE_INVESTIGATION</code>, not <code>FIRE</code></li>
+  <li>A lift assist where the patient didn't require transport → <code>PUBLIC_SERVICE / LIFT_ASSIST</code>, not <code>MEDICAL</code></li>
+  <li>A motor vehicle accident with no injuries → <code>HAZSIT / HAZARD_NONCHEM / MOTOR_VEHICLE_COLLISION</code>, not <code>RESCUE</code></li>
+  <li>A motor vehicle accident with entrapment → <code>RESCUE / TRANSPORTATION / MOTOR_VEHICLE_EXTRICATION_ENTRAPPED</code></li>
+</ul>
+<p>The same underlying event codes differently depending on what you actually found. This requires crews to code after the incident is resolved, not at dispatch.</p>
+
+<h2>The Six Major Code Groups</h2>
+
+<h3>FIRE — Fire Incidents</h3>
+<p>The FIRE group covers all incidents where combustion was the primary hazard. Sub-groups include structure fires, vehicle fires, wildland fires, and other fires (dumpster, outside, etc.).</p>
+<ul>
+  <li><code>FIRE / STRUCTURE_FIRE / STRUCTURAL_INVOLVEMENT_FIRE</code> — fire has spread to structural components</li>
+  <li><code>FIRE / STRUCTURE_FIRE / CONFINED_FIRE</code> — fire contained to object of origin, no structural involvement</li>
+  <li><code>FIRE / VEHICLE_FIRE / CAR_FIRE</code> — passenger vehicle fire</li>
+  <li><code>FIRE / VEHICLE_FIRE / ELECTRIC_VEHICLE_FIRE</code> — EV battery or drivetrain fire</li>
+  <li><code>FIRE / WILDLAND_FIRE / GRASS_FIRE</code> — grass or brush fire</li>
+  <li><code>FIRE / OTHER_FIRE / DUMPSTER_FIRE</code> — trash, dumpster, or outside refuse fire</li>
+</ul>
+
+<h3>MEDICAL — Medical Emergencies</h3>
+<p>The MEDICAL group covers incidents where the primary problem is a medical condition. It's divided between INJURY (trauma) and ILLNESS (medical condition) sub-groups.</p>
+<ul>
+  <li><code>MEDICAL / ILLNESS / CARDIAC_ARREST</code> — cardiac arrest requiring resuscitation</li>
+  <li><code>MEDICAL / ILLNESS / STROKE_CVA</code> — stroke or cerebrovascular accident</li>
+  <li><code>MEDICAL / ILLNESS / RESPIRATORY</code> — respiratory distress</li>
+  <li><code>MEDICAL / INJURY / TRAUMATIC_INJURY</code> — trauma from a fall, assault, etc.</li>
+  <li><code>MEDICAL / INJURY / MOTOR_VEHICLE_COLLISION</code> — MVC where someone was injured and transported</li>
+</ul>
+
+<h3>HAZSIT — Hazardous Situations</h3>
+<p>Hazardous situations cover incidents involving chemical hazards, non-chemical hazards, and investigations where a hazard was suspected but not confirmed. This is where most coding confusion occurs.</p>
+<ul>
+  <li><code>HAZSIT / HAZARD_MATERIAL / GAS_LEAK</code> — confirmed natural gas or LP gas leak</li>
+  <li><code>HAZSIT / HAZARD_MATERIAL / FUEL_SPILL</code> — petroleum product spill</li>
+  <li><code>HAZSIT / HAZARD_NONCHEM / MOTOR_VEHICLE_COLLISION</code> — MVC with no injuries</li>
+  <li><code>HAZSIT / INVESTIGATION / SMOKE_INVESTIGATION</code> — smoke reported, no fire found</li>
+  <li><code>HAZSIT / INVESTIGATION / GAS_ODOR</code> — gas odor reported, leak not confirmed</li>
+</ul>
+
+<h3>RESCUE — Rescue Operations</h3>
+<p>Rescue covers incidents where the primary action was extricating or recovering a person from a life-threatening situation — not a medical emergency per se, but a physical rescue.</p>
+<ul>
+  <li><code>RESCUE / TRANSPORTATION / MOTOR_VEHICLE_EXTRICATION_ENTRAPPED</code> — occupant trapped and requiring extrication</li>
+  <li><code>RESCUE / WATER_RESCUE / SWIFT_WATER</code> — swift water rescue</li>
+  <li><code>RESCUE / CONFINED_SPACE / INDUSTRIAL</code> — confined space rescue in industrial setting</li>
+  <li><code>RESCUE / HIGH_ANGLE / CLIFF_RESCUE</code> — rope/high angle rescue</li>
+</ul>
+
+<h3>PUBLIC_SERVICE — Non-Emergency Responses</h3>
+<p>Public service covers calls where the department responded but the incident was not an emergency in the traditional sense — alarms, lift assists, welfare checks, and service calls.</p>
+<ul>
+  <li><code>PUBLIC_SERVICE / LIFT_ASSIST</code> — patient on floor, department assists but no transport</li>
+  <li><code>PUBLIC_SERVICE / ALARMS / SMOKE_ALARM_ACTIVATION</code> — smoke alarm activation, no fire found</li>
+  <li><code>PUBLIC_SERVICE / ALARMS / CO_ALARM</code> — carbon monoxide alarm activation</li>
+  <li><code>PUBLIC_SERVICE / LOST_PERSON</code> — missing person search</li>
+  <li><code>PUBLIC_SERVICE / WEATHER_RESPONSE</code> — storm damage, flooding assistance</li>
+  <li><code>PUBLIC_SERVICE / PERSON_IN_DISTRESS</code> — welfare check, person in need of assistance</li>
+</ul>
+
+<h3>NO_EMERGENCY — False Alarms and Good Intent</h3>
+<p>Every cancelled call, false alarm, and good-intent call must still be reported in NERIS. These records are used to track false alarm trends and assess departmental workload.</p>
+<ul>
+  <li><code>NO_EMERGENCY / FALSE_ALARM / MALICIOUS</code> — intentional false report</li>
+  <li><code>NO_EMERGENCY / FALSE_ALARM / ACCIDENTAL</code> — accidental activation, unintentional</li>
+  <li><code>NO_EMERGENCY / GOOD_INTENT / CANCELLED</code> — call cancelled en route</li>
+  <li><code>NO_EMERGENCY / GOOD_INTENT / WRONG_LOCATION</code> — responded to incorrect address</li>
+</ul>
+
+<h2>Common Coding Mistakes</h2>
+<p>These are the coding errors that show up most frequently in NERIS data quality audits:</p>
+<ul>
+  <li><strong>Using MEDICAL for lift assists</strong> — lift assists with no transport should be <code>PUBLIC_SERVICE / LIFT_ASSIST</code>. Only code MEDICAL if there was a medical condition being treated.</li>
+  <li><strong>Using FIRE for smoke investigations</strong> — if you responded to a smoke report and found no fire, it's <code>HAZSIT / INVESTIGATION / SMOKE_INVESTIGATION</code>.</li>
+  <li><strong>Using HAZSIT for MVC with entrapment</strong> — if someone was trapped and required extrication, that's <code>RESCUE</code>, not <code>HAZSIT</code>.</li>
+  <li><strong>Leaving cancelled calls out</strong> — all calls, including cancellations, must be reported. Use <code>NO_EMERGENCY / GOOD_INTENT / CANCELLED</code>.</li>
+  <li><strong>Coding at dispatch, not resolution</strong> — the incident type should reflect what you found, not what dispatch thought it might be.</li>
+</ul>
+
+<div class="article-callout">
+<strong>Practical tip:</strong> Build a one-page coding reference card for your most common incident types and post it at each station. The majority of your call volume — structure fires, MVCs, medical calls, alarm activations — will be covered by 10-15 codes. Once crews know those cold, coding accuracy improves dramatically.
+</div>
+""",
+    },
+    {
         "slug":      "neris-faq",
         "title":     "NERIS FAQ: Everything Fire Departments Are Asking Right Now",
         "category":  "NERIS",
