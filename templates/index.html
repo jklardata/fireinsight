@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FireInsight — AI Analytics for Fire Departments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:    #DC2626;
+      --red-lt: #FEF2F2;
+      --gray-50:  #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-400: #9CA3AF;
+      --gray-600: #4B5563;
+      --gray-900: #111827;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: var(--gray-900);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 32px;
+      border-bottom: 1px solid var(--gray-200);
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      width: 36px; height: 36px;
+      background: var(--red);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo svg { width: 20px; height: 20px; fill: #fff; }
+
+    header h1 { font-size: 18px; font-weight: 800; letter-spacing: -.3px; }
+    header h1 span { color: var(--red); }
+
+    .badge {
+      margin-left: auto;
+      font-size: 11px; font-weight: 600;
+      background: var(--red-lt); color: var(--red);
+      padding: 3px 10px; border-radius: 20px;
+      letter-spacing: .3px;
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      min-height: calc(100vh - 61px);
+    }
+
+    /* ── Sidebar / Form ── */
+    .sidebar {
+      border-right: 1px solid var(--gray-200);
+      padding: 28px 24px;
+      background: var(--gray-50);
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .6px;
+      color: var(--gray-400);
+      margin-bottom: 20px;
+    }
+
+    /* Report type tabs */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 8px 4px;
+      font-size: 12px; font-weight: 600;
+      text-align: center;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      cursor: pointer;
+      background: #fff;
+      color: var(--gray-600);
+      transition: all .15s;
+    }
+
+    .tab.active {
+      border-color: var(--red);
+      background: var(--red-lt);
+      color: var(--red);
+    }
+
+    /* Form fields */
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 12px; font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--gray-900);
+      transition: border-color .15s;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--red);
+    }
+
+    textarea { resize: vertical; min-height: 72px; }
+
+    .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    /* Toggle */
+    .toggle-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      background: #fff;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: border-color .15s;
+    }
+    .toggle-row:has(input:checked) { border-color: var(--red); background: var(--red-lt); }
+
+    .toggle-row input[type="checkbox"] { accent-color: var(--red); width: 16px; height: 16px; }
+    .toggle-row span { font-size: 13px; font-weight: 500; }
+
+    /* Grant section */
+    #grant-fields {
+      padding: 14px;
+      background: #fff;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+    #grant-fields .field:last-child { margin-bottom: 0; }
+
+    /* Submit */
+    .btn-generate {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px; font-weight: 700;
+      font-family: inherit;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-generate:hover { background: #b91c1c; }
+    .btn-generate:active { transform: scale(.98); }
+    .btn-generate svg { width: 16px; height: 16px; fill: #fff; }
+
+    /* ── Main / Results ── */
+    .main {
+      padding: 36px 48px;
+      overflow-y: auto;
+    }
+
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; height: 100%;
+      color: var(--gray-400); text-align: center; gap: 12px;
+    }
+    .empty-state svg { width: 48px; height: 48px; opacity: .3; }
+    .empty-state p { font-size: 15px; font-weight: 500; }
+    .empty-state small { font-size: 13px; }
+
+    /* Result card */
+    .result-card {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .result-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--gray-200);
+      background: var(--gray-50);
+    }
+
+    .result-header span {
+      font-size: 13px; font-weight: 600; color: var(--gray-600);
+    }
+
+    .btn-download {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      font-size: 12px; font-weight: 600;
+      font-family: inherit;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      color: var(--gray-600);
+      transition: border-color .15s, color .15s;
+    }
+    .btn-download:hover { border-color: var(--red); color: var(--red); }
+    .btn-download svg { width: 14px; height: 14px; }
+
+    .result-body {
+      padding: 32px 36px;
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    /* Markdown styles */
+    .result-body h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .result-body h2 { font-size: 17px; font-weight: 700; margin: 28px 0 10px; color: var(--gray-900); }
+    .result-body h3 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; }
+    .result-body p  { margin-bottom: 14px; color: var(--gray-600); }
+    .result-body ul, .result-body ol { padding-left: 20px; margin-bottom: 14px; }
+    .result-body li { margin-bottom: 6px; color: var(--gray-600); }
+    .result-body strong { color: var(--gray-900); font-weight: 700; }
+    .result-body em { color: var(--gray-400); }
+    .result-body hr { border: none; border-top: 1px solid var(--gray-200); margin: 20px 0; }
+
+    /* Error */
+    .error-banner {
+      background: var(--red-lt);
+      border: 1.5px solid #FECACA;
+      color: #991B1B;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 13px; font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    /* Convert panel */
+    .convert-drop {
+      border: 2px dashed var(--gray-200);
+      border-radius: var(--radius);
+      padding: 28px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      background: #fff;
+      margin-bottom: 16px;
+    }
+    .convert-drop:hover, .convert-drop.drag-over {
+      border-color: var(--red);
+      background: var(--red-lt);
+    }
+    .convert-drop svg { width: 28px; height: 28px; opacity: .35; margin-bottom: 8px; }
+    .convert-drop p { font-size: 13px; font-weight: 500; color: var(--gray-600); margin-bottom: 4px; }
+    .convert-drop small { font-size: 11px; color: var(--gray-400); }
+    .convert-drop input[type="file"] { display: none; }
+
+    .convert-summary {
+      background: #fff;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .convert-summary-head {
+      padding: 12px 16px;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px;
+      color: var(--gray-400);
+    }
+    .convert-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .convert-stat {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .convert-stat:nth-child(odd) { border-right: 1px solid var(--gray-200); }
+    .convert-stat .val {
+      font-size: 22px; font-weight: 800; color: var(--gray-900);
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .convert-stat .lbl { font-size: 11px; color: var(--gray-400); font-weight: 500; }
+
+    .convert-types { padding: 14px 16px; }
+    .convert-type-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; margin-bottom: 8px;
+    }
+    .convert-type-row .type-name { color: var(--gray-600); font-weight: 500; flex: 1; padding-right: 8px; }
+    .convert-type-row .type-bar-wrap { flex: 1; background: var(--gray-100); border-radius: 4px; height: 6px; margin-right: 8px; }
+    .convert-type-row .type-bar { height: 6px; background: var(--red); border-radius: 4px; }
+    .convert-type-row .type-count { color: var(--gray-900); font-weight: 700; min-width: 30px; text-align: right; }
+
+    .convert-warnings {
+      padding: 10px 16px;
+      border-top: 1px solid var(--gray-200);
+      background: #FFFBEB;
+    }
+    .convert-warnings p { font-size: 11px; color: #92400E; line-height: 1.5; }
+
+    .btn-download-json {
+      width: 100%;
+      padding: 11px;
+      font-size: 13px; font-weight: 700;
+      font-family: inherit;
+      background: var(--gray-900);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      margin-top: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: background .15s;
+    }
+    .btn-download-json:hover { background: #374151; }
+    .btn-download-json svg { width: 14px; height: 14px; fill: #fff; }
+
+    /* Loading overlay */
+    #loading {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px;
+    }
+    #loading.show { display: flex; }
+
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #loading p { font-size: 14px; font-weight: 600; color: var(--gray-600); }
+    #loading small { font-size: 12px; color: var(--gray-400); }
+
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--gray-200); }
+      .main { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Generating with Claude AI...</p>
+  <small>This usually takes 10-20 seconds</small>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0c0-3.5-2.5-6-6-11zm0 16a4 4 0 01-4-4c0-2 1.2-3.8 3-6.3C12.8 10.2 14 12 14 15a4 4 0 01-4 3z" opacity=".3"/>
+      <path d="M12 2C9 6.5 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/>
+    </svg>
+  </div>
+  <h1>Fire<span>Insight</span></h1>
+  <span class="badge">BETA</span>
+</header>
+
+<!-- Layout -->
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Generate Report</h2>
+
+    <form method="POST" action="/generate" id="main-form">
+
+      <!-- Report type tabs -->
+      <div class="tabs">
+        <div class="tab {% if not form and not convert %}active{% elif form and form.report_type == 'trends' %}active{% endif %}" data-value="trends" onclick="selectTab(this)">Trends</div>
+        <div class="tab {% if form and form.report_type == 'report' %}active{% endif %}" data-value="report" onclick="selectTab(this)">Chief Report</div>
+        <div class="tab {% if form and form.report_type == 'grant' %}active{% endif %}" data-value="grant" onclick="selectTab(this)">Grant</div>
+        <div class="tab {% if convert %}active{% endif %}" data-value="convert" onclick="selectTab(this)">Convert</div>
+      </div>
+      <input type="hidden" name="report_type" id="report_type" value="{{ form.report_type if form else 'trends' }}" />
+
+      <!-- Mock toggle -->
+      <label class="toggle-row">
+        <input type="checkbox" name="use_mock" id="use_mock" {% if not form or form.use_mock %}checked{% endif %} />
+        <span>Use sample data (no credentials needed)</span>
+      </label>
+
+      <!-- NERIS ID -->
+      <div class="field" id="neris-field" style="{% if not form or form.use_mock %}display:none{% endif %}">
+        <label>Department NERIS ID</label>
+        <input type="text" name="neris_id" value="{{ form.neris_id if form else 'MOCK-001' }}" placeholder="e.g. VA-1234" />
+      </div>
+
+      <!-- Date range -->
+      <div class="field">
+        <label>Date Range (optional)</label>
+        <div class="date-row">
+          <input type="date" name="start" value="{{ form.start if form else '' }}" />
+          <input type="date" name="end" value="{{ form.end if form else '' }}" />
+        </div>
+      </div>
+
+      <!-- Period label -->
+      <div class="field">
+        <label>Period Label <span style="font-weight:400;color:var(--gray-400)">(appears in report)</span></label>
+        <input type="text" name="period" value="{{ form.period if form else '' }}" placeholder="e.g. January 2025" />
+      </div>
+
+      <!-- Grant fields -->
+      <div id="grant-fields" style="{% if not form or form.report_type != 'grant' %}display:none{% endif %}">
+        <div class="field">
+          <label>Grant Program</label>
+          <select name="grant_type">
+            <option value="AFG" {% if form and form.grant_type == 'AFG' %}selected{% endif %}>FEMA AFG — Assistance to Firefighters</option>
+            <option value="SAFER" {% if form and form.grant_type == 'SAFER' %}selected{% endif %}>FEMA SAFER — Staffing</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>What are you requesting?</label>
+          <textarea name="grant_request" placeholder="e.g. 2 thermal imaging cameras for structural firefighting">{{ form.grant_request if form else '' }}</textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-generate" onclick="showLoading()">
+        <svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+        Generate Report
+      </button>
+
+    </form>
+
+    <!-- Convert panel (separate form, shown when Convert tab active) -->
+    <div id="convert-panel" style="{% if not convert %}display:none{% endif %}">
+      <form method="POST" action="/convert" enctype="multipart/form-data" id="convert-form">
+
+        <label
+          class="convert-drop"
+          id="drop-zone"
+          for="nfirs-file"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="handleDrop(event)"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+          </svg>
+          <p id="drop-label">{% if convert and convert.filename %}{{ convert.filename }}{% else %}Drop your NFIRS CSV here{% endif %}</p>
+          <small>or click to browse &nbsp;&middot;&nbsp; .csv files only</small>
+          <input type="file" name="file" id="nfirs-file" accept=".csv,text/csv" onchange="onFileSelect(this)" {% if not convert or not convert.summary %}required{% endif %} />
+        </label>
+
+        {% if convert and convert.error %}
+        <div class="error-banner" style="margin-bottom:14px">{{ convert.error }}</div>
+        {% endif %}
+
+        <button type="submit" class="btn-generate" onclick="showLoading()" id="convert-submit" style="{% if convert and convert.summary %}display:flex{% else %}display:none{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+          Convert Another File
+        </button>
+
+      </form>
+    </div>
+
+  </aside>
+
+  <!-- Main output -->
+  <main class="main">
+
+    {% if error %}
+    <div class="error-banner">{{ error }}</div>
+    {% endif %}
+
+    {% if convert and convert.summary %}
+
+    <!-- Conversion results -->
+    <div class="result-card">
+      <div class="result-header">
+        <span>NFIRS → NERIS Conversion &mdash; {{ convert.filename }}</span>
+        <form method="POST" action="/convert/download" style="display:inline">
+          <input type="hidden" name="content" value="{{ convert.incidents | tojson | e }}" />
+          <input type="hidden" name="filename" value="neris-{{ convert.filename | replace('.csv','') }}.json" />
+          <button type="submit" class="btn-download">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download NERIS JSON
+          </button>
+        </form>
+      </div>
+      <div class="result-body">
+
+        <!-- Stat grid -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px">
+          <div style="text-align:center;padding:20px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px">
+            <div style="font-size:32px;font-weight:900;color:var(--gray-900);line-height:1">{{ convert.summary.total }}</div>
+            <div style="font-size:12px;color:var(--gray-400);font-weight:500;margin-top:4px">Total Incidents</div>
+          </div>
+          <div style="text-align:center;padding:20px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px">
+            <div style="font-size:32px;font-weight:900;color:var(--gray-900);line-height:1">{{ convert.summary.with_timestamps }}</div>
+            <div style="font-size:12px;color:var(--gray-400);font-weight:500;margin-top:4px">With Timestamps</div>
+          </div>
+          <div style="text-align:center;padding:20px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px">
+            <div style="font-size:32px;font-weight:900;color:var(--gray-900);line-height:1">{{ convert.summary.firefighter_injuries }}</div>
+            <div style="font-size:12px;color:var(--gray-400);font-weight:500;margin-top:4px">FF Injuries</div>
+          </div>
+          <div style="text-align:center;padding:20px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px">
+            <div style="font-size:32px;font-weight:900;color:var(--gray-900);line-height:1">{{ convert.summary.civilian_injuries }}</div>
+            <div style="font-size:12px;color:var(--gray-400);font-weight:500;margin-top:4px">Civilian Injuries</div>
+          </div>
+        </div>
+
+        <!-- Top incident types -->
+        <h2 style="font-size:15px;font-weight:700;margin-bottom:16px">Top Incident Types</h2>
+        {% set max_count = convert.summary.top_types.values() | max %}
+        {% for type_name, count in convert.summary.top_types.items() %}
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:14px">
+          <span style="min-width:220px;color:var(--gray-600);font-weight:500">{{ type_name }}</span>
+          <div style="flex:1;background:var(--gray-100);border-radius:4px;height:8px">
+            <div style="width:{{ (count / max_count * 100) | int }}%;height:8px;background:var(--red);border-radius:4px"></div>
+          </div>
+          <span style="font-weight:700;color:var(--gray-900);min-width:36px;text-align:right">{{ count }}</span>
+        </div>
+        {% endfor %}
+
+        {% if convert.warnings %}
+        <div style="margin-top:24px;padding:14px 18px;background:#FFFBEB;border:1.5px solid #FCD34D;border-radius:10px">
+          <p style="font-size:13px;font-weight:600;color:#92400E;margin-bottom:4px">{{ convert.warnings | length }} warning(s)</p>
+          {% for w in convert.warnings[:3] %}
+          <p style="font-size:12px;color:#78350F;line-height:1.5">{{ w }}</p>
+          {% endfor %}
+          {% if convert.warnings | length > 3 %}
+          <p style="font-size:12px;color:#78350F;margin-top:4px">+ {{ convert.warnings | length - 3 }} more</p>
+          {% endif %}
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    {% elif result %}
+    <div class="result-card">
+      <div class="result-header">
+        <span>
+          {% if form.report_type == 'trends' %}Incident Trend Summary
+          {% elif form.report_type == 'report' %}Chief's Monthly Report
+          {% elif form.report_type == 'grant' %}{{ form.grant_type }} Grant Narrative
+          {% endif %}
+        </span>
+        <form method="POST" action="/download" style="display:inline">
+          <input type="hidden" name="content" value="{{ result | e }}" />
+          <input type="hidden" name="filename" value="fireinsight-{{ form.report_type }}.md" />
+          <button type="submit" class="btn-download">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download .md
+          </button>
+        </form>
+      </div>
+      <div class="result-body" id="result-body"></div>
+    </div>
+
+    <script>
+      const raw = {{ result | tojson }};
+      document.getElementById("result-body").innerHTML = marked.parse(raw);
+    </script>
+
+    {% else %}
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <p>Your report will appear here</p>
+      <small>Select a report type and click Generate</small>
+    </div>
+    {% endif %}
+
+  </main>
+</div>
+
+<script>
+  function selectTab(el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const val = el.dataset.value;
+
+    const isConvert = val === 'convert';
+    document.getElementById('main-form').style.display     = isConvert ? 'none' : 'block';
+    document.getElementById('convert-panel').style.display = isConvert ? 'block' : 'none';
+
+    if (!isConvert) {
+      document.getElementById('report_type').value = val;
+      document.getElementById('grant-fields').style.display = val === 'grant' ? 'block' : 'none';
+    }
+  }
+
+  // Auto-activate convert tab if server returned convert context
+  {% if convert %}
+  document.addEventListener('DOMContentLoaded', function() {
+    const convertTab = document.querySelector('[data-value="convert"]');
+    if (convertTab) selectTab(convertTab);
+  });
+  {% endif %}
+
+  document.getElementById('use_mock').addEventListener('change', function() {
+    document.getElementById('neris-field').style.display = this.checked ? 'none' : 'block';
+  });
+
+  function showLoading() {
+    document.getElementById('loading').classList.add('show');
+  }
+
+  // File drop / select for converter
+  function onFileSelect(input) {
+    const file = input.files[0];
+    if (file) {
+      document.getElementById('drop-label').textContent = file.name;
+      document.getElementById('convert-submit').style.display = 'flex';
+    }
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('drop-zone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.csv')) {
+      const input = document.getElementById('nfirs-file');
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      input.files = dt.files;
+      onFileSelect(input);
+    }
+  }
+</script>
+
+</body>
+</html>

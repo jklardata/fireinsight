@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FireInsight — AI Analytics for Fire Departments</title>
+  <meta name="description" content="Turn your NERIS incident data into instant trend summaries, chief's reports, and grant narratives — powered by Claude AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:      #DC2626;
+      --red-dk:   #b91c1c;
+      --red-lt:   #FEF2F2;
+      --red-mid:  #FCA5A5;
+      --gray-50:  #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-900: #111827;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--gray-900);
+      background: #fff;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--gray-900);
+    }
+
+    .logo-mark {
+      width: 34px; height: 34px;
+      background: var(--red);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-mark svg { width: 18px; height: 18px; fill: #fff; }
+
+    .nav-logo span {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+    }
+    .nav-logo span em { color: var(--red); font-style: normal; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-600);
+      text-decoration: none;
+      transition: color .15s;
+    }
+    .nav-links a:hover { color: var(--gray-900); }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .15s;
+      text-decoration: none;
+      border: none;
+    }
+    .btn-sm { font-size: 13px; padding: 8px 16px; }
+    .btn-md { font-size: 14px; padding: 11px 22px; }
+    .btn-lg { font-size: 16px; padding: 14px 28px; border-radius: 10px; }
+
+    .btn-primary {
+      background: var(--red);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--red-dk); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,.3); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--gray-600);
+      border: 1.5px solid var(--gray-200);
+    }
+    .btn-outline:hover { border-color: var(--gray-400); color: var(--gray-900); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--gray-600);
+    }
+    .btn-ghost:hover { color: var(--gray-900); }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 96px 24px 80px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--red-lt);
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+    }
+    .hero-badge span { width: 6px; height: 6px; background: var(--red); border-radius: 50%; display: inline-block; }
+
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -1.5px;
+      color: var(--gray-900);
+      margin-bottom: 24px;
+    }
+    .hero h1 em { color: var(--red); font-style: normal; }
+
+    .hero p {
+      font-size: 19px;
+      line-height: 1.65;
+      color: var(--gray-500);
+      max-width: 620px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-sub {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    /* ── DEMO PREVIEW ── */
+    .preview-wrap {
+      max-width: 1000px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+
+    .preview-shell {
+      border: 1.5px solid var(--gray-200);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.04);
+    }
+
+    .preview-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 16px;
+      background: var(--gray-100);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #FC5753; }
+    .dot-y { background: #FDBC40; }
+    .dot-g { background: #33C748; }
+
+    .preview-url {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: var(--gray-400);
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      padding: 4px 12px;
+      max-width: 260px;
+      margin: 0 auto;
+    }
+
+    .preview-body {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: 340px;
+      background: var(--gray-50);
+    }
+
+    .preview-sidebar {
+      border-right: 1px solid var(--gray-200);
+      padding: 20px;
+      background: var(--gray-50);
+    }
+
+    .preview-sidebar-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--gray-400);
+      margin-bottom: 12px;
+    }
+
+    .preview-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+    .preview-tab {
+      flex: 1;
+      padding: 6px 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 6px;
+      border: 1px solid var(--gray-200);
+      background: #fff;
+      color: var(--gray-400);
+    }
+    .preview-tab.active {
+      border-color: var(--red);
+      background: var(--red-lt);
+      color: var(--red);
+    }
+
+    .preview-field {
+      height: 28px;
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .preview-field-sm { height: 20px; }
+    .preview-field-label {
+      height: 8px;
+      width: 60px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    .preview-btn {
+      width: 100%;
+      height: 32px;
+      background: var(--red);
+      border-radius: 6px;
+      margin-top: 16px;
+    }
+
+    .preview-main {
+      padding: 24px 28px;
+    }
+
+    .preview-heading {
+      height: 14px;
+      width: 180px;
+      background: var(--gray-900);
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+    .preview-sub {
+      height: 10px;
+      width: 120px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+
+    .preview-line {
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .preview-line-sm { height: 8px; width: 75%; }
+    .preview-line-md { height: 8px; width: 88%; }
+    .preview-line-full { height: 8px; width: 100%; }
+
+    .preview-section-head {
+      height: 10px;
+      width: 100px;
+      background: var(--gray-900);
+      border-radius: 4px;
+      margin: 20px 0 10px;
+    }
+
+    /* ── LOGOS ── */
+    .logos-section {
+      text-align: center;
+      padding: 0 24px 80px;
+    }
+    .logos-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--gray-400);
+      margin-bottom: 24px;
+    }
+    .logos-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .logo-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gray-400);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .logo-pill-icon {
+      width: 28px; height: 28px;
+      background: var(--gray-100);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-pill-icon svg { width: 16px; height: 16px; }
+
+    /* ── FEATURES ── */
+    .section {
+      padding: 80px 24px;
+    }
+    .section-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 900;
+      letter-spacing: -.8px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .section-body {
+      font-size: 17px;
+      color: var(--gray-500);
+      line-height: 1.65;
+      max-width: 520px;
+      margin-bottom: 56px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      padding: 28px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 14px;
+      background: #fff;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .feature-card:hover {
+      border-color: var(--red-mid);
+      box-shadow: 0 4px 20px rgba(220,38,38,.06);
+    }
+
+    .feature-icon {
+      width: 44px; height: 44px;
+      background: var(--red-lt);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px;
+    }
+    .feature-icon svg { width: 22px; height: 22px; fill: var(--red); }
+
+    .feature-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--gray-500);
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how-bg {
+      background: var(--gray-50);
+      border-top: 1px solid var(--gray-200);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+    }
+
+    .step {
+      position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 22px;
+      right: -20px;
+      width: 40px;
+      height: 2px;
+      background: var(--gray-200);
+    }
+
+    .step-num {
+      width: 44px; height: 44px;
+      background: var(--red);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .step h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .step p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--gray-500);
+    }
+
+    /* ── USE CASES ── */
+    .use-cases-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .use-case {
+      display: flex;
+      gap: 16px;
+      padding: 24px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .use-case-icon {
+      width: 40px; height: 40px;
+      background: var(--red-lt);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .use-case-icon svg { width: 20px; height: 20px; fill: var(--red); }
+
+    .use-case h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .use-case p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--gray-500);
+    }
+
+    /* ── CTA BANNER ── */
+    .cta-section {
+      padding: 80px 24px;
+      text-align: center;
+    }
+
+    .cta-card {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--gray-900);
+      border-radius: 20px;
+      padding: 64px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(220,38,38,.4) 0%, transparent 70%);
+    }
+    .cta-card::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: -40px;
+      width: 260px; height: 260px;
+      background: radial-gradient(circle, rgba(220,38,38,.2) 0%, transparent 70%);
+    }
+
+    .cta-card h2 {
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 900;
+      letter-spacing: -.6px;
+      color: #fff;
+      margin-bottom: 16px;
+      position: relative; z-index: 1;
+    }
+
+    .cta-card p {
+      font-size: 16px;
+      color: rgba(255,255,255,.6);
+      line-height: 1.65;
+      margin-bottom: 36px;
+      position: relative; z-index: 1;
+    }
+
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: relative; z-index: 1;
+    }
+
+    .btn-white {
+      background: #fff;
+      color: var(--gray-900);
+    }
+    .btn-white:hover { background: var(--gray-100); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+
+    .btn-outline-white {
+      background: transparent;
+      color: rgba(255,255,255,.7);
+      border: 1.5px solid rgba(255,255,255,.2);
+    }
+    .btn-outline-white:hover { border-color: rgba(255,255,255,.5); color: #fff; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--gray-200);
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    footer p {
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links a {
+      font-size: 13px;
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color .15s;
+    }
+    .footer-links a:hover { color: var(--gray-900); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.4);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 24px 80px rgba(0,0,0,.2);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 28px; height: 28px;
+      border: none;
+      background: var(--gray-100);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-500);
+      font-size: 16px;
+      font-family: inherit;
+    }
+    .modal-close:hover { background: var(--gray-200); }
+
+    .modal-icon {
+      width: 48px; height: 48px;
+      background: var(--red-lt);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .modal-icon svg { width: 24px; height: 24px; fill: var(--red); }
+
+    .modal h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      letter-spacing: -.3px;
+    }
+
+    .modal > p {
+      font-size: 14px;
+      color: var(--gray-500);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .form-field { margin-bottom: 16px; }
+    .form-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 6px;
+    }
+    .form-field input,
+    .form-field select {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--gray-900);
+      outline: none;
+      transition: border-color .15s;
+    }
+    .form-field input:focus,
+    .form-field select:focus { border-color: var(--red); }
+
+    .modal-submit {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s;
+      margin-top: 4px;
+    }
+    .modal-submit:hover { background: var(--red-dk); }
+
+    .modal-success {
+      display: none;
+      text-align: center;
+      padding: 16px 0;
+    }
+    .modal-success .check {
+      width: 56px; height: 56px;
+      background: #DCFCE7;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .modal-success .check svg { width: 28px; height: 28px; fill: #16A34A; }
+    .modal-success h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+    .modal-success p { font-size: 14px; color: var(--gray-500); line-height: 1.6; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+
+      .hero { padding: 64px 20px 56px; }
+
+      .preview-body { grid-template-columns: 1fr; }
+      .preview-sidebar { display: none; }
+
+      .features-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; gap: 28px; }
+      .step::after { display: none; }
+      .use-cases-grid { grid-template-columns: 1fr; }
+
+      .cta-card { padding: 40px 28px; }
+
+      footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+
+      .section-inner[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── MODAL ── -->
+<div class="modal-overlay" id="demo-modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+
+    <div id="modal-form-content">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
+      </div>
+      <h2>Request a Demo</h2>
+      <p>Tell us about your department and we'll reach out to schedule a walkthrough.</p>
+
+      <form id="demo-form" onsubmit="submitDemo(event)">
+        <div class="form-field">
+          <label>Name</label>
+          <input type="text" placeholder="Chief Jane Smith" required />
+        </div>
+        <div class="form-field">
+          <label>Email</label>
+          <input type="email" placeholder="jane@firedept.gov" required />
+        </div>
+        <div class="form-field">
+          <label>Department Name</label>
+          <input type="text" placeholder="Springfield Fire Department" required />
+        </div>
+        <div class="form-field">
+          <label>Role</label>
+          <select>
+            <option value="">Select your role...</option>
+            <option>Fire Chief</option>
+            <option>Assistant Chief</option>
+            <option>Battalion Chief</option>
+            <option>Captain</option>
+            <option>Administrative Staff</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <button type="submit" class="modal-submit">Request Demo</button>
+      </form>
+    </div>
+
+    <div class="modal-success" id="modal-success">
+      <div class="check">
+        <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3>You're on the list!</h3>
+      <p>Thanks for your interest. We'll be in touch within 1 business day to schedule your personalized demo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
+    </div>
+    <span>Fire<em>Insight</em></span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#use-cases">Use Cases</a></li>
+  </ul>
+
+  <div class="nav-cta">
+    <a href="/app" class="btn btn-sm btn-ghost">Open App</a>
+    <button class="btn btn-sm btn-primary" onclick="openModal()">Request Demo</button>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-badge">
+    <span></span>
+    Now in Beta
+  </div>
+  <h1>AI analytics built for<br /><em>fire departments</em></h1>
+  <p>Turn your NERIS incident data into polished trend summaries, board-ready chief's reports, and grant narratives—in seconds, not hours.</p>
+  <div class="hero-actions">
+    <button class="btn btn-lg btn-primary" onclick="openModal()">Request Demo</button>
+    <a href="/app" class="btn btn-lg btn-outline">Try It Free</a>
+  </div>
+  <p class="hero-sub">No credit card required &nbsp;&middot;&nbsp; Works with NERIS data &nbsp;&middot;&nbsp; Powered by Claude AI</p>
+</section>
+
+<!-- ── PREVIEW ── -->
+<div class="preview-wrap">
+  <div class="preview-shell">
+    <div class="preview-bar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="preview-url">fireinsight.app</div>
+    </div>
+    <div class="preview-body">
+      <div class="preview-sidebar">
+        <div class="preview-sidebar-label">Generate Report</div>
+        <div class="preview-tabs">
+          <div class="preview-tab active">Trends</div>
+          <div class="preview-tab">Chief</div>
+          <div class="preview-tab">Grant</div>
+        </div>
+        <div class="preview-field-label"></div>
+        <div class="preview-field"></div>
+        <div class="preview-field-label" style="margin-top:10px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div class="preview-field preview-field-sm"></div>
+          <div class="preview-field preview-field-sm"></div>
+        </div>
+        <div class="preview-field-label" style="margin-top:10px"></div>
+        <div class="preview-field"></div>
+        <div class="preview-btn"></div>
+      </div>
+      <div class="preview-main">
+        <div class="preview-heading"></div>
+        <div class="preview-sub"></div>
+        <div class="preview-line preview-line-full"></div>
+        <div class="preview-line preview-line-md"></div>
+        <div class="preview-line preview-line-sm"></div>
+        <div class="preview-section-head"></div>
+        <div class="preview-line preview-line-full"></div>
+        <div class="preview-line preview-line-md"></div>
+        <div class="preview-line preview-line-full"></div>
+        <div class="preview-line preview-line-sm"></div>
+        <div class="preview-section-head"></div>
+        <div class="preview-line preview-line-md"></div>
+        <div class="preview-line preview-line-full"></div>
+        <div class="preview-line preview-line-sm"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── LOGOS ── -->
+<div class="logos-section">
+  <p class="logos-label">Built for departments of all sizes</p>
+  <div class="logos-row">
+    <div class="logo-pill">
+      <div class="logo-pill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      Career Departments
+    </div>
+    <div class="logo-pill">
+      <div class="logo-pill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      Volunteer Departments
+    </div>
+    <div class="logo-pill">
+      <div class="logo-pill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      </div>
+      Combination Departments
+    </div>
+    <div class="logo-pill">
+      <div class="logo-pill-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      </div>
+      Fire Districts
+    </div>
+  </div>
+</div>
+
+<!-- ── FEATURES ── -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <p class="section-label">Features</p>
+    <h2 class="section-title">Everything your department<br />needs to report smarter</h2>
+    <p class="section-body">FireInsight connects to your NERIS data and generates the documents your team spends hours writing—automatically.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zm0 11h7v7H3zm11-11h7v7h-7zm4 11v3m0 3v-3m0 0h-3m3 0h3"/></svg>
+        </div>
+        <h3>Incident Trend Analysis</h3>
+        <p>Identify patterns across call types, response times, and incident volume. Spot rising trends before they become problems.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        </div>
+        <h3>Chief's Monthly Report</h3>
+        <p>Generate a polished, board-ready report with key metrics, highlights, and narrative context—ready to present in minutes.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <h3>Grant Narrative Generator</h3>
+        <p>Write compelling AFG and SAFER grant narratives backed by your own incident data. Submit stronger applications faster.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3>NERIS Integration</h3>
+        <p>Pulls directly from the National Emergency Response Information System. No manual data entry—your records, automatically analyzed.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+        </div>
+        <h3>Powered by Claude AI</h3>
+        <p>State-of-the-art language model understands fire service context, terminology, and reporting standards out of the box.</p>
+      </div>
+
+      <div class="feature-card" style="border-color: #FECACA; background: var(--red-lt);">
+        <div class="feature-icon" style="background: #fff;">
+          <svg viewBox="0 0 24 24" fill="var(--red)"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+        </div>
+        <h3>NFIRS → NERIS Converter <span style="font-size:11px;font-weight:700;background:var(--red);color:#fff;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle">NEW</span></h3>
+        <p>Still on NFIRS? Upload your CSV export and instantly convert it to NERIS-compatible JSON—ready to use across all FireInsight reports.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        </div>
+        <h3>Export Anywhere</h3>
+        <p>Download reports as Markdown, paste into Word, or share directly. Your report, your format, no vendor lock-in.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── NFIRS CONVERTER HIGHLIGHT ── -->
+<section class="section how-bg" style="border-top:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200);">
+  <div class="section-inner" style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+    <div>
+      <p class="section-label">NFIRS → NERIS Converter</p>
+      <h2 class="section-title" style="margin-bottom:16px">Still on NFIRS?<br />We've got you.</h2>
+      <p style="font-size:17px;color:var(--gray-500);line-height:1.65;margin-bottom:28px">
+        Thousands of departments are mid-transition from NFIRS to NERIS. FireInsight's built-in converter maps your legacy NFIRS Basic Module exports to the NERIS schema—so you can start using AI-powered analytics today, without waiting for full migration.
+      </p>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:32px">
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:15px;color:var(--gray-600)">
+          <span style="color:var(--red);font-size:18px;line-height:1">&#10003;</span>
+          Maps all NFIRS incident type codes to NERIS labels
+        </li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:15px;color:var(--gray-600)">
+          <span style="color:var(--red);font-size:18px;line-height:1">&#10003;</span>
+          Preserves timestamps, casualty data, and property loss
+        </li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:15px;color:var(--gray-600)">
+          <span style="color:var(--red);font-size:18px;line-height:1">&#10003;</span>
+          Outputs NERIS-compatible JSON—download or pipe straight into reports
+        </li>
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:15px;color:var(--gray-600)">
+          <span style="color:var(--red);font-size:18px;line-height:1">&#10003;</span>
+          Works with exports from FIREHOUSE, ESO, ImageTrend, and more
+        </li>
+      </ul>
+      <a href="/app" class="btn btn-md btn-primary">Try the Converter</a>
+    </div>
+    <div>
+      <div style="background:#fff;border:1.5px solid var(--gray-200);border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.06)">
+        <div style="padding:14px 18px;background:var(--gray-50);border-bottom:1px solid var(--gray-200);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400)">
+          Conversion Summary
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;">
+          <div style="padding:18px;border-bottom:1px solid var(--gray-200);border-right:1px solid var(--gray-200)">
+            <div style="font-size:28px;font-weight:900;color:var(--gray-900);line-height:1">847</div>
+            <div style="font-size:11px;color:var(--gray-400);font-weight:500;margin-top:2px">Total Incidents</div>
+          </div>
+          <div style="padding:18px;border-bottom:1px solid var(--gray-200)">
+            <div style="font-size:28px;font-weight:900;color:var(--gray-900);line-height:1">847</div>
+            <div style="font-size:11px;color:var(--gray-400);font-weight:500;margin-top:2px">With Timestamps</div>
+          </div>
+          <div style="padding:18px;border-right:1px solid var(--gray-200)">
+            <div style="font-size:28px;font-weight:900;color:var(--gray-900);line-height:1">3</div>
+            <div style="font-size:11px;color:var(--gray-400);font-weight:500;margin-top:2px">FF Injuries</div>
+          </div>
+          <div style="padding:18px">
+            <div style="font-size:28px;font-weight:900;color:var(--gray-900);line-height:1">12</div>
+            <div style="font-size:11px;color:var(--gray-400);font-weight:500;margin-top:2px">Civilian Injuries</div>
+          </div>
+        </div>
+        <div style="padding:14px 18px;border-top:1px solid var(--gray-200)">
+          <div style="font-size:11px;font-weight:600;color:var(--gray-400);margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px">Top Incident Types</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+              <span style="flex:1;color:var(--gray-600);font-weight:500">EMS - Medical Emergency</span>
+              <div style="flex:1;background:var(--gray-100);border-radius:4px;height:6px"><div style="width:100%;height:6px;background:var(--red);border-radius:4px"></div></div>
+              <span style="font-weight:700;color:var(--gray-900);min-width:28px;text-align:right">322</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+              <span style="flex:1;color:var(--gray-600);font-weight:500">Fire - Structure Fire</span>
+              <div style="flex:1;background:var(--gray-100);border-radius:4px;height:6px"><div style="width:42%;height:6px;background:var(--red);border-radius:4px"></div></div>
+              <span style="font-weight:700;color:var(--gray-900);min-width:28px;text-align:right">135</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+              <span style="flex:1;color:var(--gray-600);font-weight:500">False Alarm - System</span>
+              <div style="flex:1;background:var(--gray-100);border-radius:4px;height:6px"><div style="width:28%;height:6px;background:var(--red);border-radius:4px"></div></div>
+              <span style="font-weight:700;color:var(--gray-900);min-width:28px;text-align:right">91</span>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 18px;border-top:1px solid var(--gray-200)">
+          <div style="width:100%;height:34px;background:var(--gray-900);border-radius:6px;display:flex;align-items:center;justify-content:center;gap:6px">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#fff"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            <span style="font-size:12px;font-weight:700;color:#fff">Download NERIS JSON</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="section how-bg" id="how-it-works">
+  <div class="section-inner">
+    <p class="section-label">How It Works</p>
+    <h2 class="section-title">From data to report<br />in three steps</h2>
+    <p class="section-body">No training required. If you can fill out a form, you can use FireInsight.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Connect Your Data</h3>
+        <p>Enter your NERIS department ID and select a date range. Or use our sample data to see FireInsight in action immediately—no credentials needed.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Choose a Report Type</h3>
+        <p>Select from Incident Trends, Chief's Monthly Report, or Grant Narrative. For grants, pick your program (AFG or SAFER) and describe what you're requesting.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Generate and Export</h3>
+        <p>Click Generate. Claude AI analyzes your incident data and produces a complete, ready-to-use document in under 30 seconds. Download as Markdown or copy to clipboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── USE CASES ── -->
+<section class="section" id="use-cases">
+  <div class="section-inner">
+    <p class="section-label">Use Cases</p>
+    <h2 class="section-title">Built for real fire service<br />workflows</h2>
+    <p class="section-body">FireInsight handles the writing so your leadership can focus on leading.</p>
+
+    <div class="use-cases-grid">
+      <div class="use-case">
+        <div class="use-case-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div>
+          <h4>Board &amp; City Council Presentations</h4>
+          <p>Generate monthly summaries with narrative context that non-fire-service audiences can actually understand and act on.</p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div>
+          <h4>Federal Grant Applications</h4>
+          <p>Write data-backed AFG and SAFER narratives that make a compelling case for funding—grounded in your own department's history.</p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-icon">
+          <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div>
+          <h4>Operational Planning</h4>
+          <p>Understand call volume trends by time of day, day of week, and incident type to make smarter staffing and resource decisions.</p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6"/></svg>
+        </div>
+        <div>
+          <h4>Annual Reports &amp; Accreditation</h4>
+          <p>Produce consistent, well-structured reports year over year. Keep your accreditation documentation accurate and current.</p>
+        </div>
+      </div>
+
+      <div class="use-case">
+        <div class="use-case-icon">
+          <svg viewBox="0 0 24 24"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+        </div>
+        <div>
+          <h4>NFIRS → NERIS Migration</h4>
+          <p>Bridge the gap during your department's transition. Convert legacy NFIRS exports to NERIS JSON in one click—no manual re-entry required.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <div class="cta-card">
+    <h2>Ready to save hours every month?</h2>
+    <p>Join fire departments across the country using FireInsight to generate better reports in a fraction of the time.</p>
+    <div class="cta-actions">
+      <button class="btn btn-lg btn-white" onclick="openModal()">Request Demo</button>
+      <a href="/app" class="btn btn-lg btn-outline-white">Try It Free</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="logo-mark" style="width:28px;height:28px;border-radius:6px">
+      <svg viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
+    </div>
+    <p>&copy; 2026 FireInsight. All rights reserved.</p>
+  </div>
+  <div class="footer-links">
+    <a href="/app">Open App</a>
+    <a href="#features">Features</a>
+    <a href="mailto:info@fireinsight.app">Contact</a>
+  </div>
+</footer>
+
+<script>
+  function openModal() {
+    document.getElementById('demo-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('demo-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('demo-modal')) closeModal();
+  }
+
+  function submitDemo(e) {
+    e.preventDefault();
+    document.getElementById('modal-form-content').style.display = 'none';
+    document.getElementById('modal-success').style.display = 'block';
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+  });
+</script>
+
+</body>
+</html>
