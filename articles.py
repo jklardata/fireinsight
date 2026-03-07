@@ -396,6 +396,121 @@ ARTICLES = [
 </div>
 """
     },
+    {
+        "slug":      "neris-faq",
+        "title":     "NERIS FAQ: Everything Fire Departments Are Asking Right Now",
+        "category":  "NERIS",
+        "color":     "#6366F1",
+        "bg":        "rgba(99,102,241,.1)",
+        "date":      "March 2026",
+        "read_time": 10,
+        "excerpt":   "A plain-language answer to the 20 most common questions from chiefs, data officers, and firefighters about the NERIS transition — with no bureaucratic runaround.",
+        "content":   """
+<h2>The Basics</h2>
+
+<h3>What is NERIS?</h3>
+<p>NERIS stands for the National Emergency Response Information System. It is the new federal standard for emergency incident data reporting, developed by the Fire Safety Research Institute (FSRI) and the U.S. Fire Administration (USFA). It replaced NFIRS effective January 1, 2026.</p>
+
+<h3>Why did NFIRS get replaced?</h3>
+<p>NFIRS was designed in the 1970s and patched repeatedly for 30 years. Its incident type codes couldn't handle EV fires, wildland-urban interface incidents, or modern EMS roles. Location data was inconsistent. Life safety fields were optional in practice. NERIS is a clean rebuild with modern data standards, mandatory geocoding, and an API-first architecture that allows real interoperability between departments and RMS vendors.</p>
+
+<h3>Is NERIS reporting actually mandatory?</h3>
+<p>Yes. The federal mandate took effect January 1, 2026. Continued NFIRS-only submissions are no longer accepted as compliant. Departments that receive federal funding — including AFG and SAFER grants — are expected to be reporting in NERIS format.</p>
+
+<h3>What agency oversees NERIS compliance?</h3>
+<p>The U.S. Fire Administration (USFA), a division of FEMA, administers NERIS. The technical infrastructure is maintained by FSRI. Grant program compliance is enforced through standard FEMA grant reporting requirements.</p>
+
+<div class="article-callout">
+<strong>Bottom line:</strong> If your department applies for federal grants or receives USFA funding, NERIS compliance is not optional. Non-compliant data directly weakens your grant applications and may disqualify future submissions.
+</div>
+
+<h2>Reporting Requirements</h2>
+
+<h3>What are the six mandatory NERIS modules?</h3>
+<p>Every incident must include data from these six modules:</p>
+<ol>
+  <li><strong>Core Incident</strong> — Incident ID, incident type, alarm time, dispatch time, arrival time, cleared time, and incident status</li>
+  <li><strong>Location / Geocoding</strong> — Street address, city, state, and GPS coordinates (lat/lon required)</li>
+  <li><strong>Life Safety Outcomes</strong> — Civilian fatalities, civilian injuries, firefighter fatalities, firefighter injuries</li>
+  <li><strong>Actions &amp; Tactics</strong> — Primary action taken at the scene</li>
+  <li><strong>Fire Module</strong> — Required for all fire incidents: area of origin, heat source, construction type</li>
+  <li><strong>Aid Classification</strong> — Whether mutual aid was given or received, and to/from which agency</li>
+</ol>
+
+<h3>Do I have to report every single incident?</h3>
+<p>Yes. All emergency incidents must be reported — not just fires. This includes EMS responses, hazmat calls, technical rescue, service calls, and good-intent calls. The threshold is the same as NFIRS was in theory, but NERIS enforcement is expected to be more consistent.</p>
+
+<h3>What's the deadline for submitting each incident?</h3>
+<p>NERIS does not specify a hard per-incident deadline the way NFIRS did at the state level. However, best practice is submission within 30 days of the incident. Many state fire marshals are setting tighter internal deadlines. Check with your state fire reporting program for local requirements.</p>
+
+<h3>Does NERIS cover EMS incidents?</h3>
+<p>Yes. EMS incidents are reportable under NERIS using the core incident and life safety outcome modules. The EMS-specific module is under development and is expected to be finalized in 2026. In the interim, departments should report EMS incidents with available fields populated.</p>
+
+<h3>What about wildland fires?</h3>
+<p>Wildland and wildland-urban interface (WUI) incidents are reportable under NERIS. There is a wildland fire supplemental module that captures acres burned, fire behavior, and suppression resource data. This module is particularly important for departments in wildland interface areas seeking federal wildfire mitigation funding.</p>
+
+<div class="article-callout">
+<strong>Key insight:</strong> The most commonly missed mandatory fields in real-world NERIS audits are: GPS coordinates (location module), dispatch time and cleared time (core incident), and primary action taken (actions &amp; tactics). These three gaps account for the majority of compliance failures we see in practice.
+</div>
+
+<h2>Technology &amp; Your RMS</h2>
+
+<h3>Does my RMS support NERIS?</h3>
+<p>The major RMS vendors have all released or announced NERIS compatibility modules:</p>
+<ul>
+  <li><strong>ESO</strong> — NERIS export available in current versions</li>
+  <li><strong>FIREHOUSE Software</strong> — NERIS module available via update</li>
+  <li><strong>ImageTrend</strong> — NERIS support included in their Elite platform</li>
+  <li><strong>Emergency Reporting (ER)</strong> — NERIS export in development/available</li>
+  <li><strong>Tablet Command / other CAD systems</strong> — varies; contact your vendor</li>
+</ul>
+<p>Important: having a NERIS module does not mean it is turned on or configured correctly. You need to verify with your vendor that the NERIS fields are being collected and exported in the correct format.</p>
+
+<h3>What if my RMS doesn't support NERIS yet?</h3>
+<p>Contact your vendor immediately. If your vendor cannot commit to a NERIS-compliant update within your budget cycle, you have two options: use a third-party conversion tool to transform your existing data exports into NERIS format, or consider switching RMS vendors. FEMA grant programs are unlikely to be sympathetic to "our vendor doesn't support it" as a long-term excuse.</p>
+
+<h3>Can I still submit if I'm on NFIRS?</h3>
+<p>You can use a conversion tool to map NFIRS fields to NERIS fields for historical data. However, NFIRS lacks several NERIS mandatory fields — particularly GPS coordinates, dispatch time precision, and some life safety outcome fields. Converted records will have known gaps. You cannot achieve full NERIS compliance from NFIRS data alone; you need to update your collection process going forward.</p>
+
+<h3>What is the NERIS API?</h3>
+<p>NERIS uses an API-first architecture. Departments and RMS vendors submit incident data via a REST API rather than file uploads. The NERIS API uses OAuth2 authentication with a Client ID and Client Secret. Your RMS vendor should handle API submission automatically. If you are submitting directly, you will need credentials from the USFA/FSRI portal.</p>
+
+<h2>Grants &amp; Consequences</h2>
+
+<h3>How does NERIS compliance affect AFG and SAFER grants?</h3>
+<p>FEMA's AFG and SAFER grant programs increasingly rely on NERIS data to assess applicant need. Reviewers look at incident volume, response times, staffing levels relative to call volume, and community risk — all of which come from NERIS data. A department with incomplete or non-compliant NERIS data will have weaker evidence for need-based scoring criteria. This directly affects your competitive score.</p>
+
+<h3>Could non-compliance disqualify our department from grants?</h3>
+<p>Outright disqualification for non-compliance is not yet the standard, but the direction is clear. Grant guidance for 2026 and beyond explicitly references NERIS data quality as an evaluation factor. Departments that cannot demonstrate complete incident data are at a competitive disadvantage, and future grant cycles are expected to harden this requirement.</p>
+
+<h3>Does NERIS affect our ISO PPC rating?</h3>
+<p>Not directly — ISO's Public Protection Classification system has its own data collection process and does not yet formally incorporate NERIS. However, ISO evaluates response time performance, and the most defensible evidence for your response time record is your incident data. NERIS data quality directly affects the reliability of the response time evidence you can present during an ISO evaluation.</p>
+
+<h2>Practical Questions</h2>
+
+<h3>How do I know if our NERIS data is actually compliant?</h3>
+<p>Run a compliance check against the six mandatory module fields for a sample of your recent incidents. For each incident, verify that Core Incident (alarm, dispatch, arrival, cleared times + incident type), Location (address + GPS coordinates), Life Safety Outcomes (all four injury/fatality fields present, even if zero), Actions &amp; Tactics (primary action), Fire Module (for fire incidents), and Aid Classification fields are populated. FireInsight's compliance checker automates this audit against your incident export.</p>
+
+<h3>What are the most common NERIS data quality problems?</h3>
+<ul>
+  <li><strong>Missing GPS coordinates</strong> — The most common gap. Many departments collect address but not lat/lon.</li>
+  <li><strong>Incomplete timestamps</strong> — Dispatch time and cleared time are frequently missing in records where the call was handled quickly or the crew forgot to update status.</li>
+  <li><strong>No primary action recorded</strong> — The actions &amp; tactics module is often left blank when crews complete the report quickly.</li>
+  <li><strong>Life safety fields skipped</strong> — Departments assume "no injuries = skip the field," but NERIS requires explicit zeros.</li>
+  <li><strong>Fire module missing on structure fires</strong> — Area of origin and heat source are often incomplete on fire incidents.</li>
+</ul>
+
+<h3>How do we get crews to fill out records completely?</h3>
+<p>Training alone is rarely enough. The most effective approach combines three things: (1) configure your RMS to require mandatory fields before submission — make incomplete records un-submissible, (2) run a monthly data quality report and share it with company officers so crews see the gaps, and (3) tie completion rates to performance feedback rather than treating it as an IT problem. Crew-level ownership of record quality is the single biggest driver of improvement.</p>
+
+<h3>Is there a NERIS education program for firefighters?</h3>
+<p>FSRI and USFA have published guidance documentation and training materials on the NERIS portal. Many state fire training organizations are incorporating NERIS record-keeping into their officer development curricula. For a practical starting point, the FireInsight resource library covers the mandatory modules, common gaps, and actionable fixes in language that works for company officers as well as data administrators.</p>
+
+<div class="article-callout">
+<strong>Where to start:</strong> If you are unsure where your department stands, run a quick compliance audit on your last 90 days of incident data. Look at completeness rates for the six mandatory modules. Identify the two or three fields with the lowest completion rates. Fix those first — typically GPS coordinates, cleared time, and primary action — and you will capture the majority of the compliance improvement available.
+</div>
+""",
+    },
 ]
 
 

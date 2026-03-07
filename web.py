@@ -552,6 +552,16 @@ async def resources_index(request: Request):
     })
 
 
+@app.get("/neris", response_class=HTMLResponse)
+async def neris_education(request: Request):
+    from articles import ARTICLES
+    neris_articles = [a for a in ARTICLES if a["category"] == "NERIS"]
+    return templates.TemplateResponse("neris_education.html", {
+        "request": request,
+        "neris_articles": neris_articles,
+    })
+
+
 @app.get("/resources/{slug}", response_class=HTMLResponse)
 async def resource_article(request: Request, slug: str):
     from articles import get_article, ARTICLES
