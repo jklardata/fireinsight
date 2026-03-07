@@ -7,33 +7,27 @@
   <meta name="description" content="Practical guides to help fire departments navigate NERIS compliance, ISO ratings, grant writing, and data-driven operations." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --navy:     #0F1A20;
-      --navy-2:   #162028;
-      --navy-3:   #1E2E38;
-      --navy-4:   #243440;
-      --red:      #D63737;
-      --red-dk:   #B82E2E;
-      --red-glow: rgba(214,55,55,0.25);
-      --white:    #FFFFFF;
-      --gray-1:   #E8E9EB;
-      --gray-2:   #C2C2C2;
-      --gray-3:   #8A9BA8;
-      --gray-4:   #4A5C68;
-      --border:   rgba(255,255,255,0.08);
-      --border-2: rgba(255,255,255,0.14);
+      --bg:    #F7F4EF;
+      --bg2:   #EDE9E2;
+      --ink:   #0F1A20;
+      --ink2:  #2C3A42;
+      --muted: #6B7A85;
+      --red:   #C8392B;
+      --red-lt:#FDE8E6;
+      --border:#D8D2C8;
+      --white: #FFFFFF;
     }
 
     html { scroll-behavior: smooth; }
-
     body {
       font-family: 'Geist', sans-serif;
-      background: var(--navy);
-      color: var(--white);
+      background: var(--bg);
+      color: var(--ink);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
@@ -42,202 +36,253 @@
     nav {
       position: sticky; top: 0; z-index: 50;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 48px; height: 68px;
-      background: rgba(15,26,32,0.92);
-      backdrop-filter: blur(16px);
+      padding: 0 48px; height: 64px;
+      background: rgba(247,244,239,0.95);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo {
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none; color: var(--white);
-    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
     .logo-mark {
-      width: 36px; height: 36px;
-      background: var(--red); border-radius: 10px;
+      width: 34px; height: 34px; background: var(--red); border-radius: 9px;
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; box-shadow: 0 0 16px var(--red-glow);
     }
-    .logo-mark svg { width: 18px; height: 18px; fill: #fff; }
-    .nav-logo span { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
-    .nav-logo span em { color: var(--red); font-style: normal; }
-    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
-    .nav-links a { font-size: 14px; font-weight: 500; color: var(--gray-2); text-decoration: none; transition: color .15s; }
-    .nav-links a:hover, .nav-links a.active { color: var(--white); }
-    .nav-cta { display: flex; align-items: center; gap: 10px; }
+    .logo-mark svg { width: 17px; height: 17px; fill: #fff; }
+    .nav-logo-text { font-size: 16px; font-weight: 800; letter-spacing: -.3px; }
+    .nav-logo-text em { color: var(--red); font-style: normal; }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .15s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--ink); }
+    .nav-cta { display: flex; gap: 8px; }
     .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-family: inherit; font-weight: 600;
-      cursor: pointer; text-decoration: none; border: none;
-      transition: all .2s;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: inherit; font-weight: 600; cursor: pointer;
+      text-decoration: none; border: none; transition: all .18s;
     }
-    .btn-sm  { font-size: 13px; padding: 8px 18px; border-radius: 25px; }
-    .btn-md  { font-size: 14px; padding: 11px 24px; border-radius: 25px; }
-    .btn-primary { background: var(--red); color: #fff; box-shadow: 0 4px 20px var(--red-glow); }
-    .btn-primary:hover { background: var(--red-dk); transform: translateY(-2px); box-shadow: 0 8px 28px var(--red-glow); }
-    .btn-ghost { background: transparent; color: var(--gray-2); }
-    .btn-ghost:hover { color: var(--white); }
+    .btn-sm { font-size: 13px; padding: 8px 18px; border-radius: 25px; }
+    .btn-primary { background: var(--ink); color: #fff; }
+    .btn-primary:hover { background: var(--red); }
+    .btn-ghost { background: transparent; color: var(--muted); }
+    .btn-ghost:hover { color: var(--ink); }
 
-    /* ── HERO ── */
-    .hero {
-      position: relative;
-      text-align: center;
-      padding: 88px 24px 72px;
-      overflow: hidden;
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 64px 48px 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
     }
-    .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
-      pointer-events: none;
+    .page-header-left { max-width: 560px; }
+    .eyebrow {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--red);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
     }
-    .hero::after {
-      content: '';
-      position: absolute; top: -100px; left: 50%;
-      transform: translateX(-50%);
-      width: 600px; height: 400px;
-      background: radial-gradient(ellipse, rgba(214,55,55,.15) 0%, transparent 70%);
-      pointer-events: none;
+    .eyebrow::before { content: ''; display: block; width: 20px; height: 2px; background: var(--red); }
+    .page-header h1 {
+      font-family: 'Lora', Georgia, serif;
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 600; line-height: 1.1;
+      letter-spacing: -.5px; color: var(--ink);
     }
-    .hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(214,55,55,.12);
-      border: 1px solid rgba(214,55,55,.3);
-      color: #F87171;
-      font-size: 12px; font-weight: 700;
-      letter-spacing: .5px; text-transform: uppercase;
-      padding: 5px 14px; border-radius: 25px;
-      margin-bottom: 28px;
-    }
-    .hero-badge span { width: 6px; height: 6px; background: var(--red); border-radius: 50%; display: inline-block; box-shadow: 0 0 6px var(--red); }
-    .hero h1 {
-      font-size: clamp(36px, 5.5vw, 58px);
-      font-weight: 800; line-height: 1.06;
-      letter-spacing: -1.5px; color: var(--white);
-      margin-bottom: 20px;
-    }
-    .hero h1 em { color: var(--red); font-style: normal; }
-    .hero p { font-size: 17px; line-height: 1.7; color: var(--gray-3); max-width: 520px; margin: 0 auto; }
+    .page-header p { font-size: 16px; color: var(--muted); line-height: 1.7; margin-top: 12px; }
 
     /* ── FILTER ── */
-    .filter-wrap {
-      max-width: 1080px; margin: 0 auto;
-      padding: 40px 24px 0;
+    .filter-row {
+      max-width: 1200px; margin: 0 auto;
+      padding: 36px 48px 0;
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
     }
-    .filter-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-4); margin-right: 4px; }
     .filter-btn {
+      font-family: inherit; font-size: 13px; font-weight: 600;
       padding: 6px 16px; border-radius: 25px;
-      border: 1px solid var(--border-2);
-      background: transparent;
-      color: var(--gray-3); font-size: 13px; font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: transparent; color: var(--muted);
       cursor: pointer; transition: all .15s;
-      font-family: inherit;
     }
-    .filter-btn:hover { border-color: rgba(255,255,255,.25); color: var(--white); }
-    .filter-btn.active {
-      background: rgba(214,55,55,.12);
-      border-color: rgba(214,55,55,.35);
-      color: #F87171;
+    .filter-btn:hover { border-color: var(--ink2); color: var(--ink); }
+    .filter-btn.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+    /* ── MAIN GRID ── */
+    .content-wrap { max-width: 1200px; margin: 0 auto; padding: 48px 48px 96px; }
+
+    /* Featured + side stack layout for first set */
+    .featured-row {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 1px;
     }
 
-    /* ── ARTICLE GRID ── */
-    .section { padding: 48px 24px 96px; }
-    .section-inner { max-width: 1080px; margin: 0 auto; }
-
+    /* Regular 3-col grid */
     .articles-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 32px;
     }
 
+    /* Base card */
     .article-card {
       display: flex; flex-direction: column;
-      background: var(--navy-2);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
+      background: var(--white);
       text-decoration: none; color: inherit;
-      transition: border-color .2s, box-shadow .2s, transform .2s;
+      transition: background .15s;
+      padding: 32px;
+      position: relative;
     }
-    .article-card:hover {
-      border-color: rgba(214,55,55,.35);
-      box-shadow: 0 8px 32px rgba(0,0,0,.3);
-      transform: translateY(-2px);
+    .article-card:hover { background: var(--bg); }
+
+    /* Featured card (left, large) */
+    .article-card.card-featured {
+      padding: 40px;
+      justify-content: flex-end;
+      min-height: 420px;
     }
-    .card-top-stripe { height: 3px; }
-    .card-body { padding: 24px 24px 16px; flex: 1; display: flex; flex-direction: column; }
-    .card-meta {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 14px;
+    .card-featured-bg {
+      position: absolute; inset: 0;
+      opacity: 0.08;
+      background-size: cover; background-position: center;
     }
-    .card-cat {
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .4px;
-      padding: 3px 9px; border-radius: 25px;
+    .card-featured-content { position: relative; z-index: 1; }
+
+    .cat-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 4px 10px; border-radius: 4px;
+      margin-bottom: 16px;
     }
-    .card-time { font-size: 12px; color: var(--gray-4); }
+    .cat-dot { width: 5px; height: 5px; border-radius: 50%; }
+
     .card-title {
-      font-size: 16px; font-weight: 700;
-      line-height: 1.35; color: var(--white);
+      font-family: 'Lora', Georgia, serif;
+      font-size: 22px; font-weight: 600;
+      line-height: 1.3; color: var(--ink);
       margin-bottom: 10px;
     }
-    .card-excerpt {
-      font-size: 13px; color: var(--gray-3);
-      line-height: 1.65; flex: 1;
-    }
-    .card-footer {
-      padding: 14px 24px;
-      border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .card-date { font-size: 12px; color: var(--gray-4); }
-    .card-cta { font-size: 13px; font-weight: 600; color: #F87171; }
+    .card-featured .card-title { font-size: 30px; }
 
-    /* ── FEATURED (first card wider) ── */
-    .article-card.featured {
-      border-color: rgba(214,55,55,.25);
-      background: linear-gradient(160deg, rgba(214,55,55,.06) 0%, var(--navy-2) 60%);
-    }
+    .card-excerpt { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
 
-    /* ── CTA BANNER ── */
-    .cta-section { padding: 0 24px 88px; }
-    .cta-inner {
-      max-width: 1080px; margin: 0 auto;
-      background: var(--navy-3);
-      border: 1px solid var(--border-2);
+    .card-meta { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--muted); }
+    .card-meta .sep { color: var(--border); }
+    .card-read-link {
+      margin-top: auto;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 700; color: var(--red);
+      text-decoration: none;
+    }
+    .card-read-link .arr { transition: transform .15s; }
+    .article-card:hover .arr { transform: translateX(4px); }
+
+    /* Side stack (right column in featured row) */
+    .side-stack {
+      display: flex; flex-direction: column;
+      background: var(--white);
+    }
+    .side-card {
+      display: flex; flex-direction: column;
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none; color: inherit;
+      transition: background .15s;
+      flex: 1;
+    }
+    .side-card:last-child { border-bottom: none; }
+    .side-card:hover { background: var(--bg); }
+    .side-card .card-title { font-size: 15px; margin-bottom: 8px; }
+    .side-card .card-meta { margin-top: auto; padding-top: 12px; }
+
+    /* Horizontal card row */
+    .horiz-row {
+      margin-top: 32px;
+      border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 52px 56px;
-      display: flex; align-items: center; justify-content: space-between; gap: 40px;
-      flex-wrap: wrap;
+      overflow: hidden;
+      background: var(--border);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1px;
     }
-    .cta-left h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 10px; }
-    .cta-left p { font-size: 15px; color: var(--gray-3); line-height: 1.6; }
-    .cta-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .horiz-card {
+      display: flex; align-items: center; gap: 28px;
+      padding: 24px 32px;
+      background: var(--white);
+      text-decoration: none; color: inherit;
+      transition: background .15s;
+    }
+    .horiz-card:hover { background: var(--bg); }
+    .horiz-card-num {
+      font-size: 13px; font-weight: 800; color: var(--border);
+      font-variant-numeric: tabular-nums;
+      min-width: 28px;
+    }
+    .horiz-card-body { flex: 1; min-width: 0; }
+    .horiz-card .card-title {
+      font-size: 15px; margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .horiz-card .card-meta { font-size: 12px; }
+    .horiz-card-cta { font-size: 13px; font-weight: 700; color: var(--red); white-space: nowrap; }
 
-    .btn-outline {
-      background: transparent; color: var(--gray-1);
-      border: 1.5px solid var(--border-2); border-radius: 25px;
-      padding: 11px 24px; font-size: 14px; font-weight: 600;
-      text-decoration: none; display: inline-flex; align-items: center;
-      transition: all .2s;
+    /* ── NERIS SPOTLIGHT ── */
+    .spotlight {
+      margin: 48px 0;
+      background: var(--ink);
+      border-radius: 20px;
+      padding: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 32px; flex-wrap: wrap;
+      color: #fff;
+      position: relative; overflow: hidden;
     }
-    .btn-outline:hover { border-color: rgba(255,255,255,.4); color: var(--white); }
+    .spotlight::before {
+      content: 'NERIS';
+      position: absolute; right: -20px; top: 50%; transform: translateY(-50%);
+      font-size: 160px; font-weight: 900;
+      color: rgba(255,255,255,0.04); line-height: 1;
+      letter-spacing: -6px; pointer-events: none;
+    }
+    .spotlight-left { max-width: 520px; position: relative; z-index: 1; }
+    .spotlight-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #F87171; margin-bottom: 12px; }
+    .spotlight h2 { font-family: 'Lora', serif; font-size: clamp(22px, 3vw, 34px); font-weight: 600; line-height: 1.2; margin-bottom: 12px; }
+    .spotlight p { font-size: 15px; color: rgba(255,255,255,.65); line-height: 1.65; }
+    .spotlight-right { position: relative; z-index: 1; display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-light { background: #fff; color: var(--ink); border-radius: 25px; padding: 11px 24px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; }
+    .btn-light:hover { background: var(--bg2); }
+    .btn-dark-outline { background: transparent; color: rgba(255,255,255,.7); border: 1.5px solid rgba(255,255,255,.2); border-radius: 25px; padding: 11px 24px; font-size: 14px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; transition: all .15s; }
+    .btn-dark-outline:hover { border-color: rgba(255,255,255,.5); color: #fff; }
 
     /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--border);
       padding: 28px 48px;
       display: flex; align-items: center; justify-content: space-between;
-      color: var(--gray-4); font-size: 13px;
+      color: var(--muted); font-size: 13px; background: var(--bg);
     }
 
-    @media (max-width: 900px) { .articles-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 600px) { .articles-grid { grid-template-columns: 1fr; } nav { padding: 0 20px; } .cta-inner { padding: 32px 24px; } }
+    @media (max-width: 900px) {
+      .featured-row { grid-template-columns: 1fr; }
+      .articles-grid { grid-template-columns: 1fr 1fr; }
+      nav, .page-header, .filter-row, .content-wrap, footer { padding-left: 24px; padding-right: 24px; }
+    }
+    @media (max-width: 600px) {
+      .articles-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -247,32 +292,31 @@
     <div class="logo-mark">
       <svg viewBox="0 0 24 24"><path d="M12 2C8 6 6 10 8 14c-2-1-3-3-3-5C3 14 5 20 12 22c7-2 9-8 7-13-1 3-3 5-5 4 2-3 1-7-2-11z"/></svg>
     </div>
-    <span>Fire<em>Insight</em></span>
+    <span class="nav-logo-text">Fire<em>Insight</em></span>
   </a>
   <ul class="nav-links">
     <li><a href="/">Home</a></li>
-    <li><a href="#features">Features</a></li>
+    <li><a href="/neris">NERIS Guide</a></li>
     <li><a href="/resources" class="active">Resources</a></li>
   </ul>
   <div class="nav-cta">
     <a href="/app" class="btn btn-sm btn-ghost">Open App</a>
-    <a href="/app" class="btn btn-sm btn-primary">Try It Free</a>
+    <a href="/app" class="btn btn-sm btn-primary">Try Free</a>
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-inner">
-    <div class="hero-badge"><span></span> Knowledge Base</div>
-    <h1>Learn the <em>Fire Service</em><br>Data Landscape</h1>
-    <p>Practical guides to help your department navigate NERIS compliance, ISO ratings, grant writing, and data-driven decision-making.</p>
+<!-- HEADER -->
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="eyebrow">Knowledge Base</div>
+    <h1>Learn the<br>fire data landscape.</h1>
+    <p>Guides for chiefs, data officers, and grant writers navigating NERIS, ISO ratings, and modern fire service analytics.</p>
   </div>
-</section>
+</div>
 
 <!-- FILTER -->
-<div class="filter-wrap" id="filterWrap">
-  <span class="filter-label">Filter</span>
-  <button class="filter-btn active" data-cat="all">All</button>
+<div class="filter-row" id="filterRow">
+  <button class="filter-btn active" data-cat="all">All topics</button>
   {% set seen = [] %}
   {% for a in articles %}
     {% if a.category not in seen %}
@@ -282,61 +326,103 @@
   {% endfor %}
 </div>
 
-<!-- GRID -->
-<section class="section">
-  <div class="section-inner">
-    <div class="articles-grid" id="articlesGrid">
-      {% for article in articles %}
-      <a href="/resources/{{ article.slug }}" class="article-card{% if loop.first %} featured{% endif %}" data-cat="{{ article.category }}">
-        <div class="card-top-stripe" style="background: {{ article.color }};"></div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="card-cat" style="background: {{ article.bg }}; color: {{ article.color }};">{{ article.category }}</span>
-            <span class="card-time">{{ article.read_time }} min read</span>
-          </div>
-          <div class="card-title">{{ article.title }}</div>
-          <div class="card-excerpt">{{ article.excerpt }}</div>
+<div class="content-wrap">
+
+  <!-- FEATURED + SIDE STACK -->
+  {% if articles|length > 0 %}
+  <div class="featured-row" id="featuredRow">
+    <!-- Featured left -->
+    <a href="/resources/{{ articles[0].slug }}" class="article-card card-featured" data-cat="{{ articles[0].category }}">
+      <div class="card-featured-bg" style="background: {{ articles[0].color }};"></div>
+      <div class="card-featured-content">
+        <div class="cat-pill" style="background: {{ articles[0].bg }}; color: {{ articles[0].color }};">
+          <span class="cat-dot" style="background: {{ articles[0].color }};"></span>
+          {{ articles[0].category }}
         </div>
-        <div class="card-footer">
-          <span class="card-date">{{ article.date }}</span>
-          <span class="card-cta">Read →</span>
+        <div class="card-title">{{ articles[0].title }}</div>
+        <div class="card-excerpt">{{ articles[0].excerpt }}</div>
+        <div class="card-meta">
+          <span>{{ articles[0].date }}</span>
+          <span class="sep">·</span>
+          <span>{{ articles[0].read_time }} min read</span>
+        </div>
+        <span class="card-read-link" style="margin-top:20px">Read article <span class="arr">→</span></span>
+      </div>
+    </a>
+
+    <!-- Side stack -->
+    <div class="side-stack">
+      {% for article in articles[1:4] %}
+      <a href="/resources/{{ article.slug }}" class="side-card" data-cat="{{ article.category }}">
+        <div class="cat-pill" style="background: {{ article.bg }}; color: {{ article.color }};">
+          <span class="cat-dot" style="background: {{ article.color }};"></span>
+          {{ article.category }}
+        </div>
+        <div class="card-title">{{ article.title }}</div>
+        <div class="card-excerpt" style="font-size:13px; -webkit-line-clamp:2; display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden;">{{ article.excerpt }}</div>
+        <div class="card-meta">
+          <span>{{ article.date }}</span>
+          <span class="sep">·</span>
+          <span>{{ article.read_time }} min</span>
         </div>
       </a>
       {% endfor %}
     </div>
   </div>
-</section>
+  {% endif %}
 
-<!-- CTA -->
-<div class="cta-section">
-  <div class="cta-inner">
-    <div class="cta-left">
-      <h2>Put this knowledge to work.</h2>
-      <p>Run a live compliance check, generate ISO evidence, or write a grant narrative — all from your department's incident data, no migration required.</p>
+  <!-- NERIS SPOTLIGHT -->
+  <div class="spotlight">
+    <div class="spotlight-left">
+      <div class="spotlight-eyebrow">⚡ Federal Mandate Active</div>
+      <h2>Is your department actually NERIS compliant?</h2>
+      <p>The January 2026 deadline has passed. Run a field-by-field audit on your incident data and see exactly which modules are failing — in under 60 seconds.</p>
     </div>
-    <div class="cta-actions">
-      <a href="/app" class="btn btn-md btn-primary">Try FireInsight Free</a>
-      <a href="/" class="btn-outline">Learn More</a>
+    <div class="spotlight-right">
+      <a href="/app" class="btn-light">Run Compliance Check →</a>
+      <a href="/neris" class="btn-dark-outline">Learn About NERIS</a>
     </div>
   </div>
+
+  <!-- REMAINING ARTICLES - horizontal list -->
+  {% if articles|length > 4 %}
+  <div class="horiz-row" id="horizRow">
+    {% for article in articles[4:] %}
+    <a href="/resources/{{ article.slug }}" class="horiz-card" data-cat="{{ article.category }}">
+      <span class="horiz-card-num">0{{ loop.index + 4 }}</span>
+      <div class="horiz-card-body">
+        <div class="card-title">{{ article.title }}</div>
+        <div class="card-meta">
+          <span class="cat-pill" style="background: {{ article.bg }}; color: {{ article.color }}; margin-bottom:0; padding: 2px 8px;">{{ article.category }}</span>
+          <span class="sep">·</span>
+          <span>{{ article.read_time }} min read</span>
+        </div>
+      </div>
+      <span class="horiz-card-cta">Read →</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
 </div>
 
 <footer>
-  <span>&copy; 2026 FireInsight</span>
-  <span>Built for the fire service.</span>
+  <span>&copy; 2026 FireInsight — Built for the fire service</span>
+  <a href="/app" class="btn btn-sm btn-primary">Try FireInsight Free</a>
 </footer>
 
 <script>
   const filterBtns = document.querySelectorAll('.filter-btn');
-  const cards = document.querySelectorAll('.article-card');
+  const featuredRow = document.getElementById('featuredRow');
+  const allCards = document.querySelectorAll('[data-cat]');
 
   filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const cat = btn.dataset.cat;
-      cards.forEach(card => {
-        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? 'flex' : 'none';
+      allCards.forEach(card => {
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
       });
     });
   });
