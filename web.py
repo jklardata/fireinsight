@@ -541,6 +541,35 @@ async def neris_status():
     })
 
 
+# ── Resources / Education ─────────────────────────────────────────────────────
+
+@app.get("/resources", response_class=HTMLResponse)
+async def resources_index(request: Request):
+    from articles import ARTICLES
+    return templates.TemplateResponse("resources.html", {
+        "request": request,
+        "articles": ARTICLES,
+    })
+
+
+@app.get("/resources/{slug}", response_class=HTMLResponse)
+async def resource_article(request: Request, slug: str):
+    from articles import get_article, ARTICLES
+    article = get_article(slug)
+    if not article:
+        return HTMLResponse("<h1>Article not found</h1>", status_code=404)
+    slugs = [a["slug"] for a in ARTICLES]
+    idx = slugs.index(slug)
+    prev_article = ARTICLES[idx - 1] if idx > 0 else None
+    next_article = ARTICLES[idx + 1] if idx < len(ARTICLES) - 1 else None
+    return templates.TemplateResponse("article.html", {
+        "request": request,
+        "article": article,
+        "prev_article": prev_article,
+        "next_article": next_article,
+    })
+
+
 @app.post("/convert/download")
 async def convert_download(
     content: str = Form(...),

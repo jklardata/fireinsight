@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ article.title }} — FireInsight Resources</title>
+<meta name="description" content="{{ article.excerpt }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0a0f1e;
+    --navy2: #111827;
+    --navy3: #1a2236;
+    --accent: #6366F1;
+    --accent2: #818cf8;
+    --border: rgba(255,255,255,0.08);
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --card-bg: rgba(255,255,255,0.03);
+    --article-accent: {{ article.color }};
+    --article-bg: {{ article.bg }};
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Nav ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 60px;
+    background: rgba(10,15,30,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 0.5rem;
+    text-decoration: none; color: var(--text);
+    font-weight: 800; font-size: 1.1rem;
+  }
+  .nav-brand .logo-icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, #6366F1, #8b5cf6);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+  .nav-links a { text-decoration: none; color: var(--muted); font-size: 0.875rem; transition: color 0.15s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    padding: 0.4rem 1rem;
+    background: var(--accent); border-radius: 6px;
+    color: white !important; font-weight: 600; font-size: 0.8rem !important;
+  }
+  .nav-cta:hover { background: var(--accent2) !important; }
+
+  /* ── Layout ── */
+  .page-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 5rem;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  /* ── Breadcrumb ── */
+  .breadcrumb {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.8rem; color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .breadcrumb a { color: var(--muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--text); }
+  .breadcrumb span { color: var(--muted); }
+
+  /* ── Article header ── */
+  .article-header { margin-bottom: 2rem; }
+  .article-meta {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 1rem; flex-wrap: wrap;
+  }
+  .article-cat {
+    font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 0.25rem 0.7rem; border-radius: 4px;
+    background: var(--article-bg); color: var(--article-accent);
+  }
+  .article-date { font-size: 0.8rem; color: var(--muted); }
+  .article-read-time { font-size: 0.8rem; color: var(--muted); }
+  .dot { color: var(--muted); }
+  .article-title {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 900; line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+  .article-excerpt {
+    font-size: 1rem; color: var(--muted); line-height: 1.7;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── Article content ── */
+  .article-content { line-height: 1.8; }
+
+  .article-content h2 {
+    font-size: 1.4rem; font-weight: 800;
+    margin: 2.5rem 0 0.8rem;
+    color: var(--text);
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--article-accent);
+    display: inline-block;
+  }
+  .article-content h3 {
+    font-size: 1.05rem; font-weight: 700;
+    margin: 1.5rem 0 0.5rem;
+    color: var(--text);
+  }
+  .article-content p {
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+  .article-content ul, .article-content ol {
+    margin: 0.75rem 0 1rem 1.5rem;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+  }
+  .article-content li { margin-bottom: 0.35rem; line-height: 1.65; }
+  .article-content strong { color: var(--text); font-weight: 700; }
+
+  .article-callout {
+    background: rgba(99,102,241,0.08);
+    border-left: 3px solid var(--article-accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.7;
+  }
+  .article-callout strong { color: var(--text); }
+
+  /* ── Prev / Next ── */
+  .article-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .article-nav a {
+    display: flex; flex-direction: column; gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none; color: inherit;
+    transition: border-color 0.2s;
+  }
+  .article-nav a:hover { border-color: rgba(99,102,241,0.4); }
+  .article-nav .nav-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .article-nav .nav-title { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .article-nav .next-link { text-align: right; }
+
+  /* ── Sidebar ── */
+  .sidebar { position: sticky; top: 80px; display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .sidebar-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .sidebar-card h3 {
+    font-size: 0.85rem; font-weight: 700;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .toc-list { list-style: none; padding: 0; }
+  .toc-list li { margin-bottom: 0.5rem; }
+  .toc-list a {
+    font-size: 0.8rem; color: var(--muted);
+    text-decoration: none; display: block;
+    padding: 0.25rem 0.5rem;
+    border-left: 2px solid transparent;
+    border-radius: 0 4px 4px 0;
+    transition: all 0.15s;
+  }
+  .toc-list a:hover {
+    color: var(--text);
+    border-left-color: var(--article-accent);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .cta-card {
+    background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.08));
+    border: 1px solid rgba(99,102,241,0.3);
+  }
+  .cta-card h3 { border-bottom-color: rgba(99,102,241,0.2); }
+  .cta-card p { font-size: 0.8rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+  .btn-cta {
+    display: block; text-align: center;
+    padding: 0.65rem 1rem;
+    background: var(--accent); border-radius: 7px;
+    color: white; font-weight: 700; font-size: 0.85rem;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn-cta:hover { background: var(--accent2); }
+  .btn-outline {
+    display: block; text-align: center;
+    padding: 0.55rem 1rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--muted); font-size: 0.8rem;
+    text-decoration: none; margin-top: 0.5rem;
+    transition: all 0.15s;
+  }
+  .btn-outline:hover { border-color: rgba(99,102,241,0.4); color: var(--text); }
+
+  .more-list { list-style: none; padding: 0; }
+  .more-list li { border-bottom: 1px solid var(--border); }
+  .more-list li:last-child { border-bottom: none; }
+  .more-list a {
+    display: block; padding: 0.6rem 0;
+    font-size: 0.8rem; color: var(--muted);
+    text-decoration: none; transition: color 0.15s;
+  }
+  .more-list a:hover { color: var(--text); }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-align: center; color: var(--muted); font-size: 0.8rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-wrap { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+    .article-nav { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">
+    <div class="logo-icon">🔥</div>
+    FireInsight
+  </a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/resources">Resources</a>
+    <a href="/app" class="nav-cta">Open App</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <!-- Main article -->
+  <main>
+    <div class="breadcrumb">
+      <a href="/">Home</a>
+      <span>/</span>
+      <a href="/resources">Resources</a>
+      <span>/</span>
+      <span>{{ article.title }}</span>
+    </div>
+
+    <div class="article-header">
+      <div class="article-meta">
+        <span class="article-cat">{{ article.category }}</span>
+        <span class="article-date">{{ article.date }}</span>
+        <span class="dot">·</span>
+        <span class="article-read-time">{{ article.read_time }}</span>
+      </div>
+      <h1 class="article-title">{{ article.title }}</h1>
+      <p class="article-excerpt">{{ article.excerpt }}</p>
+    </div>
+
+    <div class="article-content">
+      {{ article.content | safe }}
+    </div>
+
+    <!-- Prev / Next -->
+    <nav class="article-nav" aria-label="Article navigation">
+      {% if prev_article %}
+      <a href="/resources/{{ prev_article.slug }}">
+        <span class="nav-label">← Previous</span>
+        <span class="nav-title">{{ prev_article.title }}</span>
+      </a>
+      {% else %}
+      <div></div>
+      {% endif %}
+
+      {% if next_article %}
+      <a href="/resources/{{ next_article.slug }}" class="next-link">
+        <span class="nav-label">Next →</span>
+        <span class="nav-title">{{ next_article.title }}</span>
+      </a>
+      {% else %}
+      <div></div>
+      {% endif %}
+    </nav>
+  </main>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <!-- CTA -->
+    <div class="sidebar-card cta-card">
+      <h3>Try It in FireInsight</h3>
+      <p>Run a live {{ article.category }} analysis on your department's incident data — no setup required.</p>
+      <a href="/app" class="btn-cta">Open FireInsight →</a>
+      <a href="/resources" class="btn-outline">← All Resources</a>
+    </div>
+
+    <!-- More articles -->
+    <div class="sidebar-card">
+      <h3>More Resources</h3>
+      <ul class="more-list" id="moreList"></ul>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  &copy; 2026 FireInsight. Built for the fire service.
+</footer>
+
+<script>
+  // Populate "More Resources" sidebar list via a simple inline list
+  const allArticles = [
+    {% for a in [prev_article, next_article] if a %}
+    { slug: "{{ a.slug }}", title: "{{ a.title }}", cat: "{{ a.category }}" },
+    {% endfor %}
+  ];
+
+  // Fallback: embed resource links from resources page
+  const moreList = document.getElementById('moreList');
+  const currentSlug = "{{ article.slug }}";
+
+  // We'll show prev/next in more list if available
+  allArticles.forEach(a => {
+    if (a.slug !== currentSlug) {
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="/resources/${a.slug}">${a.title}</a>`;
+      moreList.appendChild(li);
+    }
+  });
+
+  if (moreList.children.length === 0) {
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="/resources">Browse all resources →</a>`;
+    moreList.appendChild(li);
+  }
+</script>
+
+</body>
+</html>
