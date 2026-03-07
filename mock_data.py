@@ -19,6 +19,8 @@ INCIDENT_TYPES = [
     ("EMS - Motor Vehicle Accident", 12),
     ("Fire - Structure Fire", 8),
     ("Fire - Vehicle Fire", 5),
+    ("Fire - EV Battery Fire", 4),
+    ("Hazmat - Lithium Battery", 2),
     ("Fire - Brush/Grass Fire", 6),
     ("Hazmat - Carbon Monoxide", 7),
     ("Service Call - Public Assist", 10),

@@ -5,119 +5,146 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FireInsight — AI Analytics for Fire Departments</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --red:    #DC2626;
-      --red-lt: #FEF2F2;
-      --gray-50:  #F9FAFB;
-      --gray-100: #F3F4F6;
-      --gray-200: #E5E7EB;
-      --gray-400: #9CA3AF;
-      --gray-600: #4B5563;
-      --gray-900: #111827;
-      --radius: 10px;
-      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+      --navy:     #0F1A20;
+      --navy-2:   #162028;
+      --navy-3:   #1E2E38;
+      --navy-4:   #243440;
+      --navy-5:   #2C3E4A;
+      --red:      #D63737;
+      --red-dk:   #B82E2E;
+      --red-glow: rgba(214,55,55,.25);
+      --red-lt:   rgba(214,55,55,.1);
+      --white:    #FFFFFF;
+      --gray-1:   #E8E9EB;
+      --gray-2:   #C2C2C2;
+      --gray-3:   #8A9BA8;
+      --gray-4:   #4A5C68;
+      --border:   rgba(255,255,255,.08);
+      --border-2: rgba(255,255,255,.13);
+      --radius:   10px;
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: #fff;
-      color: var(--gray-900);
+      font-family: 'Geist', sans-serif;
+      background: var(--navy);
+      color: var(--white);
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Header ── */
+    /* ── HEADER ── */
     header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 18px 32px;
-      border-bottom: 1px solid var(--gray-200);
-      background: #fff;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 28px;
+      height: 60px;
+      background: var(--navy-2);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 10;
     }
 
     .logo {
-      width: 36px; height: 36px;
+      width: 34px; height: 34px;
       background: var(--red);
-      border-radius: 8px;
+      border-radius: 9px;
       display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 14px var(--red-glow);
+      flex-shrink: 0;
     }
-    .logo svg { width: 20px; height: 20px; fill: #fff; }
+    .logo svg { width: 18px; height: 18px; fill: #fff; }
 
-    header h1 { font-size: 18px; font-weight: 800; letter-spacing: -.3px; }
+    header h1 {
+      font-size: 17px; font-weight: 800;
+      letter-spacing: -.3px; color: var(--white);
+    }
     header h1 span { color: var(--red); }
 
-    .badge {
+    .header-right {
       margin-left: auto;
-      font-size: 11px; font-weight: 600;
-      background: var(--red-lt); color: var(--red);
-      padding: 3px 10px; border-radius: 20px;
-      letter-spacing: .3px;
+      display: flex; align-items: center; gap: 10px;
     }
 
-    /* ── Layout ── */
+    .badge {
+      font-size: 10px; font-weight: 700; letter-spacing: .4px;
+      background: rgba(214,55,55,.12);
+      border: 1px solid rgba(214,55,55,.25);
+      color: #F87171;
+      padding: 3px 10px; border-radius: 25px;
+    }
+
+    .header-home {
+      font-size: 12px; font-weight: 600;
+      color: var(--gray-3); text-decoration: none;
+      padding: 5px 12px; border-radius: 25px;
+      border: 1px solid var(--border-2);
+      transition: color .15s, border-color .15s;
+    }
+    .header-home:hover { color: var(--white); border-color: var(--border-2); }
+
+    /* ── LAYOUT ── */
     .layout {
       display: grid;
-      grid-template-columns: 340px 1fr;
-      min-height: calc(100vh - 61px);
+      grid-template-columns: 300px 1fr;
+      min-height: calc(100vh - 60px);
     }
 
-    /* ── Sidebar / Form ── */
+    /* ── SIDEBAR ── */
     .sidebar {
-      border-right: 1px solid var(--gray-200);
-      padding: 28px 24px;
-      background: var(--gray-50);
+      background: var(--navy-2);
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
       overflow-y: auto;
     }
 
-    .sidebar h2 {
-      font-size: 13px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .6px;
-      color: var(--gray-400);
-      margin-bottom: 20px;
+    .sidebar-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .7px;
+      color: var(--gray-4); margin-bottom: 16px;
     }
 
-    /* Report type tabs */
-    .tabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 24px;
-    }
+    /* Tabs */
+    .tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 22px; }
 
     .tab {
-      flex: 1;
-      padding: 8px 4px;
-      font-size: 12px; font-weight: 600;
+      flex: 1; min-width: calc(50% - 3px);
+      padding: 7px 6px;
+      font-size: 11px; font-weight: 700;
       text-align: center;
-      border: 1.5px solid var(--gray-200);
+      border: 1px solid var(--border-2);
       border-radius: 8px;
       cursor: pointer;
-      background: #fff;
-      color: var(--gray-600);
+      background: transparent;
+      color: var(--gray-3);
       transition: all .15s;
+      letter-spacing: .2px;
     }
-
+    .tab:hover { color: var(--gray-1); border-color: var(--border-2); }
     .tab.active {
-      border-color: var(--red);
-      background: var(--red-lt);
-      color: var(--red);
+      border-color: rgba(214,55,55,.4);
+      background: rgba(214,55,55,.1);
+      color: #F87171;
     }
 
-    /* Form fields */
-    .field { margin-bottom: 16px; }
+    /* Form elements */
+    .field { margin-bottom: 14px; }
 
     label {
       display: block;
-      font-size: 12px; font-weight: 600;
-      color: var(--gray-600);
-      margin-bottom: 6px;
+      font-size: 11px; font-weight: 600;
+      color: var(--gray-3); margin-bottom: 5px;
+      letter-spacing: .2px;
     }
 
     input[type="text"],
@@ -126,315 +153,714 @@
     textarea {
       width: 100%;
       padding: 9px 12px;
-      font-size: 13px;
-      font-family: inherit;
-      border: 1.5px solid var(--gray-200);
-      border-radius: var(--radius);
-      background: #fff;
-      color: var(--gray-900);
-      transition: border-color .15s;
+      font-size: 13px; font-family: inherit;
+      background: var(--navy-3);
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      color: var(--white);
       outline: none;
+      transition: border-color .15s;
     }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--red);
-    }
-
+    input::placeholder { color: var(--gray-4); }
+    input:focus, select:focus, textarea:focus { border-color: rgba(214,55,55,.5); }
+    select option { background: var(--navy-3); }
     textarea { resize: vertical; min-height: 72px; }
 
-    .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 
     /* Toggle */
     .toggle-row {
       display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px;
-      background: #fff;
-      border: 1.5px solid var(--gray-200);
+      padding: 9px 12px;
+      background: var(--navy-3);
+      border: 1px solid var(--border-2);
       border-radius: var(--radius);
-      cursor: pointer;
-      margin-bottom: 16px;
+      cursor: pointer; margin-bottom: 14px;
       transition: border-color .15s;
     }
-    .toggle-row:has(input:checked) { border-color: var(--red); background: var(--red-lt); }
+    .toggle-row:has(input:checked) {
+      border-color: rgba(214,55,55,.4);
+      background: rgba(214,55,55,.08);
+    }
+    .toggle-row input[type="checkbox"] { accent-color: var(--red); width: 15px; height: 15px; flex-shrink: 0; }
+    .toggle-row span { font-size: 12px; font-weight: 500; color: var(--gray-2); }
 
-    .toggle-row input[type="checkbox"] { accent-color: var(--red); width: 16px; height: 16px; }
-    .toggle-row span { font-size: 13px; font-weight: 500; }
-
-    /* Grant section */
+    /* Grant fields */
     #grant-fields {
-      padding: 14px;
-      background: #fff;
-      border: 1.5px solid var(--gray-200);
+      padding: 12px;
+      background: var(--navy-3);
+      border: 1px solid var(--border-2);
       border-radius: var(--radius);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     #grant-fields .field:last-child { margin-bottom: 0; }
 
-    /* Submit */
+    /* Generate button */
     .btn-generate {
-      width: 100%;
-      padding: 12px;
-      font-size: 14px; font-weight: 700;
-      font-family: inherit;
-      background: var(--red);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
+      width: 100%; padding: 11px;
+      font-size: 13px; font-weight: 700; font-family: inherit;
+      background: var(--red); color: #fff;
+      border: none; border-radius: 25px;
       cursor: pointer;
-      transition: background .15s, transform .1s;
+      transition: background .15s, box-shadow .15s, transform .1s;
       display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 16px var(--red-glow);
     }
-    .btn-generate:hover { background: #b91c1c; }
+    .btn-generate:hover { background: var(--red-dk); box-shadow: 0 6px 20px var(--red-glow); }
     .btn-generate:active { transform: scale(.98); }
-    .btn-generate svg { width: 16px; height: 16px; fill: #fff; }
+    .btn-generate svg { width: 15px; height: 15px; }
 
-    /* ── Main / Results ── */
+    /* ── MAIN PANEL ── */
     .main {
-      padding: 36px 48px;
+      padding: 32px 40px;
       overflow-y: auto;
+      background: var(--navy);
     }
 
+    /* Empty state */
     .empty-state {
       display: flex; flex-direction: column; align-items: center;
       justify-content: center; height: 100%;
-      color: var(--gray-400); text-align: center; gap: 12px;
+      color: var(--gray-4); text-align: center; gap: 12px;
     }
-    .empty-state svg { width: 48px; height: 48px; opacity: .3; }
-    .empty-state p { font-size: 15px; font-weight: 500; }
-    .empty-state small { font-size: 13px; }
+    .empty-state svg { width: 48px; height: 48px; opacity: .25; }
+    .empty-state p { font-size: 15px; font-weight: 600; color: var(--gray-3); }
+    .empty-state small { font-size: 13px; color: var(--gray-4); }
 
     /* Result card */
     .result-card {
-      background: #fff;
-      border: 1px solid var(--gray-200);
+      background: var(--navy-2);
+      border: 1px solid var(--border-2);
       border-radius: 14px;
-      box-shadow: var(--shadow);
       overflow: hidden;
+      margin-bottom: 20px;
     }
 
     .result-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--gray-200);
-      background: var(--gray-50);
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--border);
+      background: var(--navy-3);
     }
-
-    .result-header span {
-      font-size: 13px; font-weight: 600; color: var(--gray-600);
-    }
+    .result-header span { font-size: 12px; font-weight: 700; color: var(--gray-2); letter-spacing: .2px; }
 
     .btn-download {
       display: flex; align-items: center; gap: 6px;
-      padding: 7px 14px;
-      font-size: 12px; font-weight: 600;
-      font-family: inherit;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 8px;
-      background: #fff;
-      cursor: pointer;
-      color: var(--gray-600);
+      padding: 6px 14px;
+      font-size: 11px; font-weight: 700; font-family: inherit;
+      border: 1px solid var(--border-2);
+      border-radius: 25px;
+      background: transparent;
+      cursor: pointer; color: var(--gray-2);
       transition: border-color .15s, color .15s;
     }
-    .btn-download:hover { border-color: var(--red); color: var(--red); }
-    .btn-download svg { width: 14px; height: 14px; }
+    .btn-download:hover { border-color: var(--red); color: #F87171; }
+    .btn-download svg { width: 13px; height: 13px; }
 
     .result-body {
-      padding: 32px 36px;
-      line-height: 1.75;
-      font-size: 15px;
+      padding: 28px 32px;
+      line-height: 1.75; font-size: 14px; color: var(--gray-1);
     }
 
     /* Markdown styles */
-    .result-body h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-    .result-body h2 { font-size: 17px; font-weight: 700; margin: 28px 0 10px; color: var(--gray-900); }
-    .result-body h3 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; }
-    .result-body p  { margin-bottom: 14px; color: var(--gray-600); }
-    .result-body ul, .result-body ol { padding-left: 20px; margin-bottom: 14px; }
-    .result-body li { margin-bottom: 6px; color: var(--gray-600); }
-    .result-body strong { color: var(--gray-900); font-weight: 700; }
-    .result-body em { color: var(--gray-400); }
-    .result-body hr { border: none; border-top: 1px solid var(--gray-200); margin: 20px 0; }
+    .result-body h1 { font-size: 20px; font-weight: 800; margin-bottom: 4px; color: var(--white); }
+    .result-body h2 { font-size: 16px; font-weight: 700; margin: 26px 0 10px; color: var(--white); }
+    .result-body h3 { font-size: 14px; font-weight: 700; margin: 18px 0 8px; color: var(--gray-1); }
+    .result-body p  { margin-bottom: 12px; color: var(--gray-2); }
+    .result-body ul, .result-body ol { padding-left: 20px; margin-bottom: 12px; }
+    .result-body li { margin-bottom: 5px; color: var(--gray-2); }
+    .result-body strong { color: var(--white); font-weight: 700; }
+    .result-body em { color: var(--gray-3); }
+    .result-body hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
 
     /* Error */
     .error-banner {
-      background: var(--red-lt);
-      border: 1.5px solid #FECACA;
-      color: #991B1B;
+      background: rgba(214,55,55,.1);
+      border: 1px solid rgba(214,55,55,.25);
+      color: #FCA5A5;
       border-radius: var(--radius);
-      padding: 14px 18px;
+      padding: 12px 16px;
       font-size: 13px; font-weight: 500;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
-    /* Convert panel */
+    /* ── CONVERT PANEL ── */
     .convert-drop {
-      border: 2px dashed var(--gray-200);
+      border: 1.5px dashed var(--border-2);
       border-radius: var(--radius);
-      padding: 28px 16px;
-      text-align: center;
-      cursor: pointer;
+      padding: 26px 16px;
+      text-align: center; cursor: pointer;
       transition: border-color .15s, background .15s;
-      background: #fff;
-      margin-bottom: 16px;
+      background: var(--navy-3); margin-bottom: 14px;
+      display: block;
     }
     .convert-drop:hover, .convert-drop.drag-over {
-      border-color: var(--red);
-      background: var(--red-lt);
+      border-color: rgba(214,55,55,.4);
+      background: rgba(214,55,55,.06);
     }
-    .convert-drop svg { width: 28px; height: 28px; opacity: .35; margin-bottom: 8px; }
-    .convert-drop p { font-size: 13px; font-weight: 500; color: var(--gray-600); margin-bottom: 4px; }
-    .convert-drop small { font-size: 11px; color: var(--gray-400); }
+    .convert-drop svg { width: 26px; height: 26px; opacity: .3; margin-bottom: 8px; stroke: var(--gray-2); }
+    .convert-drop p { font-size: 12px; font-weight: 600; color: var(--gray-2); margin-bottom: 3px; }
+    .convert-drop small { font-size: 11px; color: var(--gray-4); }
     .convert-drop input[type="file"] { display: none; }
 
-    .convert-summary {
-      background: #fff;
-      border: 1.5px solid var(--gray-200);
-      border-radius: var(--radius);
+    .btn-download-json {
+      width: 100%; padding: 10px;
+      font-size: 12px; font-weight: 700; font-family: inherit;
+      background: var(--navy-4);
+      color: var(--gray-1);
+      border: 1px solid var(--border-2);
+      border-radius: 25px; cursor: pointer; margin-top: 12px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: background .15s, color .15s;
+    }
+    .btn-download-json:hover { background: var(--navy-5); color: var(--white); }
+    .btn-download-json svg { width: 13px; height: 13px; fill: var(--gray-3); }
+
+    /* ── QUALITY SCORER ── */
+    .score-ring-wrap { text-align: center; padding: 20px 0 16px; }
+    .score-ring {
+      width: 110px; height: 110px; border-radius: 50%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      margin: 0 auto 10px;
+      border: 5px solid var(--navy-4);
+    }
+    .score-ring.grade-A { border-color: #16A34A; box-shadow: 0 0 20px rgba(22,163,74,.2); }
+    .score-ring.grade-B { border-color: #2563EB; box-shadow: 0 0 20px rgba(37,99,235,.2); }
+    .score-ring.grade-C { border-color: #D97706; box-shadow: 0 0 20px rgba(217,119,6,.2); }
+    .score-ring.grade-D { border-color: #EA580C; box-shadow: 0 0 20px rgba(234,88,12,.2); }
+    .score-ring.grade-F { border-color: var(--red); box-shadow: 0 0 20px var(--red-glow); }
+    .score-ring .score-num { font-size: 34px; font-weight: 900; line-height: 1; color: var(--white); }
+    .score-ring .score-lbl { font-size: 10px; color: var(--gray-4); font-weight: 600; }
+
+    .grade-badge {
+      display: inline-block; font-size: 12px; font-weight: 800;
+      padding: 3px 12px; border-radius: 25px; margin-bottom: 3px;
+    }
+    .grade-badge.grade-A { background: rgba(22,163,74,.15); color: #4ADE80; }
+    .grade-badge.grade-B { background: rgba(37,99,235,.15); color: #60A5FA; }
+    .grade-badge.grade-C { background: rgba(217,119,6,.15); color: #FCD34D; }
+    .grade-badge.grade-D { background: rgba(234,88,12,.15); color: #FB923C; }
+    .grade-badge.grade-F { background: var(--red-lt); color: #F87171; }
+    .grade-label { font-size: 11px; color: var(--gray-4); }
+
+    .field-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .field-row:last-child { border-bottom: none; }
+    .field-tier {
+      font-size: 8px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .4px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
+    }
+    .tier-critical    { background: rgba(214,55,55,.15); color: #F87171; }
+    .tier-important   { background: rgba(217,119,6,.15); color: #FCD34D; }
+    .tier-supplemental { background: var(--navy-4); color: var(--gray-3); }
+    .field-name { flex: 1; font-weight: 500; color: var(--gray-2); }
+    .field-pct  { font-weight: 700; font-size: 12px; min-width: 34px; text-align: right; }
+    .field-pct.pct-high { color: #4ADE80; }
+    .field-pct.pct-mid  { color: #FCD34D; }
+    .field-pct.pct-low  { color: #F87171; }
+    .field-bar-wrap { width: 56px; background: var(--navy-4); border-radius: 4px; height: 4px; flex-shrink: 0; }
+    .field-bar { height: 4px; border-radius: 4px; }
+    .bar-high { background: #4ADE80; }
+    .bar-mid  { background: #FCD34D; }
+    .bar-low  { background: var(--red); }
+
+    .flag-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(217,119,6,.1); color: #FCD34D;
+      border: 1px solid rgba(217,119,6,.2);
+      font-size: 11px; font-weight: 600;
+      padding: 4px 10px; border-radius: 25px;
+      margin: 3px 3px 3px 0;
+    }
+
+    .worst-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .worst-table th {
+      text-align: left; padding: 8px 14px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .4px; color: var(--gray-4);
+      border-bottom: 1px solid var(--border);
+      background: var(--navy-3);
+    }
+    .worst-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--gray-2); }
+    .worst-table tr:last-child td { border-bottom: none; }
+
+    .score-pill {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 6px;
+    }
+    .score-pill.high { background: rgba(22,163,74,.15); color: #4ADE80; }
+    .score-pill.mid  { background: rgba(217,119,6,.15); color: #FCD34D; }
+    .score-pill.low  { background: var(--red-lt); color: #F87171; }
+
+    /* ── DASHBOARD ── */
+    .dashboard { display: flex; flex-direction: column; gap: 20px; }
+
+    .dash-stat-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .dash-stat {
+      background: var(--navy-2);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+      padding: 18px 20px;
+      position: relative;
       overflow: hidden;
     }
-    .convert-summary-head {
-      padding: 12px 16px;
-      background: var(--gray-50);
-      border-bottom: 1px solid var(--gray-200);
-      font-size: 12px; font-weight: 700;
+    .dash-stat::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+      opacity: .6;
+    }
+    .dash-stat-label {
+      font-size: 10px; font-weight: 700;
       text-transform: uppercase; letter-spacing: .5px;
-      color: var(--gray-400);
+      color: var(--gray-4); margin-bottom: 8px;
     }
-    .convert-stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
+    .dash-stat-value {
+      font-size: 28px; font-weight: 900;
+      color: var(--white); line-height: 1;
+      margin-bottom: 4px;
     }
-    .convert-stat {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--gray-200);
+    .dash-stat-sub {
+      font-size: 11px; color: var(--gray-4); font-weight: 500;
     }
-    .convert-stat:nth-child(odd) { border-right: 1px solid var(--gray-200); }
-    .convert-stat .val {
-      font-size: 22px; font-weight: 800; color: var(--gray-900);
-      line-height: 1;
-      margin-bottom: 2px;
+    .dash-stat-icon {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      background: var(--red-lt);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
     }
-    .convert-stat .lbl { font-size: 11px; color: var(--gray-400); font-weight: 500; }
+    .dash-stat-icon svg { width: 16px; height: 16px; fill: var(--red); }
 
-    .convert-types { padding: 14px 16px; }
-    .convert-type-row {
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 12px; margin-bottom: 8px;
-    }
-    .convert-type-row .type-name { color: var(--gray-600); font-weight: 500; flex: 1; padding-right: 8px; }
-    .convert-type-row .type-bar-wrap { flex: 1; background: var(--gray-100); border-radius: 4px; height: 6px; margin-right: 8px; }
-    .convert-type-row .type-bar { height: 6px; background: var(--red); border-radius: 4px; }
-    .convert-type-row .type-count { color: var(--gray-900); font-weight: 700; min-width: 30px; text-align: right; }
+    .dash-row { display: grid; gap: 14px; }
+    .dash-row-2 { grid-template-columns: 1fr 1fr; }
+    .dash-row-3 { grid-template-columns: 2fr 1fr; }
 
-    .convert-warnings {
-      padding: 10px 16px;
-      border-top: 1px solid var(--gray-200);
-      background: #FFFBEB;
+    .dash-card {
+      background: var(--navy-2);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+      overflow: hidden;
     }
-    .convert-warnings p { font-size: 11px; color: #92400E; line-height: 1.5; }
+    .dash-card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dash-card-title {
+      font-size: 12px; font-weight: 700;
+      color: var(--gray-2); letter-spacing: .2px;
+    }
+    .dash-card-sub {
+      font-size: 11px; color: var(--gray-4);
+    }
+    .dash-card-body { padding: 16px 18px; }
 
-    .btn-download-json {
-      width: 100%;
-      padding: 11px;
-      font-size: 13px; font-weight: 700;
-      font-family: inherit;
-      background: var(--gray-900);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
+    .dash-chart-wrap { position: relative; }
+
+    /* Mini map in dashboard */
+    #dash-mini-map {
+      height: 260px;
       cursor: pointer;
-      margin-top: 14px;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
+      position: relative;
+    }
+    .dash-map-overlay {
+      position: absolute;
+      bottom: 12px; right: 12px;
+      z-index: 500;
+      background: var(--red);
+      color: #fff;
+      font-size: 11px; font-weight: 700;
+      padding: 6px 14px; border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px var(--red-glow);
+      display: flex; align-items: center; gap: 6px;
       transition: background .15s;
     }
-    .btn-download-json:hover { background: #374151; }
-    .btn-download-json svg { width: 14px; height: 14px; fill: #fff; }
+    .dash-map-overlay:hover { background: var(--red-dk); }
+    .dash-map-overlay svg { width: 12px; height: 12px; fill: #fff; }
 
-    /* Loading overlay */
-    #loading {
+    /* Busiest days list */
+    .dash-day-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px; font-size: 13px;
+    }
+    .dash-day-name { min-width: 80px; color: var(--gray-2); font-weight: 500; }
+    .dash-day-bar-wrap { flex: 1; background: var(--navy-4); border-radius: 4px; height: 6px; }
+    .dash-day-bar { height: 6px; background: var(--red); border-radius: 4px; opacity: .8; }
+    .dash-day-count { font-weight: 700; color: var(--white); min-width: 28px; text-align: right; }
+
+    /* Month trend list */
+    .dash-month-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 8px; font-size: 12px;
+    }
+    .dash-month-name { min-width: 76px; color: var(--gray-3); }
+    .dash-month-bar-wrap { flex: 1; background: var(--navy-4); border-radius: 3px; height: 5px; }
+    .dash-month-bar { height: 5px; background: var(--gray-4); border-radius: 3px; }
+    .dash-month-count { font-weight: 600; color: var(--gray-2); min-width: 24px; text-align: right; }
+
+    .dash-dept-name {
+      font-size: 13px; font-weight: 700; color: var(--gray-1);
+      margin-bottom: 2px;
+    }
+    .dash-period {
+      font-size: 11px; color: var(--gray-4);
+    }
+
+    /* ── EV / LITHIUM FIRE TRACKING ── */
+    .ev-stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+    .ev-stat {
+      background: var(--navy-2); border: 1px solid var(--border-2);
+      border-radius: 12px; padding: 18px 20px; position: relative; overflow: hidden;
+    }
+    .ev-stat::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: #F59E0B;
+    }
+    .ev-stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-4); margin-bottom: 6px; }
+    .ev-stat-value { font-size: 26px; font-weight: 900; color: var(--white); line-height: 1; margin-bottom: 3px; }
+    .ev-stat-sub   { font-size: 11px; color: var(--gray-4); }
+    .ev-stat-icon  { position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; background: rgba(245,158,11,.12); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .ev-stat-icon svg { width: 15px; height: 15px; fill: #F59E0B; }
+    .ev-trend-up   { color: #F87171; font-weight: 800; }
+    .ev-trend-down { color: #4ADE80; font-weight: 800; }
+
+    .ev-alert {
+      background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25);
+      border-radius: 12px; padding: 16px 20px; font-size: 12px; color: #FDE68A;
+      line-height: 1.6;
+    }
+    .ev-alert-title { font-size: 12px; font-weight: 800; color: #F59E0B; margin-bottom: 8px; letter-spacing: .2px; }
+    .ev-alert-item  { display: flex; align-items: flex-start; gap: 7px; margin-bottom: 6px; }
+    .ev-alert-item:last-child { margin-bottom: 0; }
+    .ev-alert-dot   { width: 6px; height: 6px; border-radius: 50%; background: #F59E0B; flex-shrink: 0; margin-top: 5px; }
+
+    .ev-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .ev-table th { text-align: left; padding: 8px 14px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--gray-4); border-bottom: 1px solid var(--border); background: var(--navy-3); }
+    .ev-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--gray-2); }
+    .ev-table tr:last-child td { border-bottom: none; }
+
+    #ev-map  { height: 200px; border-radius: 0 0 12px 12px; }
+    #risk-map { height: 360px; border-radius: 0 0 12px 12px; }
+
+    /* ── COMMUNITY RISK ── */
+    .risk-level-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+    .risk-level-card {
+      border-radius: 12px; padding: 16px 18px;
+      border: 1px solid; text-align: center;
+    }
+    .risk-level-card.critical { background: rgba(239,68,68,.1);  border-color: rgba(239,68,68,.3);  }
+    .risk-level-card.high     { background: rgba(249,115,22,.1); border-color: rgba(249,115,22,.3); }
+    .risk-level-card.medium   { background: rgba(234,179,8,.1);  border-color: rgba(234,179,8,.3);  }
+    .risk-level-card.low      { background: rgba(34,197,94,.1);  border-color: rgba(34,197,94,.3);  }
+    .risk-level-count { font-size: 34px; font-weight: 900; line-height: 1; }
+    .risk-level-card.critical .risk-level-count { color: #F87171; }
+    .risk-level-card.high     .risk-level-count { color: #FB923C; }
+    .risk-level-card.medium   .risk-level-count { color: #FDE047; }
+    .risk-level-card.low      .risk-level-count { color: #4ADE80; }
+    .risk-level-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-4); margin-top: 4px; }
+    .risk-level-sub   { font-size: 11px; color: var(--gray-4); margin-top: 3px; }
+
+    .risk-zone-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .risk-zone-table th { text-align: left; padding: 8px 14px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--gray-4); border-bottom: 1px solid var(--border); background: var(--navy-3); }
+    .risk-zone-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--gray-2); }
+    .risk-zone-table tr:last-child td { border-bottom: none; }
+    .risk-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+    .risk-badge.Critical { background: rgba(239,68,68,.2);  color: #F87171; }
+    .risk-badge.High     { background: rgba(249,115,22,.2); color: #FB923C; }
+    .risk-badge.Medium   { background: rgba(234,179,8,.2);  color: #FDE047; }
+    .risk-badge.Low      { background: rgba(34,197,94,.2);  color: #4ADE80; }
+
+    .risk-gap-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 12px;
+    }
+    .risk-gap-item:last-child { border-bottom: none; }
+    .risk-gap-dot { width: 10px; height: 10px; border-radius: 50%; background: #F97316; flex-shrink: 0; }
+
+    /* ── BENCHMARK ── */
+    .bench-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .bench-dept { font-size: 15px; font-weight: 800; color: var(--white); }
+    .bench-sub  { font-size: 12px; color: var(--gray-4); margin-top: 2px; }
+
+    .bench-peers {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .bench-peer-pill {
+      font-size: 11px; font-weight: 600;
+      padding: 4px 12px; border-radius: 25px;
+      border: 1px solid var(--border-2);
+      color: var(--gray-3);
+      background: var(--navy-3);
+    }
+    .bench-peer-pill strong { color: var(--white); }
+
+    .bench-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+
+    .bench-card {
+      background: var(--navy-2);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .bench-card-head {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .bench-card-title { font-size: 12px; font-weight: 700; color: var(--gray-2); }
+    .bench-card-sub   { font-size: 10px; color: var(--gray-4); margin-top: 2px; }
+
+    .bench-card-body  { padding: 14px 16px; }
+
+    .bench-values {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+    }
+    .bench-your-value {
+      font-size: 24px; font-weight: 900; color: var(--white); line-height: 1;
+    }
+    .bench-your-label { font-size: 10px; color: var(--gray-4); margin-top: 2px; font-weight: 600; }
+    .bench-vs { font-size: 11px; color: var(--gray-4); }
+    .bench-peer-value { font-size: 18px; font-weight: 700; color: var(--gray-3); line-height: 1; }
+    .bench-peer-label { font-size: 10px; color: var(--gray-4); margin-top: 2px; }
+
+    .bench-delta {
+      margin-left: auto;
+      font-size: 11px; font-weight: 700;
+      padding: 4px 10px; border-radius: 25px;
+      white-space: nowrap;
+    }
+    .bench-delta.better { background: rgba(22,163,74,.15); color: #4ADE80; }
+    .bench-delta.worse  { background: var(--red-lt); color: #F87171; }
+    .bench-delta.neutral{ background: var(--navy-4); color: var(--gray-3); }
+
+    /* Percentile track */
+    .bench-pct-block { margin-bottom: 12px; }
+    .bench-pct-track {
+      position: relative;
+      height: 6px;
+      background: var(--navy-4);
+      border-radius: 6px;
+      margin-bottom: 4px;
+    }
+    .bench-pct-fill {
+      position: absolute; top: 0; left: 0;
+      height: 6px; border-radius: 6px;
+      transition: width .5s ease;
+    }
+    .bench-pct-fill.pct-great  { background: #16A34A; }
+    .bench-pct-fill.pct-good   { background: #2563EB; }
+    .bench-pct-fill.pct-mid    { background: #D97706; }
+    .bench-pct-fill.pct-low    { background: var(--red); }
+    .bench-pct-marker {
+      position: absolute; top: -3px;
+      width: 12px; height: 12px;
+      background: var(--white);
+      border-radius: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 6px rgba(0,0,0,.5);
+    }
+    .bench-pct-labels {
+      display: flex; justify-content: space-between;
+      font-size: 9px; color: var(--gray-4); font-weight: 600;
+    }
+    .bench-pct-number {
+      font-size: 28px; font-weight: 900; line-height: 1;
+      margin-bottom: 2px;
+    }
+    .bench-pct-number.pct-great  { color: #4ADE80; }
+    .bench-pct-number.pct-good   { color: #60A5FA; }
+    .bench-pct-number.pct-mid    { color: #FCD34D; }
+    .bench-pct-number.pct-low    { color: #F87171; }
+    .bench-pct-label { font-size: 9px; font-weight: 700; color: var(--gray-4); letter-spacing: .4px; text-transform: uppercase; }
+
+    /* Scope tabs under each card */
+    .bench-scope-row {
+      display: flex; gap: 6px; border-top: 1px solid var(--border);
+      padding: 10px 16px;
+    }
+    .bench-scope-chip {
+      flex: 1; text-align: center;
+      padding: 6px 4px; border-radius: 8px;
+      font-size: 10px; font-weight: 600;
+      border: 1px solid var(--border-2);
+      color: var(--gray-3); cursor: pointer;
+      background: transparent; transition: all .12s;
+    }
+    .bench-scope-chip.active {
+      background: rgba(214,55,55,.1);
+      border-color: rgba(214,55,55,.35);
+      color: #F87171;
+    }
+    .bench-scope-chip:hover { color: var(--gray-1); }
+    .bench-scope-pct {
+      font-size: 12px; font-weight: 800;
+      display: block; margin-bottom: 1px;
+    }
+
+    /* ── MAP ── */
+    #map-container {
       display: none;
-      position: fixed; inset: 0;
-      background: rgba(255,255,255,.75);
-      backdrop-filter: blur(4px);
-      z-index: 100;
       flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 16px;
+      height: calc(100vh - 60px);
+      position: relative;
+    }
+    #map-container.active { display: flex; }
+
+    #map { flex: 1; }
+
+    .map-legend {
+      position: absolute;
+      bottom: 28px; right: 12px;
+      z-index: 1000;
+      background: var(--navy-2);
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 11px;
+      min-width: 160px;
+    }
+    .map-legend-title {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .5px; color: var(--gray-4); margin-bottom: 8px;
+    }
+    .map-legend-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 5px; color: var(--gray-2); font-weight: 500;
+    }
+    .map-legend-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    .map-stat-bar {
+      position: absolute;
+      top: 12px; left: 50%; transform: translateX(-50%);
+      z-index: 1000;
+      display: flex; gap: 8px;
+    }
+    .map-stat-chip {
+      background: var(--navy-2);
+      border: 1px solid var(--border-2);
+      border-radius: 25px;
+      padding: 5px 14px;
+      font-size: 12px; font-weight: 700; color: var(--gray-1);
+      white-space: nowrap;
+    }
+    .map-stat-chip span { color: var(--gray-4); font-weight: 500; margin-left: 4px; }
+
+    /* Override Leaflet popup for dark theme */
+    .leaflet-popup-content-wrapper {
+      background: var(--navy-2) !important;
+      border: 1px solid var(--border-2) !important;
+      border-radius: 10px !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5) !important;
+      color: var(--white) !important;
+    }
+    .leaflet-popup-tip { background: var(--navy-2) !important; }
+    .leaflet-popup-content { margin: 12px 14px !important; font-family: 'Geist', sans-serif !important; }
+
+    /* ── LOADING ── */
+    #loading {
+      display: none; position: fixed; inset: 0;
+      background: rgba(15,26,32,.8); backdrop-filter: blur(6px);
+      z-index: 100; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
     }
     #loading.show { display: flex; }
 
     .spinner {
-      width: 40px; height: 40px;
-      border: 3px solid var(--gray-200);
+      width: 38px; height: 38px;
+      border: 3px solid var(--navy-4);
       border-top-color: var(--red);
       border-radius: 50%;
       animation: spin .7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    #loading p { font-size: 14px; font-weight: 600; color: var(--gray-2); }
+    #loading small { font-size: 12px; color: var(--gray-4); }
 
-    #loading p { font-size: 14px; font-weight: 600; color: var(--gray-600); }
-    #loading small { font-size: 12px; color: var(--gray-400); }
-
+    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       .layout { grid-template-columns: 1fr; }
-      .sidebar { border-right: none; border-bottom: 1px solid var(--gray-200); }
-      .main { padding: 24px 20px; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+      .main { padding: 20px; }
     }
   </style>
 </head>
 <body>
 
-<!-- Loading overlay -->
 <div id="loading">
   <div class="spinner"></div>
-  <p>Generating with Claude AI...</p>
-  <small>This usually takes 10-20 seconds</small>
+  <p>Analyzing your incident data...</p>
+  <small>Usually takes 10–20 seconds</small>
 </div>
 
-<!-- Header -->
 <header>
   <div class="logo">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0c0-3.5-2.5-6-6-11zm0 16a4 4 0 01-4-4c0-2 1.2-3.8 3-6.3C12.8 10.2 14 12 14 15a4 4 0 01-4 3z" opacity=".3"/>
-      <path d="M12 2C9 6.5 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/>
-    </svg>
+    <svg viewBox="0 0 24 24"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
   </div>
   <h1>Fire<span>Insight</span></h1>
-  <span class="badge">BETA</span>
+  <div class="header-right">
+    <span class="badge">BETA</span>
+    <button id="neris-status-btn" onclick="toggleNerisPanel()" style="font-size:11px;font-weight:700;font-family:inherit;padding:5px 12px;border-radius:25px;border:1px solid var(--border-2);background:transparent;color:var(--gray-3);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s">
+      <span id="neris-dot" style="width:7px;height:7px;border-radius:50%;background:var(--gray-4);flex-shrink:0"></span>
+      <span id="neris-status-label">Connect NERIS</span>
+    </button>
+    <a href="/" class="header-home">← Home</a>
+  </div>
 </header>
 
-<!-- Layout -->
 <div class="layout">
 
-  <!-- Sidebar -->
+  <!-- SIDEBAR -->
   <aside class="sidebar">
-    <h2>Generate Report</h2>
+    <div class="sidebar-label">Generate Report</div>
 
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab {% if not form and not convert and not quality and not dashboard and active_tab not in ['benchmark','ev','risk','compliance','iso','staffing'] %}active{% elif form and form.report_type == 'trends' %}active{% endif %}" data-value="trends" onclick="selectTab(this)">Trends</div>
+      <div class="tab {% if form and form.report_type == 'report' %}active{% endif %}" data-value="report" onclick="selectTab(this)">Chief Report</div>
+      <div class="tab {% if form and form.report_type == 'grant' %}active{% endif %}" data-value="grant" onclick="selectTab(this)">Grant</div>
+      <div class="tab {% if convert %}active{% endif %}" data-value="convert" onclick="selectTab(this)">Convert</div>
+      <div class="tab {% if quality %}active{% endif %}" data-value="quality" onclick="selectTab(this)">Quality</div>
+      <div class="tab" data-value="map" onclick="selectTab(this)">Map</div>
+      <div class="tab {% if active_tab == 'benchmark' %}active{% endif %}" data-value="benchmark" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(214,55,55,.3);background:rgba(214,55,55,.06)">&#9650; Benchmark Peers</div>
+      <div class="tab {% if active_tab == 'ev' %}active{% endif %}" data-value="ev" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06)">&#9889; EV / Battery Fires</div>
+      <div class="tab {% if active_tab == 'risk' %}active{% endif %}" data-value="risk" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.06)">&#9888; Community Risk</div>
+      <div class="tab {% if active_tab == 'compliance' %}active{% endif %}" data-value="compliance" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06)">&#10003; NERIS Compliance</div>
+      <div class="tab {% if active_tab == 'iso' %}active{% endif %}" data-value="iso" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(20,184,166,.3);background:rgba(20,184,166,.06)">&#127795; ISO Evidence Pack</div>
+      <div class="tab {% if active_tab == 'staffing' %}active{% endif %}" data-value="staffing" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.06)">&#128101; Staffing Justification</div>
+    </div>
+
+    <!-- Report form -->
     <form method="POST" action="/generate" id="main-form">
-
-      <!-- Report type tabs -->
-      <div class="tabs">
-        <div class="tab {% if not form and not convert %}active{% elif form and form.report_type == 'trends' %}active{% endif %}" data-value="trends" onclick="selectTab(this)">Trends</div>
-        <div class="tab {% if form and form.report_type == 'report' %}active{% endif %}" data-value="report" onclick="selectTab(this)">Chief Report</div>
-        <div class="tab {% if form and form.report_type == 'grant' %}active{% endif %}" data-value="grant" onclick="selectTab(this)">Grant</div>
-        <div class="tab {% if convert %}active{% endif %}" data-value="convert" onclick="selectTab(this)">Convert</div>
-      </div>
       <input type="hidden" name="report_type" id="report_type" value="{{ form.report_type if form else 'trends' }}" />
 
-      <!-- Mock toggle -->
       <label class="toggle-row">
         <input type="checkbox" name="use_mock" id="use_mock" {% if not form or form.use_mock %}checked{% endif %} />
         <span>Use sample data (no credentials needed)</span>
       </label>
 
-      <!-- NERIS ID -->
       <div class="field" id="neris-field" style="{% if not form or form.use_mock %}display:none{% endif %}">
         <label>Department NERIS ID</label>
         <input type="text" name="neris_id" value="{{ form.neris_id if form else 'MOCK-001' }}" placeholder="e.g. VA-1234" />
       </div>
 
-      <!-- Date range -->
       <div class="field">
         <label>Date Range (optional)</label>
         <div class="date-row">
@@ -443,13 +869,11 @@
         </div>
       </div>
 
-      <!-- Period label -->
       <div class="field">
-        <label>Period Label <span style="font-weight:400;color:var(--gray-400)">(appears in report)</span></label>
+        <label>Period Label <span style="font-weight:400;color:var(--gray-4)">(appears in report)</span></label>
         <input type="text" name="period" value="{{ form.period if form else '' }}" placeholder="e.g. January 2025" />
       </div>
 
-      <!-- Grant fields -->
       <div id="grant-fields" style="{% if not form or form.report_type != 'grant' %}display:none{% endif %}">
         <div class="field">
           <label>Grant Program</label>
@@ -465,16 +889,14 @@
       </div>
 
       <button type="submit" class="btn-generate" onclick="showLoading()">
-        <svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
         Generate Report
       </button>
-
     </form>
 
-    <!-- Convert panel (separate form, shown when Convert tab active) -->
+    <!-- Convert panel -->
     <div id="convert-panel" style="{% if not convert %}display:none{% endif %}">
       <form method="POST" action="/convert" enctype="multipart/form-data" id="convert-form">
-
         <label
           class="convert-drop"
           id="drop-zone"
@@ -483,38 +905,1008 @@
           ondragleave="this.classList.remove('drag-over')"
           ondrop="handleDrop(event)"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
           </svg>
-          <p id="drop-label">{% if convert and convert.filename %}{{ convert.filename }}{% else %}Drop your NFIRS CSV here{% endif %}</p>
-          <small>or click to browse &nbsp;&middot;&nbsp; .csv files only</small>
-          <input type="file" name="file" id="nfirs-file" accept=".csv,text/csv" onchange="onFileSelect(this)" {% if not convert or not convert.summary %}required{% endif %} />
+          <p id="drop-label">{% if convert and convert.filename %}{{ convert.filename }}{% else %}Drop NFIRS CSV here{% endif %}</p>
+          <small>or click to browse &nbsp;&middot;&nbsp; .csv only</small>
+          <input type="file" name="file" id="nfirs-file" accept=".csv,text/csv" onchange="onFileSelect(this)" />
         </label>
 
         {% if convert and convert.error %}
-        <div class="error-banner" style="margin-bottom:14px">{{ convert.error }}</div>
+        <div class="error-banner">{{ convert.error }}</div>
         {% endif %}
 
         <button type="submit" class="btn-generate" onclick="showLoading()" id="convert-submit" style="{% if convert and convert.summary %}display:flex{% else %}display:none{% endif %}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
           Convert Another File
         </button>
-
       </form>
+    </div>
+
+    <!-- Quality panel -->
+    <div id="quality-panel" style="{% if not quality %}display:none{% endif %}">
+      <form method="POST" action="/quality" id="quality-form">
+        <label class="toggle-row">
+          <input type="checkbox" name="use_mock" id="quality-use-mock" checked />
+          <span>Use sample data</span>
+        </label>
+        <div class="field" id="quality-neris-field" style="display:none">
+          <label>Department NERIS ID</label>
+          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
+        </div>
+        <div class="field">
+          <label>Date Range (optional)</label>
+          <div class="date-row">
+            <input type="date" name="start" />
+            <input type="date" name="end" />
+          </div>
+        </div>
+        <label class="toggle-row" style="margin-bottom:14px">
+          <input type="checkbox" name="narrative" id="quality-narrative" value="1" />
+          <span>Generate AI fix recommendations</span>
+        </label>
+        <button type="submit" class="btn-generate" onclick="showLoading()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Score Data Quality
+        </button>
+      </form>
+    </div>
+
+    <!-- EV panel -->
+    <div id="ev-panel" style="{% if active_tab == 'ev' %}display:block{% else %}display:none{% endif %}">
+      <form method="POST" action="/ev">
+        <label class="toggle-row">
+          <input type="checkbox" name="use_mock" id="ev-use-mock" checked />
+          <span>Use sample data</span>
+        </label>
+        <div class="field" id="ev-neris-field" style="display:none">
+          <label>Department NERIS ID</label>
+          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
+        </div>
+        <div class="field">
+          <label>Date Range (optional)</label>
+          <div class="date-row">
+            <input type="date" name="start" />
+            <input type="date" name="end" />
+          </div>
+        </div>
+        <button type="submit" class="btn-generate" onclick="showLoading()">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+          Analyze EV Incidents
+        </button>
+      </form>
+      <div style="margin-top:20px;padding:12px 14px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:10px;font-size:11px;color:#FDE68A;line-height:1.7">
+        <div style="font-weight:700;color:#F59E0B;margin-bottom:6px">Why this matters</div>
+        EV battery fires require 3–5× more water, extended scene commitment, and risk of re-ignition up to 24 hours later. Standard vehicle fire protocols are insufficient.
+      </div>
+    </div>
+
+    <!-- Risk panel -->
+    <div id="risk-panel" style="{% if active_tab == 'risk' %}display:block{% else %}display:none{% endif %}">
+      <form method="POST" action="/risk">
+        <label class="toggle-row">
+          <input type="checkbox" name="use_mock" id="risk-use-mock" checked />
+          <span>Use sample data</span>
+        </label>
+        <div class="field" id="risk-neris-field" style="display:none">
+          <label>Department NERIS ID</label>
+          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
+        </div>
+        <div class="field">
+          <label>Date Range (optional)</label>
+          <div class="date-row">
+            <input type="date" name="start" />
+            <input type="date" name="end" />
+          </div>
+        </div>
+        <button type="submit" class="btn-generate" onclick="showLoading()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+          Generate Risk Map
+        </button>
+      </form>
+      <div style="margin-top:20px;padding:12px 14px;background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.2);border-radius:10px;font-size:11px;color:#FED7AA;line-height:1.7">
+        <div style="font-weight:700;color:#F97316;margin-bottom:6px">Risk scoring model</div>
+        Zones scored 0–100 by incident density, type severity, and response time gap vs. the NFPA 8-minute benchmark.
+      </div>
+    </div>
+
+    <!-- Benchmark panel -->
+    <div id="benchmark-panel" style="{% if active_tab == 'benchmark' %}display:block{% else %}display:none{% endif %}">
+      <form method="POST" action="/benchmark" id="benchmark-form">
+        <label class="toggle-row">
+          <input type="checkbox" name="use_mock" id="bench-use-mock" checked />
+          <span>Use sample data</span>
+        </label>
+        <div class="field" id="bench-neris-field" style="display:none">
+          <label>Department NERIS ID</label>
+          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
+        </div>
+
+        <div class="field">
+          <label>State</label>
+          <select name="state" id="bench-state">
+            {% set states = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),("CA","California"),("CO","Colorado"),("CT","Connecticut"),("DE","Delaware"),("FL","Florida"),("GA","Georgia"),("HI","Hawaii"),("ID","Idaho"),("IL","Illinois"),("IN","Indiana"),("IA","Iowa"),("KS","Kansas"),("KY","Kentucky"),("LA","Louisiana"),("ME","Maine"),("MD","Maryland"),("MA","Massachusetts"),("MI","Michigan"),("MN","Minnesota"),("MS","Mississippi"),("MO","Missouri"),("MT","Montana"),("NE","Nebraska"),("NV","Nevada"),("NH","New Hampshire"),("NJ","New Jersey"),("NM","New Mexico"),("NY","New York"),("NC","North Carolina"),("ND","North Dakota"),("OH","Ohio"),("OK","Oklahoma"),("OR","Oregon"),("PA","Pennsylvania"),("RI","Rhode Island"),("SC","South Carolina"),("SD","South Dakota"),("TN","Tennessee"),("TX","Texas"),("UT","Utah"),("VT","Vermont"),("VA","Virginia"),("WA","Washington"),("WV","West Virginia"),("WI","Wisconsin"),("WY","Wyoming")] %}
+            {% for abbr, name in states %}
+            <option value="{{ abbr }}" {% if benchmark and benchmark.form.state == abbr %}selected{% elif not benchmark and abbr == 'VA' %}selected{% endif %}>{{ abbr }} — {{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Department Type</label>
+          <select name="dept_type" id="bench-dept-type">
+            <option value="volunteer"    {% if benchmark and benchmark.form.dept_type == 'volunteer'    %}selected{% endif %}>Volunteer</option>
+            <option value="combination" {% if benchmark and benchmark.form.dept_type == 'combination' %}selected{% elif not benchmark %}selected{% endif %}>Combination</option>
+            <option value="career"      {% if benchmark and benchmark.form.dept_type == 'career'      %}selected{% endif %}>Career</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Population Served</label>
+          <input type="number" name="population" min="100" max="2000000" step="500"
+            value="{{ benchmark.form.population if benchmark else 25000 }}" />
+        </div>
+
+        <label class="toggle-row" style="margin-bottom:14px">
+          <input type="checkbox" name="narrative" value="1" />
+          <span>Generate AI executive summary</span>
+        </label>
+
+        <button type="submit" class="btn-generate" onclick="showLoading()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5l7.5 7.5 10.5-10.5M3 6l7.5 7.5 10.5-10.5"/></svg>
+          Run Benchmark
+        </button>
+      </form>
+    </div>
+
+    <!-- Map panel -->
+    <div id="map-panel" style="display:none">
+      <label class="toggle-row">
+        <input type="checkbox" id="map-use-mock" checked />
+        <span>Use sample data</span>
+      </label>
+      <div class="field" id="map-neris-field" style="display:none">
+        <label>Department NERIS ID</label>
+        <input type="text" id="map-neris-id" value="MOCK-001" placeholder="e.g. VA-1234" />
+      </div>
+      <div class="field">
+        <label>Date Range (optional)</label>
+        <div class="date-row">
+          <input type="date" id="map-start" />
+          <input type="date" id="map-end" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Filter by Type</label>
+        <select id="map-type-filter">
+          <option value="">All Types</option>
+          <option value="Fire">Fire</option>
+          <option value="EMS">EMS</option>
+          <option value="Hazmat">Hazmat</option>
+          <option value="Rescue">Rescue</option>
+          <option value="False Alarm">False Alarm</option>
+          <option value="Service Call">Service Call</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <button class="btn-generate" onclick="loadMap()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497z"/></svg>
+        Load Map
+      </button>
+
+      <!-- Type counts legend (populated by JS) -->
+      <div id="map-counts" style="margin-top:18px;display:none">
+        <div class="sidebar-label" style="margin-bottom:10px">Incident Breakdown</div>
+        <div id="map-counts-inner"></div>
+      </div>
+    </div>
+
+    <!-- Compliance panel -->
+    <div id="compliance-panel" style="{% if active_tab == 'compliance' %}display:block{% else %}display:none{% endif %}">
+      <form method="POST" action="/compliance">
+        <label class="toggle-row">
+          <input type="checkbox" name="use_mock" id="compliance-use-mock" checked />
+          <span>Use sample data</span>
+        </label>
+        <div class="field" id="compliance-neris-field" style="display:none">
+          <label>Department NERIS ID</label>
+          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
+        </div>
+        <div class="field">
+          <label>Date Range (optional)</label>
+          <div class="date-row">
+            <input type="date" name="start" />
+            <input type="date" name="end" />
+          </div>
+        </div>
+        <button class="btn-generate" type="submit" onclick="showLoading()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Check Compliance
+        </button>
+      </form>
+    </div>
+
+    <!-- ISO panel -->
+    <div id="iso-panel" style="{% if active_tab == 'iso' %}display:block{% else %}display:none{% endif %}">
+      <form method="POST" action="/iso">
+        <label class="toggle-row">
+          <input type="checkbox" name="use_mock" id="iso-use-mock" checked />
+          <span>Use sample data</span>
+        </label>
+        <div class="field" id="iso-neris-field" style="display:none">
+          <label>Department NERIS ID</label>
+          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
+        </div>
+        <div class="field">
+          <label>Date Range (optional)</label>
+          <div class="date-row">
+            <input type="date" name="start" />
+            <input type="date" name="end" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Period Label (optional)</label>
+          <input type="text" name="period" placeholder="e.g. Calendar Year 2025" />
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" name="narrative" id="iso-narrative-toggle" />
+          <span>Generate AI evidence narrative</span>
+        </label>
+        <button class="btn-generate" type="submit" onclick="showLoading()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+          Build Evidence Pack
+        </button>
+      </form>
+    </div>
+
+    <!-- Staffing panel -->
+    <div id="staffing-panel" style="{% if active_tab == 'staffing' %}display:block{% else %}display:none{% endif %}">
+      <form method="POST" action="/staffing">
+        <label class="toggle-row">
+          <input type="checkbox" name="use_mock" id="staffing-use-mock" checked />
+          <span>Use sample data</span>
+        </label>
+        <div class="field" id="staffing-neris-field" style="display:none">
+          <label>Department NERIS ID</label>
+          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
+        </div>
+        <div class="field">
+          <label>Date Range (optional)</label>
+          <div class="date-row">
+            <input type="date" name="start" />
+            <input type="date" name="end" />
+          </div>
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" name="narrative" id="staffing-narrative-toggle" />
+          <span>Generate board presentation narrative</span>
+        </label>
+        <button class="btn-generate" type="submit" onclick="showLoading()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+          Analyze Staffing
+        </button>
+      </form>
+    </div>
+
+    <!-- NERIS Connect panel (always hidden; opened from header button) -->
+    <div id="neris-connect-panel" style="display:none">
+      <div style="font-size:11px;color:var(--gray-3);margin-bottom:14px;line-height:1.5">
+        Enter your NERIS API credentials to pull live incident data directly from NERIS instead of using sample data.
+      </div>
+      <div class="field">
+        <label>Client ID</label>
+        <input type="text" id="neris-client-id" placeholder="Your NERIS Client ID" />
+      </div>
+      <div class="field">
+        <label>Client Secret</label>
+        <input type="password" id="neris-client-secret" placeholder="Your NERIS Client Secret" />
+      </div>
+      <button class="btn-generate" type="button" onclick="connectNeris()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+        Connect to NERIS
+      </button>
+      <div id="neris-connect-result" style="margin-top:12px;font-size:12px;display:none"></div>
     </div>
 
   </aside>
 
-  <!-- Main output -->
-  <main class="main">
+  <!-- MAP PANEL (full height, outside .main) -->
+  <div id="map-container">
+    <div id="map"></div>
+    <div class="map-stat-bar" id="map-stat-bar" style="display:none">
+      <div class="map-stat-chip" id="map-stat-total">— <span>incidents</span></div>
+      <div class="map-stat-chip" id="map-stat-mapped">— <span>mapped</span></div>
+    </div>
+    <div class="map-legend" id="map-legend" style="display:none"></div>
+  </div>
 
-    {% if error %}
-    <div class="error-banner">{{ error }}</div>
+  <!-- MAIN PANEL -->
+  <main class="main" id="main-panel">
+
+    {% if ev and ev.report %}
+    {%- set r = ev.report %}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:var(--white)">EV / Lithium Battery Fire Analysis</div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:2px">{{ ev.dept_name }} &middot; {{ r.total_ev }} EV-related incidents identified</div>
+      </div>
+      <div style="font-size:11px;color:#F59E0B;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:25px;padding:4px 14px">&#9889; EV Tracking</div>
+    </div>
+
+    <!-- EV stat cards -->
+    <div class="ev-stat-row">
+      <div class="ev-stat">
+        <div class="ev-stat-icon"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div>
+        <div class="ev-stat-label">EV / Battery Fires</div>
+        <div class="ev-stat-value">{{ r.total_ev }}</div>
+        <div class="ev-stat-sub">this period</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+        <div class="ev-stat-label">% of Vehicle Fires</div>
+        <div class="ev-stat-value">{{ r.ev_pct_vehicle }}%</div>
+        <div class="ev-stat-sub">of {{ r.total_vehicle }} total vehicle fires</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-icon"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 14.93V17a1 1 0 00-2 0v-.07A8.001 8.001 0 0111 4.07V5a1 1 0 002 0v-.93A8.001 8.001 0 0113 16.93zM11 12V7a1 1 0 012 0v5a1 1 0 01-2 0z"/></svg></div>
+        <div class="ev-stat-label">Avg Response</div>
+        <div class="ev-stat-value" style="font-size:20px">{{ r.avg_rt_ev_fmt }}</div>
+        <div class="ev-stat-sub">{% if r.avg_rt_trad %}vs {{ r.avg_rt_trad_fmt }} standard{% else %}no baseline{% endif %}</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-icon"><svg viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></div>
+        <div class="ev-stat-label">Period Trend</div>
+        {% if r.trend_pct is not none %}
+          {% if r.trend_pct > 0 %}
+          <div class="ev-stat-value ev-trend-up">+{{ r.trend_pct }}%</div>
+          <div class="ev-stat-sub">increasing — monitor closely</div>
+          {% else %}
+          <div class="ev-stat-value ev-trend-down">{{ r.trend_pct }}%</div>
+          <div class="ev-stat-sub">decreasing this period</div>
+          {% endif %}
+        {% else %}
+        <div class="ev-stat-value">—</div>
+        <div class="ev-stat-sub">insufficient data</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Trend chart + operational alert -->
+    <div style="display:grid;grid-template-columns:1.7fr 1fr;gap:14px;margin-bottom:16px">
+      <div class="result-card">
+        <div class="result-header">
+          <span>EV Fire Trend — by Month</span>
+          <span style="font-size:11px;color:var(--gray-4)">{{ r.by_month | length }} months</span>
+        </div>
+        <div style="padding:16px 18px;height:190px;position:relative">
+          <canvas id="ev-trend-chart"></canvas>
+        </div>
+      </div>
+      <div class="ev-alert" style="display:flex;flex-direction:column;justify-content:flex-start">
+        <div class="ev-alert-title">&#9889; Operational Risk Factors</div>
+        <div class="ev-alert-item"><div class="ev-alert-dot"></div><span><strong>Water volume:</strong> 3,000–8,000+ gallons vs. 500 for a standard vehicle fire</span></div>
+        <div class="ev-alert-item"><div class="ev-alert-dot"></div><span><strong>Thermal runaway:</strong> re-ignition risk up to 24–72 hours post-suppression</span></div>
+        <div class="ev-alert-item"><div class="ev-alert-dot"></div><span><strong>Toxic gases:</strong> HF, CO, and other electrolyte vapors — SCBA required throughout</span></div>
+        <div class="ev-alert-item"><div class="ev-alert-dot"></div><span><strong>Submersion:</strong> battery-to-water immersion technique requires specialized equipment</span></div>
+      </div>
+    </div>
+
+    <!-- EV map + recent incidents -->
+    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:14px">
+      <div class="result-card" style="overflow:hidden">
+        <div class="result-header"><span>EV Fire Locations</span><span style="font-size:11px;color:var(--gray-4)">{{ r.map_points | length }} mapped</span></div>
+        <div id="ev-map"></div>
+      </div>
+      <div class="result-card">
+        <div class="result-header"><span>Recent EV Incidents</span></div>
+        <table class="ev-table">
+          <thead><tr><th>Date</th><th>Type</th><th>Response</th><th>ID</th></tr></thead>
+          <tbody>
+            {% for inc in r.recent_incidents %}
+            <tr>
+              <td>{{ inc.date }}</td>
+              <td style="color:var(--gray-1);font-weight:600">{{ inc.type }}</td>
+              <td>{% if inc.response != '—' %}<span style="color:#F59E0B;font-weight:700">{{ inc.response }}</span>{% else %}—{% endif %}</td>
+              <td style="font-size:11px;color:var(--gray-4)">{{ inc.id }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {% elif ev and ev.error %}
+    <div class="error-banner">{{ ev.error }}</div>
+
+    {% elif risk and risk.summary %}
+    {%- set s = risk.summary %}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:var(--white)">Community Risk Dashboard</div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:2px">{{ risk.dept_name }} &middot; {{ s.total_zones }} geographic zones analyzed</div>
+      </div>
+      <div style="font-size:11px;color:#F97316;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.25);border-radius:25px;padding:4px 14px">&#9888; Risk Score: {{ s.avg_risk_score }}/100</div>
+    </div>
+
+    <!-- Risk level cards -->
+    <div class="risk-level-row">
+      <div class="risk-level-card critical">
+        <div class="risk-level-count">{{ s.critical_count }}</div>
+        <div class="risk-level-label">Critical</div>
+        <div class="risk-level-sub">score &ge; 75</div>
+      </div>
+      <div class="risk-level-card high">
+        <div class="risk-level-count">{{ s.high_count }}</div>
+        <div class="risk-level-label">High</div>
+        <div class="risk-level-sub">score 50–74</div>
+      </div>
+      <div class="risk-level-card medium">
+        <div class="risk-level-count">{{ s.medium_count }}</div>
+        <div class="risk-level-label">Medium</div>
+        <div class="risk-level-sub">score 25–49</div>
+      </div>
+      <div class="risk-level-card low">
+        <div class="risk-level-count">{{ s.low_count }}</div>
+        <div class="risk-level-label">Low</div>
+        <div class="risk-level-sub">score &lt; 25</div>
+      </div>
+    </div>
+
+    <!-- Risk map (full width) -->
+    <div class="result-card" style="margin-bottom:14px;overflow:hidden">
+      <div class="result-header">
+        <span>Risk Zone Map</span>
+        <div style="display:flex;gap:12px;font-size:11px">
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#EF4444;display:inline-block"></span>Critical</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#F97316;display:inline-block"></span>High</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#EAB308;display:inline-block"></span>Medium</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#22C55E;display:inline-block"></span>Low</span>
+        </div>
+      </div>
+      <div id="risk-map"></div>
+    </div>
+
+    <!-- Top zones table + response gap -->
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px">
+      <div class="result-card">
+        <div class="result-header"><span>Highest-Risk Zones</span><span style="font-size:11px;color:var(--gray-4)">top {{ s.top_zones | length }}</span></div>
+        <table class="risk-zone-table">
+          <thead><tr><th>Level</th><th>Score</th><th>Incidents</th><th>Dominant Type</th><th>Avg Response</th></tr></thead>
+          <tbody>
+            {% for z in s.top_zones %}
+            <tr>
+              <td><span class="risk-badge {{ z.risk_level }}">{{ z.risk_level }}</span></td>
+              <td style="font-weight:700;color:var(--white)">{{ z.risk_score }}</td>
+              <td>{{ z.incident_count }}</td>
+              <td style="font-size:11px;color:var(--gray-3)">{{ z.dominant_type | truncate(24, true, '…') }}</td>
+              <td>{% if z.avg_response_seconds %}{{ (z.avg_response_seconds // 60) }}m {{ '%02d'|format(z.avg_response_seconds % 60) }}s{% else %}—{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="result-card">
+        <div class="result-header">
+          <span>Response Gap Zones</span>
+          <span style="font-size:11px;color:var(--gray-4)">exceeding 8-min target</span>
+        </div>
+        <div style="padding:8px 16px">
+          {% if s.gap_zones %}
+            {% for z in s.gap_zones %}
+            <div class="risk-gap-item">
+              <div class="risk-gap-dot"></div>
+              <div style="flex:1">
+                <div style="font-weight:600;font-size:12px;color:var(--gray-1)">
+                  {{ z.incident_count }} incidents &middot; {{ z.dominant_type | truncate(22, true, '…') }}
+                </div>
+                <div style="font-size:11px;color:var(--gray-4);margin-top:2px">
+                  Avg response: <span style="color:#FB923C;font-weight:700">{{ (z.avg_response_seconds // 60) }}m {{ '%02d'|format(z.avg_response_seconds % 60) }}s</span>
+                  &mdash; {{ z.avg_response_seconds - 480 | int }}s over target
+                </div>
+              </div>
+              <span class="risk-badge {{ z.risk_level }}">{{ z.risk_score }}</span>
+            </div>
+            {% endfor %}
+          {% else %}
+          <div style="padding:20px 0;text-align:center;color:var(--gray-4);font-size:12px">
+            <div style="color:#4ADE80;font-size:20px;font-weight:800;margin-bottom:4px">&#10003;</div>
+            All zones within 8-minute response target
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% elif risk and risk.error %}
+    <div class="error-banner">{{ risk.error }}</div>
+
+    {% elif benchmark and benchmark.result %}
+    {%- set br = benchmark.result %}
+    {%- set pc = br.peer_counts %}
+    {%- set type_label = {'volunteer':'Volunteer','combination':'Combination','career':'Career'}[br.dept_type] %}
+    {%- macro ordinal(n) %}{{ n }}{% if n % 100 in (11,12,13) %}th{% elif n % 10 == 1 %}st{% elif n % 10 == 2 %}nd{% elif n % 10 == 3 %}rd{% else %}th{% endif %}{%- endmacro %}
+    {%- macro pct_class(p) %}{% if p >= 70 %}pct-great{% elif p >= 50 %}pct-good{% elif p >= 30 %}pct-mid{% else %}pct-low{% endif %}{%- endmacro %}
+
+    <!-- Benchmark header -->
+    <div class="bench-header" style="margin-bottom:12px">
+      <div>
+        <div class="bench-dept">{{ br.dept_name }}</div>
+        <div class="bench-sub">{{ type_label }} department &middot; {{ br.state }} &middot; {{ "{:,}".format(br.population) }} population served</div>
+      </div>
+      <div style="font-size:11px;color:var(--gray-4);background:var(--navy-3);border:1px solid var(--border);border-radius:25px;padding:4px 14px;white-space:nowrap">Peer Benchmark</div>
+    </div>
+
+    <div class="bench-peers">
+      <span class="bench-peer-pill"><strong>{{ pc.state }}</strong> {{ br.state }} peers</span>
+      <span class="bench-peer-pill"><strong>{{ pc.regional }}</strong> {{ br.region }} peers</span>
+      <span class="bench-peer-pill"><strong>{{ pc.national }}</strong> national peers</span>
+      <span class="bench-peer-pill">All {{ type_label | lower }}, similar size</span>
+    </div>
+
+    <!-- Metric cards grid -->
+    <div class="bench-grid">
+    {%- for key, m in br.metrics.items() %}
+    {%- set nat = m.national %}
+    {%- if nat %}
+    {%- set p = nat.percentile %}
+    {%- set cls = pct_class(p) %}
+    {%- set above = nat.above_avg %}
+
+    <div class="bench-card" data-metric="{{ key }}">
+      <div class="bench-card-head">
+        <div class="bench-card-title">{{ m.label }}</div>
+        <div class="bench-card-sub">{{ m.subtitle }}</div>
+      </div>
+      <div class="bench-card-body">
+
+        <!-- Your value vs peer avg -->
+        <div class="bench-values">
+          <div>
+            <div class="bench-your-value">{{ m.our_display }}</div>
+            <div class="bench-your-label">Your Dept</div>
+          </div>
+          <span class="bench-vs">vs</span>
+          <div>
+            <div class="bench-peer-value">{{ nat.peer_avg_fmt if nat.peer_avg_fmt else nat.peer_avg }}{% if m.unit == 'percent' and not nat.peer_avg_fmt %}%{% endif %}</div>
+            <div class="bench-peer-label">National Avg</div>
+          </div>
+          {% if m.lower_is_better %}
+            {% if above %}<span class="bench-delta better">▼ faster</span>{% else %}<span class="bench-delta worse">▲ slower</span>{% endif %}
+          {% else %}
+            {% if above %}<span class="bench-delta better">▲ above avg</span>{% elif not above %}<span class="bench-delta worse">▼ below avg</span>{% endif %}
+          {% endif %}
+        </div>
+
+        <!-- Percentile display -->
+        <div class="bench-pct-block">
+          <div style="display:flex;align-items:flex-end;gap:6px;margin-bottom:6px">
+            <div class="bench-pct-number {{ cls }}">{{ p }}</div>
+            <div style="padding-bottom:4px">
+              <div class="bench-pct-label">National Percentile</div>
+            </div>
+          </div>
+          <div class="bench-pct-track">
+            <div class="bench-pct-fill {{ cls }}" style="width:{{ p }}%"></div>
+            <div class="bench-pct-marker" style="left:{{ p }}%"></div>
+          </div>
+          <div class="bench-pct-labels"><span>0</span><span>50th</span><span>100th</span></div>
+        </div>
+
+      </div>
+
+      <!-- Scope comparison row: state | regional | national -->
+      <div class="bench-scope-row">
+        {%- for scope_key, scope_label in [('state', br.state), ('regional', br.region ~ ' Region'), ('national', 'National')] %}
+        {%- set sm = m[scope_key] %}
+        {%- if sm %}
+        {%- set sp = sm.percentile %}
+        {%- set sc = pct_class(sp) %}
+        <div class="bench-scope-chip {% if scope_key == 'national' %}active{% endif %}"
+             onclick="switchScope(this, '{{ key }}', '{{ scope_key }}')"
+             data-scope="{{ scope_key }}"
+             data-metric="{{ key }}">
+          <span class="bench-scope-pct" style="color:{% if sp >= 70 %}#4ADE80{% elif sp >= 50 %}#60A5FA{% elif sp >= 30 %}#FCD34D{% else %}#F87171{% endif %}">{{ sp }}th</span>
+          {{ scope_label }}
+          <span style="font-size:9px;color:var(--gray-4);display:block">{{ sm.peer_count }} depts</span>
+        </div>
+        {%- endif %}
+        {%- endfor %}
+      </div>
+    </div>
+    {%- endif %}
+    {%- endfor %}
+    </div><!-- /bench-grid -->
+
+    {% if benchmark.narrative %}
+    <div class="result-card" style="margin-top:20px">
+      <div class="result-header">
+        <span>AI Executive Summary — Board Presentation Ready</span>
+      </div>
+      <div class="result-body" id="bench-narrative-body"></div>
+    </div>
+    <script>
+      document.getElementById("bench-narrative-body").innerHTML = marked.parse({{ benchmark.narrative | tojson }});
+    </script>
     {% endif %}
 
-    {% if convert and convert.summary %}
+    {% elif benchmark and benchmark.error %}
+    <div class="error-banner">{{ benchmark.error }}</div>
 
-    <!-- Conversion results -->
+    {% elif quality and quality.report %}
+    {% set r = quality.report %}
+
+    <div class="result-card" style="margin-bottom:20px">
+      <div class="result-header">
+        <span>Data Quality Report &mdash; {{ quality.dept_name }}</span>
+        <span style="font-size:11px;color:var(--gray-4)">{{ r.total }} incidents scored</span>
+      </div>
+      <div class="result-body">
+        <div style="display:grid;grid-template-columns:160px 1fr;gap:28px;align-items:start">
+          <div class="score-ring-wrap">
+            <div class="score-ring grade-{{ r.grade }}">
+              <span class="score-num">{{ r.overall_score }}</span>
+              <span class="score-lbl">/ 100</span>
+            </div>
+            <div class="grade-badge grade-{{ r.grade }}">Grade {{ r.grade }}</div><br>
+            <span class="grade-label">{{ r.grade_label }}</span>
+          </div>
+          <div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+              <div style="padding:12px;background:var(--navy-3);border:1px solid var(--border);border-radius:8px;text-align:center">
+                <div style="font-size:22px;font-weight:900;color:var(--white)">{{ r.min_score }}</div>
+                <div style="font-size:10px;color:var(--gray-4);font-weight:500;margin-top:2px">Min</div>
+              </div>
+              <div style="padding:12px;background:var(--navy-3);border:1px solid var(--border);border-radius:8px;text-align:center">
+                <div style="font-size:22px;font-weight:900;color:var(--white)">{{ r.overall_score }}</div>
+                <div style="font-size:10px;color:var(--gray-4);font-weight:500;margin-top:2px">Avg</div>
+              </div>
+              <div style="padding:12px;background:var(--navy-3);border:1px solid var(--border);border-radius:8px;text-align:center">
+                <div style="font-size:22px;font-weight:900;color:var(--white)">{{ r.max_score }}</div>
+                <div style="font-size:10px;color:var(--gray-4);font-weight:500;margin-top:2px">Max</div>
+              </div>
+            </div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-4);margin-bottom:6px">Score Distribution</div>
+            <div style="display:flex;gap:3px;height:24px;border-radius:6px;overflow:hidden">
+              {% set dist = r.score_distribution %}
+              {% if dist['90-100'] > 0 %}<div style="flex:{{ dist['90-100'] }};background:#16A34A" title="{{ dist['90-100'] }} records 90-100"></div>{% endif %}
+              {% if dist['70-89'] > 0 %}<div style="flex:{{ dist['70-89'] }};background:#2563EB" title="{{ dist['70-89'] }} records 70-89"></div>{% endif %}
+              {% if dist['50-69'] > 0 %}<div style="flex:{{ dist['50-69'] }};background:#D97706" title="{{ dist['50-69'] }} records 50-69"></div>{% endif %}
+              {% if dist['below-50'] > 0 %}<div style="flex:{{ dist['below-50'] }};background:var(--red)" title="{{ dist['below-50'] }} records below 50"></div>{% endif %}
+            </div>
+            <div style="display:flex;gap:14px;margin-top:6px;font-size:10px;color:var(--gray-4)">
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:#16A34A;border-radius:2px;display:inline-block"></span>{{ dist['90-100'] }} excellent</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:#2563EB;border-radius:2px;display:inline-block"></span>{{ dist['70-89'] }} good</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:#D97706;border-radius:2px;display:inline-block"></span>{{ dist['50-69'] }} fair</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:var(--red);border-radius:2px;display:inline-block"></span>{{ dist['below-50'] }} poor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <div class="result-card">
+        <div class="result-header"><span>Field Completion</span></div>
+        <div style="padding:6px 18px">
+          {% for f in r.field_completion %}
+          {% set pct = f.completion_pct %}
+          {% set bar_cls = 'bar-high' if pct >= 85 else ('bar-mid' if pct >= 60 else 'bar-low') %}
+          {% set pct_cls = 'pct-high' if pct >= 85 else ('pct-mid' if pct >= 60 else 'pct-low') %}
+          <div class="field-row">
+            <span class="field-tier tier-{{ f.tier }}">{{ f.tier[:4] }}</span>
+            <span class="field-name">{{ f.label }}</span>
+            <div class="field-bar-wrap"><div class="field-bar {{ bar_cls }}" style="width:{{ pct }}%"></div></div>
+            <span class="field-pct {{ pct_cls }}">{{ pct }}%</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        {% if r.validity_flags %}
+        <div class="result-card">
+          <div class="result-header"><span>Validity Issues</span></div>
+          <div style="padding:12px 18px">
+            {% for flag, count in r.validity_flags.items() %}
+            <span class="flag-chip">
+              <svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:#FCD34D"><path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+              {{ flag }} ({{ count }})
+            </span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="result-card">
+          <div class="result-header"><span>Lowest-Scoring Records</span></div>
+          <table class="worst-table">
+            <thead><tr><th>Incident</th><th>Type</th><th>Score</th><th>Missing</th></tr></thead>
+            <tbody>
+              {% for rec in r.worst_records %}
+              {% set sc = rec.score %}
+              {% set pill = 'high' if sc >= 70 else ('mid' if sc >= 50 else 'low') %}
+              <tr>
+                <td style="font-weight:600;color:var(--gray-1)">{{ rec.incident_id }}</td>
+                <td>{{ rec.incident_type | truncate(22, true, '…') }}</td>
+                <td><span class="score-pill {{ pill }}">{{ sc }}</span></td>
+                <td style="font-size:11px;color:var(--gray-4)">{{ rec.missing | join(', ') | truncate(36, true, '…') }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {% if quality.narrative %}
+    <div class="result-card">
+      <div class="result-header"><span>AI Analysis &amp; Fix Recommendations</span></div>
+      <div class="result-body" id="quality-narrative-body"></div>
+    </div>
+    <script>
+      document.getElementById("quality-narrative-body").innerHTML = marked.parse({{ quality.narrative | tojson }});
+    </script>
+    {% endif %}
+
+    {% elif quality and quality.error %}
+    <div class="error-banner">{{ quality.error }}</div>
+
+    {# ── NERIS Compliance Results ── #}
+    {% elif compliance and compliance.report %}
+    {%- set cr = compliance.report %}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:var(--white)">NERIS Compliance Report</div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:2px">{{ compliance.dept_name }} &middot; {{ cr.total_incidents }} incidents analyzed</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;padding:4px 14px;border-radius:25px;
+        {% if cr.overall_level == 'Compliant' %}color:#4ADE80;background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.25)
+        {% elif cr.overall_level == 'Warning' %}color:#FCD34D;background:rgba(217,119,6,.12);border:1px solid rgba(217,119,6,.25)
+        {% else %}color:#F87171;background:var(--red-lt);border:1px solid rgba(214,55,55,.3){% endif %}">
+        {{ cr.overall_pct }}% Compliant
+      </div>
+    </div>
+
+    {% if cr.deadline_passed %}
+    <div style="background:rgba(214,55,55,.08);border:1px solid rgba(214,55,55,.25);border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:16px">&#9888;</span>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#F87171">NERIS Mandatory — Deadline Passed</div>
+        <div style="font-size:11px;color:var(--gray-3);margin-top:2px">All departments were required to report in NERIS format starting January 1, 2026. Gaps below represent real compliance risk.</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Module compliance grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+    {% for mod_name, mod in cr.modules.items() %}
+    <div style="background:var(--navy-2);border:1px solid {% if mod.level == 'Compliant' %}rgba(22,163,74,.2){% elif mod.level == 'Warning' %}rgba(217,119,6,.2){% else %}rgba(214,55,55,.25){% endif %};border-radius:10px;padding:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:12px;font-weight:700;color:var(--white)">{{ mod_name }}</div>
+        <div style="font-size:13px;font-weight:900;{% if mod.level == 'Compliant' %}color:#4ADE80{% elif mod.level == 'Warning' %}color:#FCD34D{% else %}color:#F87171{% endif %}">{{ mod.compliance_pct }}%</div>
+      </div>
+      <div style="background:var(--navy-4);border-radius:4px;height:4px;margin-bottom:10px">
+        <div style="height:4px;border-radius:4px;width:{{ mod.compliance_pct }}%;{% if mod.level == 'Compliant' %}background:#4ADE80{% elif mod.level == 'Warning' %}background:#FCD34D{% else %}background:var(--red){% endif %}"></div>
+      </div>
+      {% for f in mod.fields %}{% if not f.na %}
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px">
+        <span style="color:var(--gray-3)">{{ f.label }}</span>
+        <span style="font-weight:700;{% if f.pct >= 95 %}color:#4ADE80{% elif f.pct >= 70 %}color:#FCD34D{% else %}color:#F87171{% endif %}">{{ f.pct }}%</span>
+      </div>
+      {% endif %}{% endfor %}
+    </div>
+    {% endfor %}
+    </div>
+
+    {% if cr.top_gaps %}
+    <div class="result-card">
+      <div class="result-header"><span>Top Compliance Gaps</span></div>
+      <div style="padding:0">
+        <table class="worst-table">
+          <thead><tr><th>Module</th><th>Field</th><th>Missing</th><th>Compliance</th></tr></thead>
+          <tbody>
+          {% for g in cr.top_gaps %}
+          <tr>
+            <td style="color:var(--gray-4);font-size:11px">{{ g.module }}</td>
+            <td>{{ g.field }}</td>
+            <td style="color:var(--gray-3)">{{ g.missing }} / {{ g.total }}</td>
+            <td><span class="score-pill {% if g.pct >= 70 %}mid{% else %}low{% endif %}">{{ g.pct }}%</span></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    {% elif compliance and compliance.error %}
+    <div class="error-banner">{{ compliance.error }}</div>
+
+    {# ── ISO Evidence Pack Results ── #}
+    {% elif iso and iso.iso_metrics %}
+    {%- set im = iso.iso_metrics %}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:var(--white)">ISO PPC Evidence Pack</div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:2px">{{ iso.dept_name }} &middot; {{ im.sample_size }} incidents with response data</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;padding:4px 14px;border-radius:25px;color:#5EEAD4;background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.25)">&#127795; ISO Evidence</div>
+    </div>
+
+    <!-- ISO metric cards -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+      <div class="dash-stat">
+        <div class="dash-stat-label">Avg Response Time</div>
+        <div class="dash-stat-value" style="font-size:22px">{{ im.avg_rt_fmt }}</div>
+        <div class="dash-stat-sub">vs 6:00 ISO target</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">80th Percentile RT</div>
+        <div class="dash-stat-value" style="font-size:22px">{{ im.p80_rt_fmt }}</div>
+        <div class="dash-stat-sub">ISO measures at 80th %ile</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Meet NFPA 1710</div>
+        <div class="dash-stat-value" style="font-size:22px;{% if im.pct_under_8min >= 90 %}color:#4ADE80{% elif im.pct_under_8min >= 70 %}color:#FCD34D{% else %}color:#F87171{% endif %}">{{ im.pct_under_8min }}%</div>
+        <div class="dash-stat-sub">of calls ≤ 8 minutes</div>
+      </div>
+    </div>
+
+    <!-- ISO benchmark comparison table -->
+    <div class="result-card" style="margin-bottom:20px">
+      <div class="result-header"><span>ISO Benchmark Comparison</span></div>
+      <div style="padding:0">
+        <table class="worst-table">
+          <thead><tr><th>Metric</th><th>Your Department</th><th>ISO Target</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Average Response Time</td>
+              <td style="font-weight:700;color:var(--white)">{{ im.avg_rt_fmt }}</td>
+              <td style="color:var(--gray-4)">6m 00s (total)</td>
+              <td><span class="score-pill {% if im.meets_iso_total %}high{% else %}low{% endif %}">{% if im.meets_iso_total %}Meets{% else %}Exceeds{% endif %}</span></td>
+            </tr>
+            <tr>
+              <td>80th Percentile Response</td>
+              <td style="font-weight:700;color:var(--white)">{{ im.p80_rt_fmt }}</td>
+              <td style="color:var(--gray-4)">4m travel (ISO credit)</td>
+              <td><span class="score-pill {% if im.p80_meets_iso %}high{% else %}mid{% endif %}">{% if im.p80_meets_iso %}Meets{% else %}Review{% endif %}</span></td>
+            </tr>
+            <tr>
+              <td>NFPA 1710 Compliance</td>
+              <td style="font-weight:700;color:var(--white)">{{ im.pct_under_8min }}% of calls</td>
+              <td style="color:var(--gray-4)">≥90% recommended</td>
+              <td><span class="score-pill {% if im.pct_under_8min >= 90 %}high{% elif im.pct_under_8min >= 70 %}mid{% else %}low{% endif %}">{% if im.pct_under_8min >= 90 %}Compliant{% elif im.pct_under_8min >= 70 %}Partial{% else %}Below{% endif %}</span></td>
+            </tr>
+            <tr>
+              <td>ISO 6-Minute Compliance</td>
+              <td style="font-weight:700;color:var(--white)">{{ im.pct_under_6min }}% of calls</td>
+              <td style="color:var(--gray-4)">ISO travel + turnout</td>
+              <td><span class="score-pill {% if im.pct_under_6min >= 80 %}high{% elif im.pct_under_6min >= 60 %}mid{% else %}low{% endif %}">{% if im.pct_under_6min >= 80 %}Strong{% elif im.pct_under_6min >= 60 %}Moderate{% else %}Weak{% endif %}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {% if iso.narrative %}
+    <div class="result-card">
+      <div class="result-header">
+        <span>AI Evidence Narrative</span>
+        <form method="POST" action="/download" style="display:inline">
+          <input type="hidden" name="content" value="{{ iso.narrative | e }}" />
+          <input type="hidden" name="filename" value="iso-evidence-{{ iso.dept_name | replace(' ','-') }}.md" />
+          <button class="btn-download" type="submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            Download
+          </button>
+        </form>
+      </div>
+      <div class="result-body" id="iso-narrative-body"></div>
+    </div>
+    <script>
+      document.getElementById("iso-narrative-body").innerHTML = marked.parse({{ iso.narrative | tojson }});
+    </script>
+    {% endif %}
+
+    {% elif iso and iso.error %}
+    <div class="error-banner">{{ iso.error }}</div>
+
+    {# ── Staffing Justification Results ── #}
+    {% elif staffing and staffing.report %}
+    {%- set sr = staffing.report %}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:var(--white)">Staffing Justification Analysis</div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:2px">{{ staffing.dept_name }} &middot; {{ sr.total_incidents }} incidents analyzed</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;padding:4px 14px;border-radius:25px;color:#C084FC;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25)">&#128101; Staffing Analysis</div>
+    </div>
+
+    <!-- Staffing stat cards -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+      <div class="dash-stat">
+        <div class="dash-stat-label">Max Concurrent</div>
+        <div class="dash-stat-value" style="{% if sr.max_concurrent >= 3 %}color:#F87171{% elif sr.max_concurrent >= 2 %}color:#FCD34D{% else %}color:#4ADE80{% endif %}">{{ sr.max_concurrent }}</div>
+        <div class="dash-stat-sub">simultaneous calls</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Understaffing Events</div>
+        <div class="dash-stat-value" style="{% if sr.understaffing_pct >= 20 %}color:#F87171{% elif sr.understaffing_pct >= 10 %}color:#FCD34D{% else %}color:var(--white){% endif %}">{{ sr.understaffing_pct }}%</div>
+        <div class="dash-stat-sub">of calls ({{ sr.understaffing_count }} incidents)</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">RT — Normal Load</div>
+        <div class="dash-stat-value" style="font-size:20px">{{ sr.avg_rt_normal_fmt }}</div>
+        <div class="dash-stat-sub">0–1 concurrent calls</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">RT — Busy Load</div>
+        <div class="dash-stat-value" style="font-size:20px;{% if sr.rt_degradation_pct and sr.rt_degradation_pct > 20 %}color:#F87171{% elif sr.rt_degradation_pct and sr.rt_degradation_pct > 0 %}color:#FCD34D{% else %}color:var(--white){% endif %}">{{ sr.avg_rt_busy_fmt }}</div>
+        <div class="dash-stat-sub">{% if sr.rt_degradation_pct %}+{{ sr.rt_degradation_pct }}% slower{% else %}2+ concurrent calls{% endif %}</div>
+      </div>
+    </div>
+
+    <!-- Peak demand + worst events -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+      <div class="result-card">
+        <div class="result-header"><span>Peak Demand Hours</span></div>
+        <div style="padding:14px 18px">
+          {% for h in sr.peak_hours %}
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:12px;font-weight:700;color:var(--white);min-width:48px">{{ h.hour }}</span>
+            <div style="flex:1;background:var(--navy-4);border-radius:4px;height:6px">
+              <div style="height:6px;border-radius:4px;background:rgba(168,85,247,.6);width:{{ (h.count / sr.peak_hours[0].count * 100) | int }}%"></div>
+            </div>
+            <span style="font-size:11px;color:var(--gray-3)">{{ h.count }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="result-card">
+        <div class="result-header"><span>Highest Concurrency Events</span></div>
+        <div style="padding:0">
+          <table class="worst-table">
+            <thead><tr><th>Date / Time</th><th>Type</th><th>Concurrent</th></tr></thead>
+            <tbody>
+            {% for ev in sr.worst_events %}
+            <tr>
+              <td style="font-size:11px;color:var(--gray-3)">{{ ev.date }}</td>
+              <td style="font-size:11px">{{ ev.type }}</td>
+              <td><span class="score-pill {% if ev.concurrent >= 3 %}low{% elif ev.concurrent >= 2 %}mid{% else %}high{% endif %}">{{ ev.concurrent }} active</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {% if staffing.narrative %}
+    <div class="result-card">
+      <div class="result-header">
+        <span>Board Presentation Narrative</span>
+        <form method="POST" action="/download" style="display:inline">
+          <input type="hidden" name="content" value="{{ staffing.narrative | e }}" />
+          <input type="hidden" name="filename" value="staffing-justification-{{ staffing.dept_name | replace(' ','-') }}.md" />
+          <button class="btn-download" type="submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            Download
+          </button>
+        </form>
+      </div>
+      <div class="result-body" id="staffing-narrative-body"></div>
+    </div>
+    <script>
+      document.getElementById("staffing-narrative-body").innerHTML = marked.parse({{ staffing.narrative | tojson }});
+    </script>
+    {% endif %}
+
+    {% elif staffing and staffing.error %}
+    <div class="error-banner">{{ staffing.error }}</div>
+
+    {% elif convert and convert.summary %}
     <div class="result-card">
       <div class="result-header">
         <span>NFIRS → NERIS Conversion &mdash; {{ convert.filename }}</span>
@@ -522,60 +1914,52 @@
           <input type="hidden" name="content" value="{{ convert.incidents | tojson | e }}" />
           <input type="hidden" name="filename" value="neris-{{ convert.filename | replace('.csv','') }}.json" />
           <button type="submit" class="btn-download">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download NERIS JSON
           </button>
         </form>
       </div>
       <div class="result-body">
-
-        <!-- Stat grid -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px">
-          <div style="text-align:center;padding:20px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px">
-            <div style="font-size:32px;font-weight:900;color:var(--gray-900);line-height:1">{{ convert.summary.total }}</div>
-            <div style="font-size:12px;color:var(--gray-400);font-weight:500;margin-top:4px">Total Incidents</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px">
+          <div style="text-align:center;padding:18px;background:var(--navy-3);border:1px solid var(--border);border-radius:10px">
+            <div style="font-size:30px;font-weight:900;color:var(--white);line-height:1">{{ convert.summary.total }}</div>
+            <div style="font-size:11px;color:var(--gray-4);font-weight:500;margin-top:4px">Total Incidents</div>
           </div>
-          <div style="text-align:center;padding:20px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px">
-            <div style="font-size:32px;font-weight:900;color:var(--gray-900);line-height:1">{{ convert.summary.with_timestamps }}</div>
-            <div style="font-size:12px;color:var(--gray-400);font-weight:500;margin-top:4px">With Timestamps</div>
+          <div style="text-align:center;padding:18px;background:var(--navy-3);border:1px solid var(--border);border-radius:10px">
+            <div style="font-size:30px;font-weight:900;color:var(--white);line-height:1">{{ convert.summary.with_timestamps }}</div>
+            <div style="font-size:11px;color:var(--gray-4);font-weight:500;margin-top:4px">With Timestamps</div>
           </div>
-          <div style="text-align:center;padding:20px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px">
-            <div style="font-size:32px;font-weight:900;color:var(--gray-900);line-height:1">{{ convert.summary.firefighter_injuries }}</div>
-            <div style="font-size:12px;color:var(--gray-400);font-weight:500;margin-top:4px">FF Injuries</div>
+          <div style="text-align:center;padding:18px;background:var(--navy-3);border:1px solid var(--border);border-radius:10px">
+            <div style="font-size:30px;font-weight:900;color:var(--white);line-height:1">{{ convert.summary.firefighter_injuries }}</div>
+            <div style="font-size:11px;color:var(--gray-4);font-weight:500;margin-top:4px">FF Injuries</div>
           </div>
-          <div style="text-align:center;padding:20px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px">
-            <div style="font-size:32px;font-weight:900;color:var(--gray-900);line-height:1">{{ convert.summary.civilian_injuries }}</div>
-            <div style="font-size:12px;color:var(--gray-400);font-weight:500;margin-top:4px">Civilian Injuries</div>
+          <div style="text-align:center;padding:18px;background:var(--navy-3);border:1px solid var(--border);border-radius:10px">
+            <div style="font-size:30px;font-weight:900;color:var(--white);line-height:1">{{ convert.summary.civilian_injuries }}</div>
+            <div style="font-size:11px;color:var(--gray-4);font-weight:500;margin-top:4px">Civilian Injuries</div>
           </div>
         </div>
-
-        <!-- Top incident types -->
-        <h2 style="font-size:15px;font-weight:700;margin-bottom:16px">Top Incident Types</h2>
+        <h2 style="font-size:13px;font-weight:700;margin-bottom:14px;color:var(--gray-2);text-transform:uppercase;letter-spacing:.4px">Top Incident Types</h2>
         {% set max_count = convert.summary.top_types.values() | max %}
         {% for type_name, count in convert.summary.top_types.items() %}
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:14px">
-          <span style="min-width:220px;color:var(--gray-600);font-weight:500">{{ type_name }}</span>
-          <div style="flex:1;background:var(--gray-100);border-radius:4px;height:8px">
-            <div style="width:{{ (count / max_count * 100) | int }}%;height:8px;background:var(--red);border-radius:4px"></div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:13px">
+          <span style="min-width:200px;color:var(--gray-2);font-weight:500">{{ type_name }}</span>
+          <div style="flex:1;background:var(--navy-4);border-radius:4px;height:6px">
+            <div style="width:{{ (count / max_count * 100) | int }}%;height:6px;background:var(--red);border-radius:4px"></div>
           </div>
-          <span style="font-weight:700;color:var(--gray-900);min-width:36px;text-align:right">{{ count }}</span>
+          <span style="font-weight:700;color:var(--white);min-width:32px;text-align:right">{{ count }}</span>
         </div>
         {% endfor %}
-
         {% if convert.warnings %}
-        <div style="margin-top:24px;padding:14px 18px;background:#FFFBEB;border:1.5px solid #FCD34D;border-radius:10px">
-          <p style="font-size:13px;font-weight:600;color:#92400E;margin-bottom:4px">{{ convert.warnings | length }} warning(s)</p>
+        <div style="margin-top:20px;padding:12px 16px;background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.2);border-radius:8px">
+          <p style="font-size:12px;font-weight:600;color:#FCD34D;margin-bottom:4px">{{ convert.warnings | length }} warning(s)</p>
           {% for w in convert.warnings[:3] %}
-          <p style="font-size:12px;color:#78350F;line-height:1.5">{{ w }}</p>
+          <p style="font-size:11px;color:#FDE68A;line-height:1.5">{{ w }}</p>
           {% endfor %}
           {% if convert.warnings | length > 3 %}
-          <p style="font-size:12px;color:#78350F;margin-top:4px">+ {{ convert.warnings | length - 3 }} more</p>
+          <p style="font-size:11px;color:#FDE68A;margin-top:4px">+ {{ convert.warnings | length - 3 }} more</p>
           {% endif %}
         </div>
         {% endif %}
-
       </div>
     </div>
 
@@ -592,67 +1976,391 @@
           <input type="hidden" name="content" value="{{ result | e }}" />
           <input type="hidden" name="filename" value="fireinsight-{{ form.report_type }}.md" />
           <button type="submit" class="btn-download">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download .md
           </button>
         </form>
       </div>
       <div class="result-body" id="result-body"></div>
     </div>
-
     <script>
-      const raw = {{ result | tojson }};
-      document.getElementById("result-body").innerHTML = marked.parse(raw);
+      document.getElementById("result-body").innerHTML = marked.parse({{ result | tojson }});
     </script>
 
     {% else %}
+    {% if dashboard %}
+    <!-- ── DASHBOARD ── -->
+    <div class="dashboard" id="dashboard">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div class="dash-dept-name">{{ dashboard.dept_name }}</div>
+          <div class="dash-period">Past 12 months &middot; {{ dashboard.stats.total_incidents }} total incidents</div>
+        </div>
+        <div style="font-size:11px;color:var(--gray-4);background:var(--navy-3);border:1px solid var(--border);border-radius:25px;padding:4px 14px">Demo Data</div>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="dash-stat-row">
+        <div class="dash-stat">
+          <div class="dash-stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
+          </div>
+          <div class="dash-stat-label">Total Incidents</div>
+          <div class="dash-stat-value">{{ dashboard.stats.total_incidents }}</div>
+          <div class="dash-stat-sub">all incident types</div>
+        </div>
+
+        <div class="dash-stat">
+          <div class="dash-stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 14.93V17a1 1 0 00-2 0v-.07A8.001 8.001 0 0111 4.07V5a1 1 0 002 0v-.93A8.001 8.001 0 0113 16.93zM11 12V7a1 1 0 012 0v5a1 1 0 01-2 0z"/></svg>
+          </div>
+          <div class="dash-stat-label">Avg Response</div>
+          {% if dashboard.stats.response_time_seconds.average %}
+          {% set avg_sec = dashboard.stats.response_time_seconds.average | int %}
+          <div class="dash-stat-value">{{ (avg_sec // 60) }}m {{ (avg_sec % 60) }}s</div>
+          <div class="dash-stat-sub">dispatch to arrival</div>
+          {% else %}
+          <div class="dash-stat-value">—</div>
+          <div class="dash-stat-sub">no timing data</div>
+          {% endif %}
+        </div>
+
+        <div class="dash-stat">
+          <div class="dash-stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          </div>
+          <div class="dash-stat-label">Top Type</div>
+          {% set top_type = dashboard.stats.call_types | first %}
+          <div class="dash-stat-value" style="font-size:16px;font-weight:800;line-height:1.2;margin-top:2px">{{ top_type }}</div>
+          <div class="dash-stat-sub">{{ dashboard.stats.call_types[top_type] }} incidents</div>
+        </div>
+
+        <div class="dash-stat">
+          <div class="dash-stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div class="dash-stat-label">Mapped</div>
+          <div class="dash-stat-value">{{ dashboard.map_points | length }}</div>
+          <div class="dash-stat-sub">with GPS coordinates</div>
+        </div>
+      </div>
+
+      <!-- Charts row: types bar + busiest days -->
+      <div class="dash-row dash-row-3">
+        <div class="dash-card">
+          <div class="dash-card-head">
+            <span class="dash-card-title">Incident Types</span>
+            <span class="dash-card-sub">top {{ dashboard.stats.call_types | length }}</span>
+          </div>
+          <div class="dash-card-body dash-chart-wrap" style="height:230px">
+            <canvas id="dash-types-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="dash-card">
+          <div class="dash-card-head">
+            <span class="dash-card-title">Busiest Days</span>
+            <span class="dash-card-sub">by call volume</span>
+          </div>
+          <div class="dash-card-body">
+            {% if dashboard.stats.busiest_days %}
+            {% set max_day_count = dashboard.stats.busiest_days | map(attribute='count') | max %}
+            {% for item in dashboard.stats.busiest_days %}
+            <div class="dash-day-row">
+              <span class="dash-day-name">{{ item.day }}</span>
+              <div class="dash-day-bar-wrap"><div class="dash-day-bar" style="width:{{ (item.count / max_day_count * 100) | int }}%"></div></div>
+              <span class="dash-day-count">{{ item.count }}</span>
+            </div>
+            {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini map + monthly trend -->
+      <div class="dash-row dash-row-3">
+        <div class="dash-card" onclick="selectTab(document.querySelector('[data-value=\'map\']'))" style="cursor:pointer">
+          <div class="dash-card-head">
+            <span class="dash-card-title">Incident Map</span>
+            <span class="dash-card-sub">click to open full map →</span>
+          </div>
+          <div style="position:relative">
+            <div id="dash-mini-map"></div>
+            <div class="dash-map-overlay">
+              <svg viewBox="0 0 24 24"><path d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497z"/></svg>
+              Explore Full Map
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-card">
+          <div class="dash-card-head">
+            <span class="dash-card-title">Monthly Trend</span>
+            <span class="dash-card-sub">last 6 months</span>
+          </div>
+          <div class="dash-card-body">
+            {% set month_pairs = dashboard.stats.by_month.items() | list %}
+            {% if month_pairs %}
+            {% set max_month_count = dashboard.stats.by_month.values() | max %}
+            {% for month, count in month_pairs[-6:] %}
+            <div class="dash-month-row">
+              <span class="dash-month-name">{{ month }}</span>
+              <div class="dash-month-bar-wrap"><div class="dash-month-bar" style="width:{{ (count / max_month_count * 100) | int }}%"></div></div>
+              <span class="dash-month-count">{{ count }}</span>
+            </div>
+            {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /dashboard -->
+    {% else %}
     <div class="empty-state">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
       </svg>
-      <p>Your report will appear here</p>
-      <small>Select a report type and click Generate</small>
+      <p>Your output will appear here</p>
+      <small>Select a report type, upload your data, and click Generate</small>
     </div>
+    {% endif %}
+    {% endif %}
+
+    {% if error %}
+    <div class="error-banner">{{ error }}</div>
     {% endif %}
 
   </main>
 </div>
 
 <script>
+  // ── Tab switching ──────────────────────────────────────────────────────────
   function selectTab(el) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     const val = el.dataset.value;
+    const isConvert    = val === 'convert';
+    const isQuality    = val === 'quality';
+    const isMap        = val === 'map';
+    const isBenchmark  = val === 'benchmark';
+    const isEv         = val === 'ev';
+    const isRisk       = val === 'risk';
+    const isCompliance = val === 'compliance';
+    const isIso        = val === 'iso';
+    const isStaffing   = val === 'staffing';
+    const isReport     = !isConvert && !isQuality && !isMap && !isBenchmark && !isEv && !isRisk && !isCompliance && !isIso && !isStaffing;
 
-    const isConvert = val === 'convert';
-    document.getElementById('main-form').style.display     = isConvert ? 'none' : 'block';
-    document.getElementById('convert-panel').style.display = isConvert ? 'block' : 'none';
+    document.getElementById('main-form').style.display          = isReport     ? 'block' : 'none';
+    document.getElementById('convert-panel').style.display      = isConvert    ? 'block' : 'none';
+    document.getElementById('quality-panel').style.display      = isQuality    ? 'block' : 'none';
+    document.getElementById('benchmark-panel').style.display    = isBenchmark  ? 'block' : 'none';
+    document.getElementById('ev-panel').style.display           = isEv         ? 'block' : 'none';
+    document.getElementById('risk-panel').style.display         = isRisk       ? 'block' : 'none';
+    document.getElementById('compliance-panel').style.display   = isCompliance ? 'block' : 'none';
+    document.getElementById('iso-panel').style.display          = isIso        ? 'block' : 'none';
+    document.getElementById('staffing-panel').style.display     = isStaffing   ? 'block' : 'none';
+    document.getElementById('map-panel').style.display          = isMap        ? 'block' : 'none';
+    document.getElementById('neris-connect-panel').style.display = 'none';
 
-    if (!isConvert) {
+    // Init EV map/chart when tab first opened
+    if (isEv)   setTimeout(() => { initEvChart(); initEvMap();   }, 150);
+    if (isRisk) setTimeout(() => { initRiskMap(); }, 150);
+
+    // Hide dashboard when any tab is selected
+    const dash = document.getElementById('dashboard');
+    if (dash) dash.style.display = 'none';
+
+    // Map container replaces main panel
+    document.getElementById('map-container').classList.toggle('active', isMap);
+    document.getElementById('main-panel').style.display = isMap ? 'none' : 'block';
+
+    if (isReport) {
       document.getElementById('report_type').value = val;
       document.getElementById('grant-fields').style.display = val === 'grant' ? 'block' : 'none';
     }
+
+    if (isMap && !_mapInitialized) loadMap();
   }
 
-  // Auto-activate convert tab if server returned convert context
   {% if convert %}
-  document.addEventListener('DOMContentLoaded', function() {
-    const convertTab = document.querySelector('[data-value="convert"]');
-    if (convertTab) selectTab(convertTab);
-  });
+  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="convert"]')));
+  {% elif quality %}
+  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="quality"]')));
+  {% elif active_tab == 'benchmark' %}
+  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="benchmark"]')));
+  {% elif active_tab == 'ev' %}
+  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="ev"]')));
+  {% elif active_tab == 'risk' %}
+  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="risk"]')));
+  {% elif active_tab == 'compliance' %}
+  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="compliance"]')));
+  {% elif active_tab == 'iso' %}
+  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="iso"]')));
+  {% elif active_tab == 'staffing' %}
+  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="staffing"]')));
   {% endif %}
 
   document.getElementById('use_mock').addEventListener('change', function() {
     document.getElementById('neris-field').style.display = this.checked ? 'none' : 'block';
   });
+  document.getElementById('quality-use-mock').addEventListener('change', function() {
+    document.getElementById('quality-neris-field').style.display = this.checked ? 'none' : 'block';
+  });
+  document.getElementById('map-use-mock').addEventListener('change', function() {
+    document.getElementById('map-neris-field').style.display = this.checked ? 'none' : 'block';
+  });
+  document.getElementById('bench-use-mock').addEventListener('change', function() {
+    document.getElementById('bench-neris-field').style.display = this.checked ? 'none' : 'block';
+  });
+  document.getElementById('ev-use-mock').addEventListener('change', function() {
+    document.getElementById('ev-neris-field').style.display = this.checked ? 'none' : 'block';
+  });
+  document.getElementById('risk-use-mock').addEventListener('change', function() {
+    document.getElementById('risk-neris-field').style.display = this.checked ? 'none' : 'block';
+  });
+  document.getElementById('compliance-use-mock').addEventListener('change', function() {
+    document.getElementById('compliance-neris-field').style.display = this.checked ? 'none' : 'block';
+  });
+  document.getElementById('iso-use-mock').addEventListener('change', function() {
+    document.getElementById('iso-neris-field').style.display = this.checked ? 'none' : 'block';
+  });
+  document.getElementById('staffing-use-mock').addEventListener('change', function() {
+    document.getElementById('staffing-neris-field').style.display = this.checked ? 'none' : 'block';
+  });
 
-  function showLoading() {
-    document.getElementById('loading').classList.add('show');
+  // ── NERIS API connection ──────────────────────────────────────────────────
+  let _nerisConnectOpen = false;
+
+  function toggleNerisPanel() {
+    _nerisConnectOpen = !_nerisConnectOpen;
+    const panel = document.getElementById('neris-connect-panel');
+    if (_nerisConnectOpen) {
+      // Close all other panels, show connect panel
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      ['main-form','convert-panel','quality-panel','benchmark-panel','ev-panel','risk-panel',
+       'compliance-panel','iso-panel','staffing-panel','map-panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+      const dash = document.getElementById('dashboard');
+      if (dash) dash.style.display = 'none';
+      panel.style.display = 'block';
+    } else {
+      panel.style.display = 'none';
+    }
   }
 
-  // File drop / select for converter
+  async function connectNeris() {
+    const clientId     = document.getElementById('neris-client-id').value.trim();
+    const clientSecret = document.getElementById('neris-client-secret').value.trim();
+    const resultEl     = document.getElementById('neris-connect-result');
+
+    if (!clientId || !clientSecret) {
+      resultEl.style.display = 'block';
+      resultEl.style.color = '#F87171';
+      resultEl.textContent = 'Please enter both Client ID and Client Secret.';
+      return;
+    }
+
+    resultEl.style.display = 'block';
+    resultEl.style.color = 'var(--gray-3)';
+    resultEl.textContent = 'Testing connection...';
+
+    const fd = new FormData();
+    fd.append('client_id', clientId);
+    fd.append('client_secret', clientSecret);
+
+    try {
+      const resp = await fetch('/neris/connect', { method: 'POST', body: fd });
+      const data = await resp.json();
+      if (data.ok) {
+        resultEl.style.color = '#4ADE80';
+        resultEl.textContent = data.message;
+        document.getElementById('neris-dot').style.background = '#4ADE80';
+        document.getElementById('neris-status-label').textContent = 'NERIS Connected';
+        document.getElementById('neris-status-btn').style.borderColor = 'rgba(74,222,128,.4)';
+        document.getElementById('neris-status-btn').style.color = '#4ADE80';
+      } else {
+        resultEl.style.color = '#F87171';
+        resultEl.textContent = data.message;
+        document.getElementById('neris-dot').style.background = '#F87171';
+        document.getElementById('neris-status-label').textContent = 'Connection Failed';
+      }
+    } catch(e) {
+      resultEl.style.color = '#F87171';
+      resultEl.textContent = 'Network error: ' + e.message;
+    }
+  }
+
+  // Check NERIS status on load
+  fetch('/neris/status').then(r => r.json()).then(d => {
+    if (d.connected) {
+      document.getElementById('neris-dot').style.background = '#4ADE80';
+      document.getElementById('neris-status-label').textContent = 'NERIS Connected';
+      document.getElementById('neris-status-btn').style.borderColor = 'rgba(74,222,128,.4)';
+      document.getElementById('neris-status-btn').style.color = '#4ADE80';
+    }
+  }).catch(() => {});
+
+  // ── Benchmark scope switcher ──────────────────────────────────────────────
+  function switchScope(chipEl, metricKey, scopeKey) {
+    // Update active chip within that card
+    const card = chipEl.closest('.bench-card');
+    card.querySelectorAll('.bench-scope-chip').forEach(c => c.classList.remove('active'));
+    chipEl.classList.add('active');
+
+    // Update the displayed peer avg and percentile in the card body
+    const scopeData = _benchData[metricKey] && _benchData[metricKey][scopeKey];
+    if (!scopeData) return;
+
+    const body = card.querySelector('.bench-card-body');
+    const peerValEl  = body.querySelector('.bench-peer-value');
+    const peerLblEl  = body.querySelector('.bench-peer-label');
+    const pctNumEl   = body.querySelector('.bench-pct-number');
+    const pctFillEl  = body.querySelector('.bench-pct-fill');
+    const pctMarkEl  = body.querySelector('.bench-pct-marker');
+    const deltaEl    = body.querySelector('.bench-delta');
+
+    const labels = {state:'State Avg', regional:'Regional Avg', national:'National Avg'};
+    if (peerValEl) peerValEl.textContent = scopeData.peer_avg_fmt || scopeData.peer_avg + (scopeData.unit === 'percent' ? '%' : '');
+    if (peerLblEl) peerLblEl.textContent = labels[scopeKey] + ` (${scopeData.peer_count} depts)`;
+
+    const p = scopeData.percentile;
+    const cls = p >= 70 ? 'pct-great' : p >= 50 ? 'pct-good' : p >= 30 ? 'pct-mid' : 'pct-low';
+    if (pctNumEl) { pctNumEl.className = `bench-pct-number ${cls}`; pctNumEl.textContent = p; }
+    if (pctFillEl) { pctFillEl.className = `bench-pct-fill ${cls}`; pctFillEl.style.width = p + '%'; }
+    if (pctMarkEl) { pctMarkEl.style.left = p + '%'; }
+  }
+
+  // Benchmark data injected by server for client-side scope switching
+  {% if benchmark and benchmark.result %}
+  const _benchData = {};
+  {% for key, m in benchmark.result.metrics.items() %}
+  _benchData['{{ key }}'] = {
+    {% for scope in ['national','regional','state'] %}
+    {% set sm = m[scope] %}
+    {% if sm %}
+    '{{ scope }}': {
+      peer_count:  {{ sm.peer_count }},
+      peer_avg:    {{ sm.peer_avg }},
+      peer_avg_fmt: {{ (sm.peer_avg_fmt if sm.peer_avg_fmt else "") | tojson }},
+      percentile:  {{ sm.percentile }},
+      above_avg:   {{ 'true' if sm.above_avg else 'false' }},
+      unit:        '{{ m.unit }}',
+    },
+    {% endif %}
+    {% endfor %}
+  };
+  {% endfor %}
+  {% else %}
+  const _benchData = {};
+  {% endif %}
+  document.getElementById('map-type-filter').addEventListener('change', () => applyMapFilter());
+
+  function showLoading() { document.getElementById('loading').classList.add('show'); }
+
   function onFileSelect(input) {
     const file = input.files[0];
     if (file) {
@@ -660,19 +2368,402 @@
       document.getElementById('convert-submit').style.display = 'flex';
     }
   }
-
   function handleDrop(e) {
     e.preventDefault();
     document.getElementById('drop-zone').classList.remove('drag-over');
     const file = e.dataTransfer.files[0];
     if (file && file.name.endsWith('.csv')) {
       const input = document.getElementById('nfirs-file');
-      const dt = new DataTransfer();
-      dt.items.add(file);
+      const dt = new DataTransfer(); dt.items.add(file);
       input.files = dt.files;
       onFileSelect(input);
     }
   }
+
+  // ── Map ───────────────────────────────────────────────────────────────────
+  let _map = null;
+  let _mapInitialized = false;
+  let _allIncidents = [];
+  let _clusterGroup = null;
+
+  // Color by incident category
+  const TYPE_COLORS = {
+    'Fire':         '#EF4444',
+    'EMS':          '#3B82F6',
+    'Hazmat':       '#F59E0B',
+    'Rescue':       '#A855F7',
+    'False Alarm':  '#6B7280',
+    'Service Call': '#10B981',
+    'Other':        '#64748B',
+  };
+  const DEFAULT_COLOR = '#64748B';
+
+  function typeCategory(type) {
+    if (!type) return 'Other';
+    const t = type.toLowerCase();
+    if (t.includes('fire') || t.includes('explosion') || t.includes('wildfire')) return 'Fire';
+    if (t.includes('ems') || t.includes('medical') || t.includes('mva') || t.includes('motor vehicle')) return 'EMS';
+    if (t.includes('hazmat') || t.includes('carbon monoxide') || t.includes('chemical') || t.includes('gas')) return 'Hazmat';
+    if (t.includes('rescue') || t.includes('extrication') || t.includes('water')) return 'Rescue';
+    if (t.includes('false alarm') || t.includes('alarm')) return 'False Alarm';
+    if (t.includes('service') || t.includes('public assist')) return 'Service Call';
+    return 'Other';
+  }
+
+  function makeMarker(inc) {
+    const cat   = typeCategory(inc.type);
+    const color = TYPE_COLORS[cat] || DEFAULT_COLOR;
+
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="
+        width:12px;height:12px;
+        background:${color};
+        border:2px solid rgba(255,255,255,.5);
+        border-radius:50%;
+        box-shadow:0 0 6px ${color}88;
+      "></div>`,
+      iconSize: [12, 12],
+      iconAnchor: [6, 6],
+    });
+
+    const time = inc.time ? new Date(inc.time).toLocaleString() : '—';
+    let respTime = '—';
+    if (inc.time && inc.arrival) {
+      const secs = Math.round((new Date(inc.arrival) - new Date(inc.time)) / 1000);
+      if (secs > 0 && secs < 7200) respTime = `${Math.floor(secs/60)}m ${secs%60}s`;
+    }
+
+    const popup = `
+      <div style="min-width:180px">
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px">${inc.type || 'Unknown'}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span style="width:8px;height:8px;background:${color};border-radius:50%;display:inline-block;flex-shrink:0"></span>
+          <span style="font-size:11px;color:#8A9BA8">${cat}</span>
+        </div>
+        <div style="font-size:11px;color:#8A9BA8;margin-bottom:2px">📅 ${time}</div>
+        <div style="font-size:11px;color:#8A9BA8">⏱ Response: ${respTime}</div>
+        ${inc.id ? `<div style="font-size:10px;color:#4A5C68;margin-top:6px">${inc.id}</div>` : ''}
+      </div>`;
+
+    return L.marker([inc.lat, inc.lon], { icon }).bindPopup(popup, { maxWidth: 240 });
+  }
+
+  function buildLegend(counts) {
+    const el = document.getElementById('map-legend');
+    el.style.display = 'block';
+    el.innerHTML = `<div class="map-legend-title">Incident Type</div>` +
+      Object.entries(counts)
+        .sort((a,b) => b[1]-a[1])
+        .map(([cat, n]) => `
+          <div class="map-legend-row">
+            <div class="map-legend-dot" style="background:${TYPE_COLORS[cat]||DEFAULT_COLOR}"></div>
+            <span>${cat}</span>
+            <span style="margin-left:auto;color:var(--gray-4);font-weight:700">${n}</span>
+          </div>`).join('');
+  }
+
+  function buildSidebarCounts(counts, total) {
+    const el = document.getElementById('map-counts-inner');
+    el.innerHTML = Object.entries(counts)
+      .sort((a,b) => b[1]-a[1])
+      .map(([cat, n]) => {
+        const pct = Math.round(n / total * 100);
+        const color = TYPE_COLORS[cat] || DEFAULT_COLOR;
+        return `
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-2);margin-bottom:4px">
+              <span style="font-weight:500">${cat}</span>
+              <span style="font-weight:700;color:var(--white)">${n}</span>
+            </div>
+            <div style="background:var(--navy-4);border-radius:4px;height:4px">
+              <div style="width:${pct}%;height:4px;background:${color};border-radius:4px"></div>
+            </div>
+          </div>`;
+      }).join('');
+    document.getElementById('map-counts').style.display = 'block';
+  }
+
+  function applyMapFilter() {
+    if (!_map || !_clusterGroup) return;
+    const filter = document.getElementById('map-type-filter').value;
+    _clusterGroup.clearLayers();
+
+    const filtered = filter
+      ? _allIncidents.filter(inc => typeCategory(inc.type) === filter)
+      : _allIncidents;
+
+    filtered.forEach(inc => _clusterGroup.addLayer(makeMarker(inc)));
+    document.getElementById('map-stat-mapped').innerHTML =
+      `${filtered.length} <span>${filter ? filter.toLowerCase() : 'mapped'}</span>`;
+  }
+
+  async function loadMap() {
+    const useMock  = document.getElementById('map-use-mock').checked;
+    const nerisId  = document.getElementById('map-neris-id')?.value || 'MOCK-001';
+    const start    = document.getElementById('map-start').value;
+    const end      = document.getElementById('map-end').value;
+
+    const params = new URLSearchParams({ use_mock: useMock, neris_id: nerisId, start, end });
+    const res    = await fetch(`/map-data?${params}`);
+    const data   = await res.json();
+
+    if (data.error) { alert('Error: ' + data.error); return; }
+
+    _allIncidents = data.incidents || [];
+
+    // Init map once
+    if (!_mapInitialized) {
+      _map = L.map('map', {
+        center: [37.5, -77.4],
+        zoom: 11,
+        zoomControl: true,
+      });
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap © CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19,
+      }).addTo(_map);
+
+      _mapInitialized = true;
+    }
+
+    // Rebuild cluster group
+    if (_clusterGroup) _map.removeLayer(_clusterGroup);
+    _clusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 40,
+      iconCreateFunction(cluster) {
+        const count = cluster.getChildCount();
+        return L.divIcon({
+          html: `<div style="
+            background:rgba(214,55,55,.85);
+            border:2px solid rgba(255,255,255,.3);
+            color:#fff;font-weight:700;font-size:12px;
+            width:34px;height:34px;border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            box-shadow:0 0 12px rgba(214,55,55,.4);
+          ">${count}</div>`,
+          iconSize: [34, 34], iconAnchor: [17, 17],
+          className: '',
+        });
+      },
+    });
+
+    _allIncidents.forEach(inc => _clusterGroup.addLayer(makeMarker(inc)));
+    _map.addLayer(_clusterGroup);
+
+    // Fit to data
+    if (_allIncidents.length) {
+      const lats = _allIncidents.map(i => i.lat);
+      const lons = _allIncidents.map(i => i.lon);
+      _map.fitBounds([[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]], { padding: [32, 32] });
+    }
+
+    // Stats
+    const counts = {};
+    _allIncidents.forEach(inc => {
+      const cat = typeCategory(inc.type);
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
+
+    document.getElementById('map-stat-total').innerHTML = `${_allIncidents.length} <span>incidents</span>`;
+    document.getElementById('map-stat-mapped').innerHTML = `${_allIncidents.length} <span>mapped</span>`;
+    document.getElementById('map-stat-bar').style.display = 'flex';
+    buildLegend(counts);
+    buildSidebarCounts(counts, _allIncidents.length);
+
+    setTimeout(() => _map.invalidateSize(), 100);
+  }
+
+  // ── EV map & chart data (injected server-side) ────────────────────────────
+  {% if ev and ev.report %}
+  const _evByMonth   = {{ ev.report.by_month  | tojson }};
+  const _evMapPoints = {{ ev.report.map_points | tojson }};
+  {% else %}
+  const _evByMonth = {}; const _evMapPoints = [];
+  {% endif %}
+
+  {% if risk and risk.zones %}
+  const _riskZones = {{ risk.zones | tojson }};
+  {% else %}
+  const _riskZones = [];
+  {% endif %}
+
+  // EV trend chart
+  let _evChart = null;
+  function initEvChart() {
+    const canvas = document.getElementById('ev-trend-chart');
+    if (!canvas || _evChart) return;
+    const months = Object.keys(_evByMonth);
+    const counts = Object.values(_evByMonth);
+    _evChart = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'EV / Battery Fires',
+          data: counts,
+          backgroundColor: 'rgba(245,158,11,.7)',
+          borderColor:     'rgba(245,158,11,1)',
+          borderWidth: 1, borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#8A9BA8', font: { size: 10 } } },
+          y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#8A9BA8', font: { size: 10 }, stepSize: 1 }, beginAtZero: true },
+        }
+      }
+    });
+  }
+
+  // EV location map
+  let _evMap = null, _evMapInit = false;
+  function initEvMap() {
+    const el = document.getElementById('ev-map');
+    if (!el || _evMapInit || !_evMapPoints.length) return;
+    _evMap = L.map('ev-map', { zoomControl: false, scrollWheelZoom: false });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '', subdomains: 'abcd', maxZoom: 19,
+    }).addTo(_evMap);
+    _evMapPoints.forEach(p => {
+      L.circleMarker([p.lat, p.lon], {
+        radius: 9, fillColor: '#F59E0B', color: 'rgba(255,255,255,.5)',
+        fillOpacity: 0.85, weight: 1.5,
+      }).bindPopup(`<div style="color:#fff"><strong>${p.type}</strong><br><small style="color:#8A9BA8">${p.time}</small></div>`)
+       .addTo(_evMap);
+    });
+    const lats = _evMapPoints.map(p => p.lat);
+    const lons = _evMapPoints.map(p => p.lon);
+    _evMap.fitBounds([[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]], { padding: [16, 16] });
+    _evMapInit = true;
+    setTimeout(() => _evMap.invalidateSize(), 100);
+  }
+
+  // Community risk map
+  let _riskMap = null, _riskMapInit = false;
+  const RISK_COLORS = { Critical: '#EF4444', High: '#F97316', Medium: '#EAB308', Low: '#22C55E' };
+  function initRiskMap() {
+    const el = document.getElementById('risk-map');
+    if (!el || _riskMapInit || !_riskZones.length) return;
+    _riskMap = L.map('risk-map', { zoomControl: true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '', subdomains: 'abcd', maxZoom: 19,
+    }).addTo(_riskMap);
+    _riskZones.forEach(z => {
+      const color = RISK_COLORS[z.risk_level] || '#64748B';
+      const radius = 10 + (z.risk_score / 100) * 22;
+      const rt = z.avg_response_seconds
+        ? `${Math.floor(z.avg_response_seconds/60)}m ${String(z.avg_response_seconds%60).padStart(2,'0')}s`
+        : '—';
+      L.circleMarker([z.lat, z.lon], {
+        radius, fillColor: color, color: 'rgba(255,255,255,.2)',
+        fillOpacity: 0.55, weight: 1,
+      }).bindPopup(`
+        <div style="min-width:180px">
+          <div style="font-size:13px;font-weight:700;color:${color};margin-bottom:5px">${z.risk_level} Risk — ${z.risk_score}/100</div>
+          <div style="font-size:11px;color:#C2C2C2">${z.incident_count} incidents</div>
+          <div style="font-size:11px;color:#8A9BA8;margin-top:2px">${z.dominant_type}</div>
+          <div style="font-size:11px;color:#8A9BA8;margin-top:2px">Avg response: ${rt}</div>
+        </div>`).addTo(_riskMap);
+    });
+    const lats = _riskZones.map(z => z.lat);
+    const lons = _riskZones.map(z => z.lon);
+    _riskMap.fitBounds([[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]], { padding: [24, 24] });
+    _riskMapInit = true;
+    setTimeout(() => _riskMap.invalidateSize(), 100);
+  }
+
+  // ── Dashboard ─────────────────────────────────────────────────────────────
+  {% if dashboard %}
+  let _dashMiniMap = null;
+
+  function initDashboard() {
+    // Incident type horizontal bar chart
+    const typesCanvas = document.getElementById('dash-types-chart');
+    if (typesCanvas) {
+      const labels = {{ dashboard.stats.call_types.keys() | list | tojson }};
+      const values = {{ dashboard.stats.call_types.values() | list | tojson }};
+      new Chart(typesCanvas, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            backgroundColor: 'rgba(214,55,55,.65)',
+            borderColor:     'rgba(214,55,55,.9)',
+            borderWidth: 1,
+            borderRadius: 4,
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: {
+            callbacks: { label: ctx => ` ${ctx.raw} incidents` }
+          }},
+          scales: {
+            x: {
+              grid: { color: 'rgba(255,255,255,.05)' },
+              ticks: { color: '#8A9BA8', font: { size: 10 } },
+              border: { color: 'rgba(255,255,255,.08)' },
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#C2C2C2', font: { size: 11 }, maxTicksLimit: 10 },
+              border: { display: false },
+            }
+          }
+        }
+      });
+    }
+
+    // Mini map (non-interactive preview)
+    const miniMapEl = document.getElementById('dash-mini-map');
+    if (miniMapEl && !_dashMiniMap) {
+      const mapPoints = {{ dashboard.map_points | tojson }};
+      _dashMiniMap = L.map('dash-mini-map', {
+        zoomControl: false,
+        dragging: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        tap: false,
+      });
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '', subdomains: 'abcd', maxZoom: 19,
+      }).addTo(_dashMiniMap);
+
+      mapPoints.forEach(p => {
+        const cat   = typeCategory(p.type);
+        const color = TYPE_COLORS[cat] || DEFAULT_COLOR;
+        L.circleMarker([p.lat, p.lon], {
+          radius: 4, fillColor: color, color: '#fff',
+          fillOpacity: 0.75, weight: 0.5, opacity: 0.3,
+        }).addTo(_dashMiniMap);
+      });
+
+      if (mapPoints.length) {
+        const lats = mapPoints.map(p => p.lat);
+        const lons = mapPoints.map(p => p.lon);
+        _dashMiniMap.fitBounds(
+          [[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]],
+          { padding: [16, 16] }
+        );
+      }
+
+      // Make map non-interactive so the card click-through works
+      miniMapEl.style.pointerEvents = 'none';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', initDashboard);
+  {% endif %}
 </script>
 
 </body>

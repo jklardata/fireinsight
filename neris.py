@@ -1,3 +1,4 @@
+from datetime import datetime
 from neris_api_client import NerisApiClient
 from neris_api_client.config import Config, GrantType
 from config import NERIS_BASE_URL, NERIS_CLIENT_ID, NERIS_CLIENT_SECRET
@@ -12,14 +13,25 @@ def get_client() -> NerisApiClient:
     ))
 
 
-def fetch_incidents(neris_id: str, **kwargs) -> list[dict]:
+def fetch_incidents(
+    neris_id: str,
+    start: datetime | None = None,
+    end: datetime | None = None,
+    **kwargs,
+) -> list[dict]:
     """Fetch all incidents for a department, handling pagination."""
     client = get_client()
     incidents = []
     cursor = None
 
     while True:
-        result = client.list_incidents(neris_id_entity=neris_id, cursor=cursor, **kwargs)
+        result = client.list_incidents(
+            neris_id_entity=neris_id,
+            cursor=cursor,
+            call_create_start=start,
+            call_create_end=end,
+            **kwargs,
+        )
         if not result:
             break
 
