@@ -9,11 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/dark/main.css" />
+  <script src="https://js.arcgis.com/4.31/"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -47,29 +44,34 @@
 
     /* ── HEADER ── */
     header {
-      display: flex; align-items: center; gap: 12px;
-      padding: 0 28px;
-      height: 60px;
-      background: var(--navy-2);
+      display: flex; align-items: center; gap: 14px;
+      padding: 0 32px;
+      height: 64px;
+      background: rgba(15,26,32,0.96);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
       position: sticky; top: 0; z-index: 10;
     }
 
     .logo {
-      width: 34px; height: 34px;
+      width: 36px; height: 36px;
       background: var(--red);
-      border-radius: 9px;
+      border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 14px var(--red-glow);
+      box-shadow: 0 0 20px var(--red-glow);
       flex-shrink: 0;
     }
     .logo svg { width: 18px; height: 18px; fill: #fff; }
 
     header h1 {
-      font-size: 17px; font-weight: 800;
-      letter-spacing: -.3px; color: var(--white);
+      font-size: 18px; font-weight: 800;
+      letter-spacing: -.4px; color: var(--white);
     }
     header h1 span { color: var(--red); }
+
+    .header-divider {
+      width: 1px; height: 20px; background: var(--border-2); margin: 0 4px;
+    }
 
     .header-right {
       margin-left: auto;
@@ -87,50 +89,50 @@
     .header-home {
       font-size: 12px; font-weight: 600;
       color: var(--gray-3); text-decoration: none;
-      padding: 5px 12px; border-radius: 25px;
+      padding: 6px 14px; border-radius: 25px;
       border: 1px solid var(--border-2);
-      transition: color .15s, border-color .15s;
+      transition: color .15s, border-color .15s, background .15s;
     }
-    .header-home:hover { color: var(--white); border-color: var(--border-2); }
+    .header-home:hover { color: var(--white); background: var(--navy-3); }
 
     /* ── LAYOUT ── */
     .layout {
       display: grid;
-      grid-template-columns: 220px 1fr;
-      min-height: calc(100vh - 60px);
+      grid-template-columns: 232px 1fr;
+      min-height: calc(100vh - 64px);
     }
 
     /* ── SIDEBAR ── */
     .sidebar {
       background: var(--navy-2);
       border-right: 1px solid var(--border);
-      padding: 12px 10px;
+      padding: 14px 10px 24px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 1px;
     }
 
     /* Nav groups */
     .nav-group-label {
       font-size: 9px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: .8px;
+      text-transform: uppercase; letter-spacing: .9px;
       color: var(--gray-4);
-      padding: 14px 10px 5px;
-      margin-top: 2px;
+      padding: 16px 12px 5px;
     }
 
     .nav-item {
       display: flex; align-items: center; gap: 10px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 12.5px; font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 9px;
+      font-size: 13px; font-weight: 500;
       color: var(--gray-3);
       cursor: pointer;
       transition: background .12s, color .12s;
       user-select: none;
       border: 1px solid transparent;
       text-decoration: none;
+      letter-spacing: -.1px;
     }
     .nav-item:hover { background: var(--navy-3); color: var(--gray-1); }
     .nav-item.active {
@@ -141,8 +143,8 @@
     }
 
     .nav-icon {
-      width: 26px; height: 26px; flex-shrink: 0;
-      border-radius: 6px;
+      width: 28px; height: 28px; flex-shrink: 0;
+      border-radius: 7px;
       background: var(--navy-4);
       display: flex; align-items: center; justify-content: center;
     }
@@ -153,28 +155,29 @@
     /* ── CONTROL BAR ── */
     .ctrl-bar {
       display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px;
-      padding: 14px 20px;
+      padding: 16px 22px;
       background: var(--navy-2);
       border: 1px solid var(--border-2);
-      border-radius: 12px;
+      border-radius: 14px;
       margin-bottom: 28px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.15);
     }
     .ctrl-bar.hidden { display: none; }
     .ctrl-field { display: flex; flex-direction: column; gap: 3px; }
     .ctrl-label {
       font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .4px;
+      text-transform: uppercase; letter-spacing: .5px;
       color: var(--gray-4);
     }
     .ctrl-bar input[type="date"],
     .ctrl-bar input[type="text"],
     .ctrl-bar input[type="number"],
     .ctrl-bar select {
-      height: 34px; padding: 0 10px;
+      height: 36px; padding: 0 12px;
       font-size: 12px; font-family: inherit;
       background: var(--navy-3);
       border: 1px solid var(--border-2);
-      border-radius: 7px;
+      border-radius: 8px;
       color: var(--white); outline: none;
       transition: border-color .15s;
     }
@@ -184,10 +187,10 @@
     .ctrl-date-pair input[type="date"] { width: 128px; }
     .ctrl-toggle-wrap {
       display: flex; align-items: center; gap: 7px;
-      height: 34px; padding: 0 12px;
+      height: 36px; padding: 0 13px;
       background: var(--navy-3);
       border: 1px solid var(--border-2);
-      border-radius: 7px;
+      border-radius: 8px;
       cursor: pointer; font-size: 12px; font-weight: 500; color: var(--gray-2);
     }
     .ctrl-toggle-wrap:has(input:checked) {
@@ -196,19 +199,19 @@
       color: #F87171;
     }
     .ctrl-toggle-wrap input[type="checkbox"] { accent-color: var(--red); width: 13px; height: 13px; }
-    .ctrl-divider { width: 1px; height: 34px; background: var(--border-2); align-self: flex-end; }
+    .ctrl-divider { width: 1px; height: 36px; background: var(--border-2); align-self: flex-end; }
     .ctrl-spacer { flex: 1; }
     .btn-run {
-      height: 34px; padding: 0 18px;
-      font-size: 12.5px; font-weight: 700; font-family: inherit;
+      height: 36px; padding: 0 20px;
+      font-size: 13px; font-weight: 700; font-family: inherit;
       background: var(--red); color: #fff;
-      border: none; border-radius: 7px;
+      border: none; border-radius: 25px;
       cursor: pointer; display: flex; align-items: center; gap: 7px;
       white-space: nowrap;
-      box-shadow: 0 2px 10px var(--red-glow);
-      transition: background .15s;
+      box-shadow: 0 4px 16px var(--red-glow);
+      transition: background .15s, box-shadow .15s;
     }
-    .btn-run:hover { background: var(--red-dk); }
+    .btn-run:hover { background: var(--red-dk); box-shadow: 0 6px 20px var(--red-glow); }
     .btn-run svg { width: 13px; height: 13px; }
 
     /* Form elements */
@@ -837,16 +840,26 @@
     }
     .map-stat-chip span { color: var(--gray-4); font-weight: 500; margin-left: 4px; }
 
-    /* Override Leaflet popup for dark theme */
-    .leaflet-popup-content-wrapper {
+    /* Override ArcGIS popup for dark theme */
+    .esri-popup__main-container {
       background: var(--navy-2) !important;
       border: 1px solid var(--border-2) !important;
       border-radius: 10px !important;
       box-shadow: 0 8px 32px rgba(0,0,0,.5) !important;
       color: var(--white) !important;
+      font-family: 'Geist', sans-serif !important;
     }
-    .leaflet-popup-tip { background: var(--navy-2) !important; }
-    .leaflet-popup-content { margin: 12px 14px !important; font-family: 'Geist', sans-serif !important; }
+    .esri-popup__header { background: var(--navy-2) !important; border-bottom: 1px solid var(--border-2) !important; }
+    .esri-popup__header-title { color: var(--white) !important; font-family: 'Geist', sans-serif !important; font-weight: 700 !important; font-size: 13px !important; }
+    .esri-popup__content { color: var(--gray-2) !important; font-family: 'Geist', sans-serif !important; font-size: 12px !important; }
+    .esri-popup__button { color: var(--gray-4) !important; }
+    .esri-popup__button:hover { color: var(--white) !important; }
+    .esri-view .esri-view-surface--inset-outline:focus::after { outline: none !important; }
+    /* ArcGIS widget theme overrides */
+    .esri-ui-corner .esri-component { border-radius: 8px !important; overflow: hidden; }
+    .esri-zoom .esri-widget--button { background: var(--navy-2) !important; border-color: var(--border-2) !important; color: var(--gray-2) !important; }
+    .esri-zoom .esri-widget--button:hover { background: var(--navy-3) !important; color: var(--white) !important; }
+    .esri-compass { background: var(--navy-2) !important; border-color: var(--border-2) !important; }
 
     /* ── LOADING ── */
     #loading {
@@ -920,49 +933,49 @@
 
     <div class="nav-group-label">Reports</div>
 
-    <div class="nav-item {% if form and form.report_type == 'trends' %}active{% elif not form and not convert and not quality and not dashboard and active_tab not in ['benchmark','ev','risk','compliance','iso','staffing','map'] %}active{% endif %}" data-value="trends" onclick="selectTab(this)">
+    <div class="nav-item {% if form and form.report_type == 'trends' %}active{% elif not form and not convert and not quality and not dashboard and active_tab not in ['benchmark','ev','risk','compliance','iso','staffing','map'] %}active{% endif %}" data-value="trends" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
       Trend Analysis
     </div>
-    <div class="nav-item {% if form and form.report_type == 'report' %}active{% endif %}" data-value="report" onclick="selectTab(this)">
+    <div class="nav-item {% if form and form.report_type == 'report' %}active{% endif %}" data-value="report" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
       Chief's Report
     </div>
-    <div class="nav-item {% if form and form.report_type == 'grant' %}active{% endif %}" data-value="grant" onclick="selectTab(this)">
+    <div class="nav-item {% if form and form.report_type == 'grant' %}active{% endif %}" data-value="grant" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
       Grant Narrative
     </div>
 
     <div class="nav-group-label">Compliance & Audit</div>
 
-    <div class="nav-item {% if active_tab == 'compliance' %}active{% endif %}" data-value="compliance" onclick="selectTab(this)">
+    <div class="nav-item {% if active_tab == 'compliance' %}active{% endif %}" data-value="compliance" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       NERIS Compliance
     </div>
-    <div class="nav-item {% if active_tab == 'iso' %}active{% endif %}" data-value="iso" onclick="selectTab(this)">
+    <div class="nav-item {% if active_tab == 'iso' %}active{% endif %}" data-value="iso" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       ISO Evidence Pack
     </div>
-    <div class="nav-item {% if quality %}active{% endif %}" data-value="quality" onclick="selectTab(this)">
+    <div class="nav-item {% if quality %}active{% endif %}" data-value="quality" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       Data Quality
     </div>
 
     <div class="nav-group-label">Operations</div>
 
-    <div class="nav-item {% if active_tab == 'staffing' %}active{% endif %}" data-value="staffing" onclick="selectTab(this)">
+    <div class="nav-item {% if active_tab == 'staffing' %}active{% endif %}" data-value="staffing" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       Staffing Justification
     </div>
-    <div class="nav-item {% if active_tab == 'ev' %}active{% endif %}" data-value="ev" onclick="selectTab(this)">
+    <div class="nav-item {% if active_tab == 'ev' %}active{% endif %}" data-value="ev" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       EV / Battery Fires
     </div>
-    <div class="nav-item {% if active_tab == 'risk' %}active{% endif %}" data-value="risk" onclick="selectTab(this)">
+    <div class="nav-item {% if active_tab == 'risk' %}active{% endif %}" data-value="risk" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       Community Risk
     </div>
-    <div class="nav-item {% if active_tab == 'benchmark' %}active{% endif %}" data-value="benchmark" onclick="selectTab(this)">
+    <div class="nav-item {% if active_tab == 'benchmark' %}active{% endif %}" data-value="benchmark" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13.5l7.5 7.5 10.5-10.5M3 6l7.5 7.5 10.5-10.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       Peer Benchmark
     </div>
@@ -1003,6 +1016,38 @@
       <div class="map-stat-chip" id="map-stat-mapped">— <span>mapped</span></div>
     </div>
     <div class="map-legend" id="map-legend" style="display:none"></div>
+
+    <!-- Map info sidebar -->
+    <div id="map-info-panel" style="position:absolute;top:12px;left:12px;width:260px;background:rgba(15,26,32,.92);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;z-index:500;box-shadow:0 4px 20px rgba(0,0,0,.4)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:800;color:var(--white)">Incident Map</div>
+        <button onclick="document.getElementById('map-info-panel').style.display='none'" style="background:none;border:none;color:var(--gray-4);cursor:pointer;font-size:16px;padding:0;line-height:1">&times;</button>
+      </div>
+      <p style="font-size:11px;color:var(--gray-3);line-height:1.6;margin-bottom:12px">Visualize where incidents are occurring across your coverage area. Identify hotspots, coverage gaps, and response patterns over time.</p>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:8px">What you can do</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
+        <div style="display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--gray-2)">
+          <span style="color:#60A5FA;flex-shrink:0">→</span>
+          <span><strong style="color:var(--white)">Filter by incident type</strong> to isolate fires, EMS, Hazmat, or false alarms</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--gray-2)">
+          <span style="color:#60A5FA;flex-shrink:0">→</span>
+          <span><strong style="color:var(--white)">Date range filtering</strong> to compare seasonal patterns or specific periods</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--gray-2)">
+          <span style="color:#60A5FA;flex-shrink:0">→</span>
+          <span><strong style="color:var(--white)">Click any cluster</strong> to drill into individual incidents in that area</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--gray-2)">
+          <span style="color:#60A5FA;flex-shrink:0">→</span>
+          <span><strong style="color:var(--white)">Identify coverage gaps</strong> — areas with frequent incidents far from your stations</span>
+        </div>
+      </div>
+      <div style="background:rgba(214,55,55,.08);border:1px solid rgba(214,55,55,.2);border-radius:8px;padding:10px">
+        <div style="font-size:10px;font-weight:700;color:#F87171;margin-bottom:4px">Use map insights for:</div>
+        <div style="font-size:10px;color:var(--gray-3);line-height:1.5">Station placement · Resource pre-positioning · Grant geographic justification · Council briefings · ISO PPC documentation</div>
+      </div>
+    </div>
   </div>
 
   <!-- MAIN PANEL -->
@@ -1309,9 +1354,9 @@
         <input type="file" name="file" id="nfirs-file" accept=".csv,text/csv" onchange="onFileSelect(this)" />
       </label>
       {% if convert and convert.error %}<div class="error-banner">{{ convert.error }}</div>{% endif %}
-      <button type="submit" class="btn-run" onclick="showLoading()" id="convert-submit" style="{% if convert and convert.summary %}display:flex{% else %}display:none{% endif %}">
+      <button type="submit" class="btn-run" onclick="showLoading()" id="convert-submit" style="display:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-        Convert Another File
+        Convert File
       </button>
     </form>
   </div>
@@ -1358,6 +1403,133 @@
       <div id="map-counts-inner" style="font-size:11px;color:var(--gray-3)"></div>
     </div>
   </div>
+
+  <!-- ── CONVERT PAGE (shown when NFIRS tab active, no auto-submit) ── -->
+  <div id="convert-page" style="display:none">
+    <div style="max-width:680px;margin:0 auto;padding-top:8px">
+      <!-- Header -->
+      <div style="margin-bottom:28px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div style="width:40px;height:40px;background:rgba(214,55,55,.15);border:1px solid rgba(214,55,55,.3);border-radius:10px;display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+          </div>
+          <div>
+            <div style="font-size:17px;font-weight:800;color:var(--white)">NFIRS → NERIS Converter</div>
+            <div style="font-size:12px;color:var(--gray-4);margin-top:2px">Migrate your legacy incident data to the new national standard</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- What is this? -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+        <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:18px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:8px">Why convert?</div>
+          <div style="font-size:13px;color:var(--gray-2);line-height:1.6">NFIRS (National Fire Incident Reporting System) is the legacy format used since 1971. <strong style="color:var(--white)">NERIS became mandatory January 1, 2026.</strong> All federal grants, compliance audits, and peer benchmarks now require NERIS-formatted data.</div>
+        </div>
+        <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:18px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:8px">What this tool does</div>
+          <ul style="list-style:none;margin:0;padding:0">
+            <li style="display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-weight:700;flex-shrink:0">✓</span>Maps NFIRS 3-digit incident codes to NERIS incident type groups</li>
+            <li style="display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-weight:700;flex-shrink:0">✓</span>Normalizes date/time formats to ISO 8601</li>
+            <li style="display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-weight:700;flex-shrink:0">✓</span>Preserves GPS coordinates, casualty counts, and property loss</li>
+            <li style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-weight:700;flex-shrink:0">✓</span>Outputs valid NERIS JSON ready to upload to the national registry</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Expected CSV format -->
+      <div style="background:var(--navy-3);border:1px solid var(--border-2);border-radius:10px;padding:14px 18px;margin-bottom:20px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:8px">Expected CSV columns</div>
+        <div style="font-family:monospace;font-size:11px;color:#93C5FD;line-height:2;overflow-x:auto;white-space:nowrap">INC_DATE, INC_NO, INC_TYPE, FDID, STATE, LATITUDE, LONGITUDE, ALARM, ARRIVAL, LU_CLEAR, FF_INJ, OTH_INJ, FF_DEATH, OTH_DEATH, PROP_LOSS, CONT_LOSS, AID_GIV, AID_REC</div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:8px">Standard NFIRS export from RMS systems (Firehouse, ESO, ImageTrend, etc.). Missing fields will be flagged as warnings.</div>
+      </div>
+
+      <!-- Next steps after conversion -->
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:18px;margin-bottom:20px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:12px">After conversion: next steps</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:22px;height:22px;border-radius:50%;background:rgba(214,55,55,.2);border:1px solid rgba(214,55,55,.35);color:#F87171;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+            <div style="font-size:12px;color:var(--gray-2);line-height:1.5"><strong style="color:var(--white)">Download the NERIS JSON file</strong> — your converted incidents in NERIS format</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:22px;height:22px;border-radius:50%;background:rgba(214,55,55,.2);border:1px solid rgba(214,55,55,.35);color:#F87171;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+            <div style="font-size:12px;color:var(--gray-2);line-height:1.5"><strong style="color:var(--white)">Review warnings</strong> — records with missing coordinates, unknown codes, or malformed dates need manual review</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:22px;height:22px;border-radius:50%;background:rgba(214,55,55,.2);border:1px solid rgba(214,55,55,.35);color:#F87171;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+            <div style="font-size:12px;color:var(--gray-2);line-height:1.5"><strong style="color:var(--white)">Connect NERIS API</strong> — use FireInsight's NERIS API connection to submit incidents directly to the national registry</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:22px;height:22px;border-radius:50%;background:rgba(214,55,55,.2);border:1px solid rgba(214,55,55,.35);color:#F87171;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+            <div style="font-size:12px;color:var(--gray-2);line-height:1.5"><strong style="color:var(--white)">Run Compliance Check</strong> — verify your converted data meets all 6 NERIS module requirements</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── NERIS CONNECT MAIN PAGE ── -->
+  <div id="neris-connect-main" style="display:none;max-width:540px;margin:0 auto;padding-top:8px">
+    <div style="margin-bottom:28px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:40px;height:40px;background:rgba(214,55,55,.15);border:1px solid rgba(214,55,55,.3);border-radius:10px;display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+        </div>
+        <div>
+          <div style="font-size:17px;font-weight:800;color:var(--white)">Connect NERIS API</div>
+          <div style="font-size:12px;color:var(--gray-4);margin-top:2px">Link your department's live NERIS data to FireInsight</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Why connect? -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px">
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">📊</div>
+        <div style="font-size:11px;font-weight:700;color:var(--white);margin-bottom:4px">Live Data</div>
+        <div style="font-size:10px;color:var(--gray-4);line-height:1.4">Real-time incident data instead of sample data</div>
+      </div>
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">✅</div>
+        <div style="font-size:11px;font-weight:700;color:var(--white);margin-bottom:4px">Compliance</div>
+        <div style="font-size:10px;color:var(--gray-4);line-height:1.4">Auto-validate all 6 NERIS modules in real time</div>
+      </div>
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:20px;margin-bottom:6px">🔒</div>
+        <div style="font-size:11px;font-weight:700;color:var(--white);margin-bottom:4px">Secure</div>
+        <div style="font-size:10px;color:var(--gray-4);line-height:1.4">OAuth2 client credentials, never stored in plain text</div>
+      </div>
+    </div>
+
+    <!-- How to get credentials -->
+    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:18px;margin-bottom:20px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:10px">How to get your NERIS credentials</div>
+      <ol style="margin:0;padding-left:16px">
+        <li style="font-size:12px;color:var(--gray-2);line-height:1.6;margin-bottom:6px">Log in to <strong style="color:var(--white)">app.neris.org</strong> as a department admin</li>
+        <li style="font-size:12px;color:var(--gray-2);line-height:1.6;margin-bottom:6px">Navigate to <strong style="color:var(--white)">Settings → API Access</strong></li>
+        <li style="font-size:12px;color:var(--gray-2);line-height:1.6;margin-bottom:6px">Click <strong style="color:var(--white)">"Create API Client"</strong> — choose "Read" scope for analytics</li>
+        <li style="font-size:12px;color:var(--gray-2);line-height:1.6">Copy your <strong style="color:var(--white)">Client ID</strong> and <strong style="color:var(--white)">Client Secret</strong> below</li>
+      </ol>
+    </div>
+
+    <!-- Credential form -->
+    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:20px">
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-4);margin-bottom:6px">Client ID</div>
+        <input type="text" id="neris-client-id-main" placeholder="e.g. fi_live_abc123..." style="width:100%;padding:9px 12px;font-size:13px;font-family:inherit;background:var(--navy-3);border:1px solid var(--border-2);border-radius:8px;color:var(--white);outline:none" />
+      </div>
+      <div style="margin-bottom:18px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-4);margin-bottom:6px">Client Secret</div>
+        <input type="password" id="neris-client-secret-main" placeholder="••••••••••••••••" style="width:100%;padding:9px 12px;font-size:13px;font-family:inherit;background:var(--navy-3);border:1px solid var(--border-2);border-radius:8px;color:var(--white);outline:none" />
+      </div>
+      <button onclick="connectNerisMain()" style="width:100%;padding:11px;font-size:13px;font-weight:700;font-family:inherit;background:var(--red);color:#fff;border:none;border-radius:25px;cursor:pointer;box-shadow:0 4px 16px var(--red-glow)">Connect to NERIS API →</button>
+      <div id="neris-connect-result-main" style="margin-top:12px;font-size:12px;display:none;text-align:center"></div>
+    </div>
+  </div>
+
+  <!-- ── RESULTS AREA ── -->
+  <div id="results-area">
 
     {% if ev and ev.report %}
     {%- set r = ev.report %}
@@ -1672,6 +1844,39 @@
     {% elif quality and quality.report %}
     {% set r = quality.report %}
 
+    <!-- Data Quality explanation -->
+    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:18px 20px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div style="width:36px;height:36px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:var(--white)">What is Data Quality scoring?</div>
+          <div style="font-size:11px;color:var(--gray-4);margin-top:2px">NERIS requires complete, accurate incident data — gaps hurt your compliance score and weaken grant applications</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:8px">What gets scored</div>
+          <ul style="list-style:none;margin:0;padding:0">
+            <li style="display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px;color:var(--gray-2)"><span style="width:5px;height:5px;background:#60A5FA;border-radius:50%;flex-shrink:0"></span>Incident type &amp; code accuracy</li>
+            <li style="display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px;color:var(--gray-2)"><span style="width:5px;height:5px;background:#60A5FA;border-radius:50%;flex-shrink:0"></span>Timestamps (alarm, arrival, clear)</li>
+            <li style="display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px;color:var(--gray-2)"><span style="width:5px;height:5px;background:#60A5FA;border-radius:50%;flex-shrink:0"></span>GPS coordinates &amp; address</li>
+            <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray-2)"><span style="width:5px;height:5px;background:#60A5FA;border-radius:50%;flex-shrink:0"></span>Personnel, apparatus &amp; casualties</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:8px">Use this report to</div>
+          <ul style="list-style:none;margin:0;padding:0">
+            <li style="display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-size:10px;font-weight:700">✓</span>Find systematic gaps in RMS data capture</li>
+            <li style="display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-size:10px;font-weight:700">✓</span>Prioritize field training for poor-scoring crews</li>
+            <li style="display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-size:10px;font-weight:700">✓</span>Prepare for NERIS compliance audits</li>
+            <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-size:10px;font-weight:700">✓</span>Strengthen grant applications with clean data</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <div class="result-card" style="margin-bottom:20px">
       <div class="result-header">
         <span>Data Quality Report &mdash; {{ quality.dept_name }}</span>
@@ -1791,40 +1996,49 @@
     {# ── NERIS Compliance Results ── #}
     {% elif compliance and compliance.report %}
     {%- set cr = compliance.report %}
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div>
-        <div style="font-size:15px;font-weight:800;color:var(--white)">NERIS Compliance Report</div>
-        <div style="font-size:11px;color:var(--gray-4);margin-top:2px">{{ compliance.dept_name }} &middot; {{ cr.total_incidents }} incidents analyzed</div>
-      </div>
-      <div style="font-size:11px;font-weight:700;padding:4px 14px;border-radius:25px;
-        {% if cr.overall_level == 'Compliant' %}color:#4ADE80;background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.25)
-        {% elif cr.overall_level == 'Warning' %}color:#FCD34D;background:rgba(217,119,6,.12);border:1px solid rgba(217,119,6,.25)
-        {% else %}color:#F87171;background:var(--red-lt);border:1px solid rgba(214,55,55,.3){% endif %}">
-        {{ cr.overall_pct }}% Compliant
-      </div>
-    </div>
 
-    {% if cr.deadline_passed %}
-    <div style="background:rgba(214,55,55,.08);border:1px solid rgba(214,55,55,.25);border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px">
-      <span style="font-size:16px">&#9888;</span>
-      <div>
-        <div style="font-size:12px;font-weight:700;color:#F87171">NERIS Mandatory — Deadline Passed</div>
-        <div style="font-size:11px;color:var(--gray-3);margin-top:2px">All departments were required to report in NERIS format starting January 1, 2026. Gaps below represent real compliance risk.</div>
+    <!-- Compliance Hero -->
+    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:16px;padding:24px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:24px">
+        <!-- Score ring -->
+        <div style="flex-shrink:0;text-align:center">
+          <div style="width:90px;height:90px;border-radius:50%;border:4px solid {% if cr.overall_level == 'Compliant' %}#4ADE80{% elif cr.overall_level == 'Warning' %}#FCD34D{% else %}#F87171{% endif %};display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--navy-3)">
+            <div style="font-size:26px;font-weight:900;line-height:1;{% if cr.overall_level == 'Compliant' %}color:#4ADE80{% elif cr.overall_level == 'Warning' %}color:#FCD34D{% else %}color:#F87171{% endif %}">{{ cr.overall_pct }}</div>
+            <div style="font-size:9px;font-weight:700;color:var(--gray-4);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">%</div>
+          </div>
+          <div style="font-size:10px;font-weight:700;margin-top:8px;{% if cr.overall_level == 'Compliant' %}color:#4ADE80{% elif cr.overall_level == 'Warning' %}color:#FCD34D{% else %}color:#F87171{% endif %}">{{ cr.overall_level }}</div>
+        </div>
+        <!-- Summary -->
+        <div style="flex:1">
+          <div style="font-size:16px;font-weight:800;color:var(--white);margin-bottom:4px">NERIS Compliance Report</div>
+          <div style="font-size:12px;color:var(--gray-4);margin-bottom:12px">{{ compliance.dept_name }} &middot; {{ cr.total_incidents }} incidents analyzed</div>
+          <p style="font-size:12px;color:var(--gray-2);line-height:1.6;margin:0">NERIS requires complete data across <strong style="color:var(--white)">6 mandatory modules</strong>. Starting January 1, 2026, all departments must submit NERIS-format data to maintain federal grant eligibility. Missing or malformed fields count against your compliance score.</p>
+        </div>
       </div>
+
+      {% if cr.deadline_passed %}
+      <div style="margin-top:16px;padding:10px 14px;background:rgba(214,55,55,.08);border:1px solid rgba(214,55,55,.25);border-radius:8px;display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+        <div style="font-size:12px;color:var(--gray-2);line-height:1.4"><strong style="color:#F87171">NERIS Mandatory — Deadline Passed.</strong> Compliance gaps below represent active reporting risk.</div>
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
 
     <!-- Module compliance grid -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
     {% for mod_name, mod in cr.modules.items() %}
-    <div style="background:var(--navy-2);border:1px solid {% if mod.level == 'Compliant' %}rgba(22,163,74,.2){% elif mod.level == 'Warning' %}rgba(217,119,6,.2){% else %}rgba(214,55,55,.25){% endif %};border-radius:10px;padding:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div style="font-size:12px;font-weight:700;color:var(--white)">{{ mod_name }}</div>
-        <div style="font-size:13px;font-weight:900;{% if mod.level == 'Compliant' %}color:#4ADE80{% elif mod.level == 'Warning' %}color:#FCD34D{% else %}color:#F87171{% endif %}">{{ mod.compliance_pct }}%</div>
+    <div style="background:var(--navy-2);border:1px solid {% if mod.level == 'Compliant' %}rgba(74,222,128,.2){% elif mod.level == 'Warning' %}rgba(252,211,77,.2){% else %}rgba(214,55,55,.25){% endif %};border-radius:12px;padding:16px;position:relative;overflow:hidden">
+      <!-- Color accent bar -->
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;{% if mod.level == 'Compliant' %}background:#4ADE80{% elif mod.level == 'Warning' %}background:#FCD34D{% else %}background:var(--red){% endif %}"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;margin-top:4px">
+        <div style="font-size:12px;font-weight:700;color:var(--white);line-height:1.3">{{ mod_name }}</div>
+        <div style="font-size:20px;font-weight:900;line-height:1;flex-shrink:0;margin-left:8px;{% if mod.level == 'Compliant' %}color:#4ADE80{% elif mod.level == 'Warning' %}color:#FCD34D{% else %}color:#F87171{% endif %}">{{ mod.compliance_pct }}<span style="font-size:10px;font-weight:700">%</span></div>
       </div>
-      <div style="background:var(--navy-4);border-radius:4px;height:4px;margin-bottom:10px">
-        <div style="height:4px;border-radius:4px;width:{{ mod.compliance_pct }}%;{% if mod.level == 'Compliant' %}background:#4ADE80{% elif mod.level == 'Warning' %}background:#FCD34D{% else %}background:var(--red){% endif %}"></div>
+      <!-- Progress bar -->
+      <div style="background:var(--navy-4);border-radius:4px;height:5px;margin-bottom:12px">
+        <div style="height:5px;border-radius:4px;width:{{ mod.compliance_pct }}%;{% if mod.level == 'Compliant' %}background:#4ADE80{% elif mod.level == 'Warning' %}background:#FCD34D{% else %}background:var(--red){% endif %}"></div>
       </div>
+      <!-- Fields -->
       {% for f in mod.fields %}{% if not f.na %}
       <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px">
         <span style="color:var(--gray-3)">{{ f.label }}</span>
@@ -1836,17 +2050,18 @@
     </div>
 
     {% if cr.top_gaps %}
-    <div class="result-card">
-      <div class="result-header"><span>Top Compliance Gaps</span></div>
+    <!-- Top gaps -->
+    <div class="result-card" style="margin-bottom:20px">
+      <div class="result-header"><span>Top Compliance Gaps — Prioritize These Fields</span></div>
       <div style="padding:0">
         <table class="worst-table">
-          <thead><tr><th>Module</th><th>Field</th><th>Missing</th><th>Compliance</th></tr></thead>
+          <thead><tr><th>Module</th><th>Field</th><th>Missing Records</th><th>Compliance</th></tr></thead>
           <tbody>
           {% for g in cr.top_gaps %}
           <tr>
             <td style="color:var(--gray-4);font-size:11px">{{ g.module }}</td>
-            <td>{{ g.field }}</td>
-            <td style="color:var(--gray-3)">{{ g.missing }} / {{ g.total }}</td>
+            <td style="font-weight:600;color:var(--gray-1)">{{ g.field }}</td>
+            <td style="color:var(--gray-3)">{{ g.missing }} of {{ g.total }}</td>
             <td><span class="score-pill {% if g.pct >= 70 %}mid{% else %}low{% endif %}">{{ g.pct }}%</span></td>
           </tr>
           {% endfor %}
@@ -1855,6 +2070,22 @@
       </div>
     </div>
     {% endif %}
+
+    <!-- Next steps -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:14px;border-top:2px solid #60A5FA">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#60A5FA;margin-bottom:6px">① Fix your gaps</div>
+        <div style="font-size:11px;color:var(--gray-2);line-height:1.55">Work with your RMS vendor to ensure all required fields are captured at dispatch. Prioritize the top gaps table above.</div>
+      </div>
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:14px;border-top:2px solid #4ADE80">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#4ADE80;margin-bottom:6px">② Submit to NERIS</div>
+        <div style="font-size:11px;color:var(--gray-2);line-height:1.55">Connect your NERIS API credentials in FireInsight to submit incidents directly to the national registry without manual uploads.</div>
+      </div>
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:14px;border-top:2px solid #FCD34D">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#FCD34D;margin-bottom:6px">③ Monitor weekly</div>
+        <div style="font-size:11px;color:var(--gray-2);line-height:1.55">Run this check every week to catch regressions early. Share the report with your data officer and training coordinator.</div>
+      </div>
+    </div>
 
     {% elif compliance and compliance.error %}
     <div class="error-banner">{{ compliance.error }}</div>
@@ -1868,6 +2099,37 @@
         <div style="font-size:11px;color:var(--gray-4);margin-top:2px">{{ iso.dept_name }} &middot; {{ im.sample_size }} incidents with response data</div>
       </div>
       <div style="font-size:11px;font-weight:700;padding:4px 14px;border-radius:25px;color:#5EEAD4;background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.25)">&#127795; ISO Evidence</div>
+    </div>
+
+    <!-- ISO explanation -->
+    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:18px 20px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div style="width:36px;height:36px;background:rgba(20,184,166,.12);border:1px solid rgba(20,184,166,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#5EEAD4" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:var(--white)">What is ISO PPC?</div>
+          <div style="font-size:11px;color:var(--gray-4);margin-top:2px">ISO grades every fire department 1–10 — your score directly affects commercial insurance rates across your district</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:8px">ISO key benchmarks</div>
+          <ul style="list-style:none;margin:0;padding:0">
+            <li style="display:flex;align-items:flex-start;gap:7px;margin-bottom:6px;font-size:12px;color:var(--gray-2)"><span style="color:#5EEAD4;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px">▸</span><span><strong style="color:var(--white)">6:00 total response</strong> — alarm to arrival average target</span></li>
+            <li style="display:flex;align-items:flex-start;gap:7px;margin-bottom:6px;font-size:12px;color:var(--gray-2)"><span style="color:#5EEAD4;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px">▸</span><span><strong style="color:var(--white)">4:00 travel at 80th %ile</strong> — ISO credit threshold for travel time</span></li>
+            <li style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--gray-2)"><span style="color:#5EEAD4;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px">▸</span><span><strong style="color:var(--white)">≥90% under 8 min</strong> — NFPA 1710 compliance standard</span></li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:8px">Use this evidence pack to</div>
+          <ul style="list-style:none;margin:0;padding:0">
+            <li style="display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-size:10px;font-weight:700">✓</span>Prepare for ISO re-grading site visits</li>
+            <li style="display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-size:10px;font-weight:700">✓</span>Support budget requests for stations &amp; apparatus</li>
+            <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray-2)"><span style="color:#4ADE80;font-size:10px;font-weight:700">✓</span>Benchmark your response times against peers</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <!-- ISO metric cards -->
@@ -1951,59 +2213,79 @@
     {# ── Staffing Justification Results ── #}
     {% elif staffing and staffing.report %}
     {%- set sr = staffing.report %}
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div>
-        <div style="font-size:15px;font-weight:800;color:var(--white)">Staffing Justification Analysis</div>
-        <div style="font-size:11px;color:var(--gray-4);margin-top:2px">{{ staffing.dept_name }} &middot; {{ sr.total_incidents }} incidents analyzed</div>
+
+    <!-- Staffing header + explanation -->
+    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:16px;padding:24px;margin-bottom:20px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <div style="width:34px;height:34px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+            </div>
+            <div style="font-size:16px;font-weight:800;color:var(--white)">Staffing Justification Analysis</div>
+          </div>
+          <div style="font-size:12px;color:var(--gray-4)">{{ staffing.dept_name }} &middot; {{ sr.total_incidents }} incidents analyzed</div>
+        </div>
+        <div style="font-size:11px;font-weight:700;padding:4px 14px;border-radius:25px;color:#C084FC;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);flex-shrink:0;white-space:nowrap">Staffing Analysis</div>
       </div>
-      <div style="font-size:11px;font-weight:700;padding:4px 14px;border-radius:25px;color:#C084FC;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25)">&#128101; Staffing Analysis</div>
+      <p style="font-size:12px;color:var(--gray-2);line-height:1.65;margin-bottom:12px">This report uses your incident data to quantify demand pressure on your crews — how often multiple calls overlap, how busyness degrades response times, and when your peak demand hours occur. Use these findings to <strong style="color:var(--white)">justify additional positions, apparatus, or shift restructuring</strong> to elected officials and budget committees.</p>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--gray-3);display:flex;align-items:center;gap:5px"><span style="color:#C084FC">&#9670;</span> Present to city council for FTE requests</span>
+        <span style="font-size:11px;color:var(--gray-3);display:flex;align-items:center;gap:5px"><span style="color:#C084FC">&#9670;</span> Support SAFER grant applications</span>
+        <span style="font-size:11px;color:var(--gray-3);display:flex;align-items:center;gap:5px"><span style="color:#C084FC">&#9670;</span> Optimize shift scheduling by peak hours</span>
+      </div>
     </div>
 
-    <!-- Staffing stat cards -->
+    <!-- Key metrics -->
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
-      <div class="dash-stat">
-        <div class="dash-stat-label">Max Concurrent</div>
-        <div class="dash-stat-value" style="{% if sr.max_concurrent >= 3 %}color:#F87171{% elif sr.max_concurrent >= 2 %}color:#FCD34D{% else %}color:#4ADE80{% endif %}">{{ sr.max_concurrent }}</div>
-        <div class="dash-stat-sub">simultaneous calls</div>
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:16px;border-top:2px solid {% if sr.max_concurrent >= 3 %}#F87171{% elif sr.max_concurrent >= 2 %}#FCD34D{% else %}#4ADE80{% endif %}">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-4);margin-bottom:8px">Max Concurrent</div>
+        <div style="font-size:32px;font-weight:900;line-height:1;{% if sr.max_concurrent >= 3 %}color:#F87171{% elif sr.max_concurrent >= 2 %}color:#FCD34D{% else %}color:#4ADE80{% endif %}">{{ sr.max_concurrent }}</div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:4px">simultaneous calls</div>
+        {% if sr.max_concurrent >= 3 %}
+        <div style="font-size:10px;color:#F87171;margin-top:6px;font-weight:600">High demand pressure</div>
+        {% elif sr.max_concurrent >= 2 %}
+        <div style="font-size:10px;color:#FCD34D;margin-top:6px;font-weight:600">Moderate overlap risk</div>
+        {% endif %}
       </div>
-      <div class="dash-stat">
-        <div class="dash-stat-label">Understaffing Events</div>
-        <div class="dash-stat-value" style="{% if sr.understaffing_pct >= 20 %}color:#F87171{% elif sr.understaffing_pct >= 10 %}color:#FCD34D{% else %}color:var(--white){% endif %}">{{ sr.understaffing_pct }}%</div>
-        <div class="dash-stat-sub">of calls ({{ sr.understaffing_count }} incidents)</div>
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:16px;border-top:2px solid {% if sr.understaffing_pct >= 20 %}#F87171{% elif sr.understaffing_pct >= 10 %}#FCD34D{% else %}var(--border-2){% endif %}">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-4);margin-bottom:8px">Understaffing Events</div>
+        <div style="font-size:32px;font-weight:900;line-height:1;{% if sr.understaffing_pct >= 20 %}color:#F87171{% elif sr.understaffing_pct >= 10 %}color:#FCD34D{% else %}color:var(--white){% endif %}">{{ sr.understaffing_pct }}%</div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:4px">{{ sr.understaffing_count }} incidents affected</div>
       </div>
-      <div class="dash-stat">
-        <div class="dash-stat-label">RT — Normal Load</div>
-        <div class="dash-stat-value" style="font-size:20px">{{ sr.avg_rt_normal_fmt }}</div>
-        <div class="dash-stat-sub">0–1 concurrent calls</div>
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:16px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-4);margin-bottom:8px">RT — Normal Load</div>
+        <div style="font-size:26px;font-weight:900;line-height:1;color:var(--white)">{{ sr.avg_rt_normal_fmt }}</div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:4px">0–1 concurrent calls</div>
       </div>
-      <div class="dash-stat">
-        <div class="dash-stat-label">RT — Busy Load</div>
-        <div class="dash-stat-value" style="font-size:20px;{% if sr.rt_degradation_pct and sr.rt_degradation_pct > 20 %}color:#F87171{% elif sr.rt_degradation_pct and sr.rt_degradation_pct > 0 %}color:#FCD34D{% else %}color:var(--white){% endif %}">{{ sr.avg_rt_busy_fmt }}</div>
-        <div class="dash-stat-sub">{% if sr.rt_degradation_pct %}+{{ sr.rt_degradation_pct }}% slower{% else %}2+ concurrent calls{% endif %}</div>
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:16px;border-top:2px solid {% if sr.rt_degradation_pct and sr.rt_degradation_pct > 20 %}#F87171{% elif sr.rt_degradation_pct and sr.rt_degradation_pct > 0 %}#FCD34D{% else %}var(--border-2){% endif %}">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-4);margin-bottom:8px">RT — Busy Load</div>
+        <div style="font-size:26px;font-weight:900;line-height:1;{% if sr.rt_degradation_pct and sr.rt_degradation_pct > 20 %}color:#F87171{% elif sr.rt_degradation_pct and sr.rt_degradation_pct > 0 %}color:#FCD34D{% else %}color:var(--white){% endif %}">{{ sr.avg_rt_busy_fmt }}</div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:4px">{% if sr.rt_degradation_pct %}+{{ sr.rt_degradation_pct }}% slower under load{% else %}2+ concurrent calls{% endif %}</div>
       </div>
     </div>
 
     <!-- Peak demand + worst events -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
       <div class="result-card">
-        <div class="result-header"><span>Peak Demand Hours</span></div>
+        <div class="result-header"><span>Peak Demand Hours</span><span style="font-size:10px;color:var(--gray-4)">Schedule staffing around these windows</span></div>
         <div style="padding:14px 18px">
           {% for h in sr.peak_hours %}
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="font-size:12px;font-weight:700;color:var(--white);min-width:48px">{{ h.hour }}</span>
-            <div style="flex:1;background:var(--navy-4);border-radius:4px;height:6px">
-              <div style="height:6px;border-radius:4px;background:rgba(168,85,247,.6);width:{{ (h.count / sr.peak_hours[0].count * 100) | int }}%"></div>
+            <span style="font-size:12px;font-weight:700;color:var(--white);min-width:52px">{{ h.hour }}</span>
+            <div style="flex:1;background:var(--navy-4);border-radius:4px;height:7px">
+              <div style="height:7px;border-radius:4px;background:linear-gradient(90deg,rgba(168,85,247,.5),rgba(168,85,247,.85));width:{{ (h.count / sr.peak_hours[0].count * 100) | int }}%"></div>
             </div>
-            <span style="font-size:11px;color:var(--gray-3)">{{ h.count }}</span>
+            <span style="font-size:11px;font-weight:600;color:var(--gray-2);min-width:20px;text-align:right">{{ h.count }}</span>
           </div>
           {% endfor %}
         </div>
       </div>
       <div class="result-card">
-        <div class="result-header"><span>Highest Concurrency Events</span></div>
+        <div class="result-header"><span>Highest Concurrency Events</span><span style="font-size:10px;color:var(--gray-4)">Evidence for the board</span></div>
         <div style="padding:0">
           <table class="worst-table">
-            <thead><tr><th>Date / Time</th><th>Type</th><th>Concurrent</th></tr></thead>
+            <thead><tr><th>Date / Time</th><th>Type</th><th>Active Units</th></tr></thead>
             <tbody>
             {% for ev in sr.worst_events %}
             <tr>
@@ -2086,7 +2368,7 @@
         {% endfor %}
         {% if convert.warnings %}
         <div style="margin-top:20px;padding:12px 16px;background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.2);border-radius:8px">
-          <p style="font-size:12px;font-weight:600;color:#FCD34D;margin-bottom:4px">{{ convert.warnings | length }} warning(s)</p>
+          <p style="font-size:12px;font-weight:600;color:#FCD34D;margin-bottom:4px">{{ convert.warnings | length }} warning(s) — records needing manual review</p>
           {% for w in convert.warnings[:3] %}
           <p style="font-size:11px;color:#FDE68A;line-height:1.5">{{ w }}</p>
           {% endfor %}
@@ -2095,6 +2377,29 @@
           {% endif %}
         </div>
         {% endif %}
+
+        <!-- Next steps after conversion -->
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+          <div style="font-size:12px;font-weight:700;color:var(--gray-2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:14px">What to do next</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="background:var(--navy-3);border:1px solid var(--border-2);border-radius:10px;padding:14px">
+              <div style="font-size:11px;font-weight:700;color:#4ADE80;margin-bottom:6px">&#10003; Download your NERIS JSON</div>
+              <div style="font-size:11px;color:var(--gray-3);line-height:1.5">Use the button above to download the converted file. This is the format accepted by the NERIS national registry for submission.</div>
+            </div>
+            <div style="background:var(--navy-3);border:1px solid var(--border-2);border-radius:10px;padding:14px">
+              <div style="font-size:11px;font-weight:700;color:#60A5FA;margin-bottom:6px">&#128279; Connect NERIS API</div>
+              <div style="font-size:11px;color:var(--gray-3);line-height:1.5">Click "Connect NERIS" in the header to link your department credentials and submit incidents directly without manual uploads.</div>
+            </div>
+            <div style="background:var(--navy-3);border:1px solid var(--border-2);border-radius:10px;padding:14px">
+              <div style="font-size:11px;font-weight:700;color:#FCD34D;margin-bottom:6px">&#9888; Fix warnings first</div>
+              <div style="font-size:11px;color:var(--gray-3);line-height:1.5">Incidents with warnings have missing coordinates, unknown incident type codes, or malformed dates. Fix these in your RMS before submission.</div>
+            </div>
+            <div style="background:var(--navy-3);border:1px solid var(--border-2);border-radius:10px;padding:14px">
+              <div style="font-size:11px;font-weight:700;color:#C084FC;margin-bottom:6px">&#10003; Run Compliance Check</div>
+              <div style="font-size:11px;color:var(--gray-3);line-height:1.5">After submission, use NERIS Compliance in the left nav to verify all 6 required modules are complete and your department is fully compliant.</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2267,6 +2572,8 @@
     <div class="error-banner">{{ error }}</div>
     {% endif %}
 
+  </div><!-- /results-area -->
+
   </main>
 </div>
 
@@ -2276,7 +2583,10 @@
     'benchmark-controls','compliance-controls','iso-controls','staffing-controls',
     'convert-controls','map-controls'];
 
-  function selectTab(el) {
+  // Server-rendered flags for showing results on initial load
+  const _hasConvertResult = {{ 'true' if (convert and convert.summary) else 'false' }};
+
+  function selectTab(el, autoRun = false) {
     document.querySelectorAll('.nav-item[data-value]').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     const val = el.dataset.value;
@@ -2305,6 +2615,26 @@
     if (isMap)        { document.getElementById('map-controls').style.display = 'flex'; }
     document.getElementById('neris-connect-panel').style.display = 'none';
 
+    // Show/hide tab-specific content pages
+    const convertPage   = document.getElementById('convert-page');
+    const nerisMainPage = document.getElementById('neris-connect-main');
+    const resultsArea   = document.getElementById('results-area');
+
+    if (convertPage)   convertPage.style.display   = isConvert ? 'block' : 'none';
+    if (nerisMainPage) nerisMainPage.style.display  = 'none';
+
+    // Hide results when switching to convert/map (no auto-submit for these)
+    if (resultsArea) {
+      if (isMap) {
+        resultsArea.style.display = 'none';
+      } else if (isConvert) {
+        // Show results only if convert results already exist on this page load
+        resultsArea.style.display = _hasConvertResult ? '' : 'none';
+      } else {
+        resultsArea.style.display = '';
+      }
+    }
+
     // Init EV map/chart when tab first opened
     if (isEv)   setTimeout(() => { initEvChart(); initEvMap();   }, 150);
     if (isRisk) setTimeout(() => { initRiskMap(); }, 150);
@@ -2325,6 +2655,21 @@
     }
 
     if (isMap && !_mapInitialized) loadMap();
+
+    // Auto-submit the form on user-initiated tab clicks (not initial page load)
+    if (autoRun && !isConvert && !isMap) {
+      const formIds = {
+        ev: 'ev-controls', risk: 'risk-controls', benchmark: 'benchmark-controls',
+        compliance: 'compliance-controls', iso: 'iso-controls', staffing: 'staffing-controls',
+        quality: 'quality-controls', trends: 'main-form', report: 'main-form', grant: 'main-form'
+      };
+      const formId = formIds[val];
+      if (formId) {
+        if (isReport) document.getElementById('report_type').value = val;
+        showLoading();
+        document.getElementById(formId).submit();
+      }
+    }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -2372,15 +2717,63 @@
 
   function toggleNerisPanel() {
     _nerisConnectOpen = !_nerisConnectOpen;
-    const panel = document.getElementById('neris-connect-panel');
+    const nerisMain = document.getElementById('neris-connect-main');
+    const resultsArea = document.getElementById('results-area');
+    const convertPage = document.getElementById('convert-page');
     if (_nerisConnectOpen) {
       document.querySelectorAll('.nav-item[data-value]').forEach(t => t.classList.remove('active'));
       _ctrlBars.forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
       const dash = document.getElementById('dashboard');
       if (dash) dash.style.display = 'none';
-      panel.style.display = 'block';
+      document.getElementById('map-container').classList.remove('active');
+      document.getElementById('main-panel').style.display = 'block';
+      if (resultsArea) resultsArea.style.display = 'none';
+      if (convertPage) convertPage.style.display = 'none';
+      if (nerisMain) nerisMain.style.display = 'block';
     } else {
-      panel.style.display = 'none';
+      if (nerisMain) nerisMain.style.display = 'none';
+    }
+  }
+
+  async function connectNerisMain() {
+    const clientId     = document.getElementById('neris-client-id-main').value.trim();
+    const clientSecret = document.getElementById('neris-client-secret-main').value.trim();
+    const resultEl     = document.getElementById('neris-connect-result-main');
+
+    if (!clientId || !clientSecret) {
+      resultEl.style.display = 'block';
+      resultEl.style.color = '#F87171';
+      resultEl.textContent = 'Please enter both Client ID and Client Secret.';
+      return;
+    }
+
+    resultEl.style.display = 'block';
+    resultEl.style.color = 'var(--gray-3)';
+    resultEl.textContent = 'Testing connection...';
+
+    const fd = new FormData();
+    fd.append('client_id', clientId);
+    fd.append('client_secret', clientSecret);
+
+    try {
+      const resp = await fetch('/neris/connect', { method: 'POST', body: fd });
+      const data = await resp.json();
+      if (data.ok) {
+        resultEl.style.color = '#4ADE80';
+        resultEl.innerHTML = '<strong>Connected!</strong> ' + data.message;
+        document.getElementById('neris-dot').style.background = '#4ADE80';
+        document.getElementById('neris-status-label').textContent = 'NERIS Connected';
+        document.getElementById('neris-status-btn').style.borderColor = 'rgba(74,222,128,.4)';
+        document.getElementById('neris-status-btn').style.color = '#4ADE80';
+      } else {
+        resultEl.style.color = '#F87171';
+        resultEl.textContent = data.message;
+        document.getElementById('neris-dot').style.background = '#F87171';
+        document.getElementById('neris-status-label').textContent = 'Connection Failed';
+      }
+    } catch(e) {
+      resultEl.style.color = '#F87171';
+      resultEl.textContent = 'Network error: ' + e.message;
     }
   }
 
@@ -2497,7 +2890,8 @@
     const file = input.files[0];
     if (file) {
       document.getElementById('drop-label').textContent = file.name;
-      document.getElementById('convert-submit').style.display = 'flex';
+      showLoading();
+      document.getElementById('convert-form').submit();
     }
   }
   function handleDrop(e) {
@@ -2512,13 +2906,25 @@
     }
   }
 
-  // ── Map ───────────────────────────────────────────────────────────────────
-  let _map = null;
+  // ── Map (ArcGIS/ESRI) ────────────────────────────────────────────────────
+  let _mapView = null;
   let _mapInitialized = false;
   let _allIncidents = [];
-  let _clusterGroup = null;
+  let _incidentLayer = null;
 
-  // Color by incident category
+  // Pre-load all ArcGIS modules once
+  const _esriReady = new Promise(resolve => {
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/layers/GraphicsLayer",
+      "esri/Graphic",
+    ], (Map, MapView, FeatureLayer, GraphicsLayer, Graphic) => {
+      resolve({ Map, MapView, FeatureLayer, GraphicsLayer, Graphic });
+    });
+  });
+
   const TYPE_COLORS = {
     'Fire':         '#EF4444',
     'EMS':          '#3B82F6',
@@ -2540,45 +2946,6 @@
     if (t.includes('false alarm') || t.includes('alarm')) return 'False Alarm';
     if (t.includes('service') || t.includes('public assist')) return 'Service Call';
     return 'Other';
-  }
-
-  function makeMarker(inc) {
-    const cat   = typeCategory(inc.type);
-    const color = TYPE_COLORS[cat] || DEFAULT_COLOR;
-
-    const icon = L.divIcon({
-      className: '',
-      html: `<div style="
-        width:12px;height:12px;
-        background:${color};
-        border:2px solid rgba(255,255,255,.5);
-        border-radius:50%;
-        box-shadow:0 0 6px ${color}88;
-      "></div>`,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
-    });
-
-    const time = inc.time ? new Date(inc.time).toLocaleString() : '—';
-    let respTime = '—';
-    if (inc.time && inc.arrival) {
-      const secs = Math.round((new Date(inc.arrival) - new Date(inc.time)) / 1000);
-      if (secs > 0 && secs < 7200) respTime = `${Math.floor(secs/60)}m ${secs%60}s`;
-    }
-
-    const popup = `
-      <div style="min-width:180px">
-        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px">${inc.type || 'Unknown'}</div>
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-          <span style="width:8px;height:8px;background:${color};border-radius:50%;display:inline-block;flex-shrink:0"></span>
-          <span style="font-size:11px;color:#8A9BA8">${cat}</span>
-        </div>
-        <div style="font-size:11px;color:#8A9BA8;margin-bottom:2px">📅 ${time}</div>
-        <div style="font-size:11px;color:#8A9BA8">⏱ Response: ${respTime}</div>
-        ${inc.id ? `<div style="font-size:10px;color:#4A5C68;margin-top:6px">${inc.id}</div>` : ''}
-      </div>`;
-
-    return L.marker([inc.lat, inc.lon], { icon }).bindPopup(popup, { maxWidth: 240 });
   }
 
   function buildLegend(counts) {
@@ -2616,25 +2983,74 @@
     document.getElementById('map-counts').style.display = 'block';
   }
 
-  function applyMapFilter() {
-    if (!_map || !_clusterGroup) return;
-    const filter = document.getElementById('map-type-filter').value;
-    _clusterGroup.clearLayers();
+  function _buildIncidentLayer(incidents, FeatureLayer, Graphic, filter) {
+    const filtered = filter ? incidents.filter(inc => typeCategory(inc.type) === filter) : incidents;
+    const graphics = filtered.map((inc, i) => {
+      const cat = typeCategory(inc.type);
+      const time = inc.time ? new Date(inc.time).toLocaleString() : '—';
+      let respTime = '—';
+      if (inc.time && inc.arrival) {
+        const secs = Math.round((new Date(inc.arrival) - new Date(inc.time)) / 1000);
+        if (secs > 0 && secs < 7200) respTime = `${Math.floor(secs/60)}m ${secs%60}s`;
+      }
+      return new Graphic({
+        geometry: { type: "point", longitude: inc.lon, latitude: inc.lat },
+        attributes: { ObjectID: i, incType: inc.type || 'Unknown', category: cat, dispTime: time, respTime, incId: inc.id || '' },
+      });
+    });
 
-    const filtered = filter
-      ? _allIncidents.filter(inc => typeCategory(inc.type) === filter)
-      : _allIncidents;
+    const uniqueValueInfos = Object.entries(TYPE_COLORS).map(([cat, color]) => ({
+      value: cat,
+      symbol: { type: "simple-marker", color, outline: { color: [255,255,255,0.5], width: 1 }, size: 10 },
+    }));
 
-    filtered.forEach(inc => _clusterGroup.addLayer(makeMarker(inc)));
-    document.getElementById('map-stat-mapped').innerHTML =
-      `${filtered.length} <span>${filter ? filter.toLowerCase() : 'mapped'}</span>`;
+    return new FeatureLayer({
+      source: graphics,
+      objectIdField: "ObjectID",
+      fields: [
+        { name: "ObjectID",  type: "oid"    },
+        { name: "incType",   type: "string" },
+        { name: "category",  type: "string" },
+        { name: "dispTime",  type: "string" },
+        { name: "respTime",  type: "string" },
+        { name: "incId",     type: "string" },
+      ],
+      renderer: {
+        type: "unique-value",
+        field: "category",
+        uniqueValueInfos,
+        defaultSymbol: { type: "simple-marker", color: DEFAULT_COLOR, outline: { color: [255,255,255,0.5], width: 1 }, size: 10 },
+      },
+      featureReduction: {
+        type: "cluster",
+        clusterRadius: "40px",
+        clusterMinSize: "24px",
+        clusterMaxSize: "54px",
+        symbol: { type: "simple-marker", style: "circle", color: [214, 55, 55, 0.85], outline: { color: [255,255,255,0.3], width: 1.5 }, size: "34px" },
+        labelingInfo: [{
+          labelExpressionInfo: { expression: "$feature.cluster_count" },
+          symbol: { type: "text", color: "white", font: { size: "12px", weight: "bold" } },
+          labelPlacement: "center-center",
+        }],
+        popupTemplate: { title: "{cluster_count} Incidents", content: "Click to zoom and see individual incidents." },
+      },
+      popupTemplate: {
+        title: "{incType}",
+        content: `<div style="font-size:12px;color:#C2C2C2;font-family:'Geist',sans-serif">
+          <div style="margin-bottom:4px"><strong style="color:#fff">Category:</strong> {category}</div>
+          <div style="margin-bottom:4px"><strong style="color:#fff">Time:</strong> {dispTime}</div>
+          <div style="margin-bottom:4px"><strong style="color:#fff">Response:</strong> {respTime}</div>
+          <div style="color:#4A5C68;margin-top:6px;font-size:10px">{incId}</div>
+        </div>`,
+      },
+    });
   }
 
   async function loadMap() {
-    const useMock  = document.getElementById('map-use-mock').checked;
-    const nerisId  = document.getElementById('map-neris-id')?.value || 'MOCK-001';
-    const start    = document.getElementById('map-start').value;
-    const end      = document.getElementById('map-end').value;
+    const useMock = document.getElementById('map-use-mock').checked;
+    const nerisId = document.getElementById('map-neris-id')?.value || 'MOCK-001';
+    const start   = document.getElementById('map-start').value;
+    const end     = document.getElementById('map-end').value;
 
     const params = new URLSearchParams({ use_mock: useMock, neris_id: nerisId, start, end });
     const res    = await fetch(`/map-data?${params}`);
@@ -2644,55 +3060,33 @@
 
     _allIncidents = data.incidents || [];
 
-    // Init map once
+    const { Map, MapView, FeatureLayer, Graphic } = await _esriReady;
+
     if (!_mapInitialized) {
-      _map = L.map('map', {
-        center: [37.5, -77.4],
+      const esriMap = new Map({ basemap: "dark-gray-vector" });
+      _mapView = new MapView({
+        container: "map",
+        map: esriMap,
+        center: [-77.4, 37.5],
         zoom: 11,
-        zoomControl: true,
+        ui: { components: ["zoom", "compass"] },
+        popup: { dockEnabled: false, dockOptions: { buttonEnabled: false } },
       });
-
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap © CARTO',
-        subdomains: 'abcd',
-        maxZoom: 19,
-      }).addTo(_map);
-
       _mapInitialized = true;
     }
 
-    // Rebuild cluster group
-    if (_clusterGroup) _map.removeLayer(_clusterGroup);
-    _clusterGroup = L.markerClusterGroup({
-      maxClusterRadius: 40,
-      iconCreateFunction(cluster) {
-        const count = cluster.getChildCount();
-        return L.divIcon({
-          html: `<div style="
-            background:rgba(214,55,55,.85);
-            border:2px solid rgba(255,255,255,.3);
-            color:#fff;font-weight:700;font-size:12px;
-            width:34px;height:34px;border-radius:50%;
-            display:flex;align-items:center;justify-content:center;
-            box-shadow:0 0 12px rgba(214,55,55,.4);
-          ">${count}</div>`,
-          iconSize: [34, 34], iconAnchor: [17, 17],
-          className: '',
-        });
-      },
-    });
+    if (_incidentLayer) _mapView.map.remove(_incidentLayer);
+    _incidentLayer = _buildIncidentLayer(_allIncidents, FeatureLayer, Graphic, null);
+    _mapView.map.add(_incidentLayer);
 
-    _allIncidents.forEach(inc => _clusterGroup.addLayer(makeMarker(inc)));
-    _map.addLayer(_clusterGroup);
-
-    // Fit to data
     if (_allIncidents.length) {
       const lats = _allIncidents.map(i => i.lat);
       const lons = _allIncidents.map(i => i.lon);
-      _map.fitBounds([[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]], { padding: [32, 32] });
+      _mapView.goTo({
+        target: { type: "extent", xmin: Math.min(...lons), ymin: Math.min(...lats), xmax: Math.max(...lons), ymax: Math.max(...lats), spatialReference: { wkid: 4326 } },
+      }, { padding: { top: 32, bottom: 32, left: 32, right: 32 }, animate: false });
     }
 
-    // Stats
     const counts = {};
     _allIncidents.forEach(inc => {
       const cat = typeCategory(inc.type);
@@ -2704,8 +3098,18 @@
     document.getElementById('map-stat-bar').style.display = 'flex';
     buildLegend(counts);
     buildSidebarCounts(counts, _allIncidents.length);
+  }
 
-    setTimeout(() => _map.invalidateSize(), 100);
+  async function applyMapFilter() {
+    if (!_mapView || !_allIncidents.length) return;
+    const filter = document.getElementById('map-type-filter').value;
+    const { FeatureLayer, Graphic } = await _esriReady;
+    if (_incidentLayer) _mapView.map.remove(_incidentLayer);
+    _incidentLayer = _buildIncidentLayer(_allIncidents, FeatureLayer, Graphic, filter);
+    _mapView.map.add(_incidentLayer);
+    const filtered = filter ? _allIncidents.filter(inc => typeCategory(inc.type) === filter) : _allIncidents;
+    document.getElementById('map-stat-mapped').innerHTML =
+      `${filtered.length} <span>${filter ? filter.toLowerCase() : 'mapped'}</span>`;
   }
 
   // ── EV map & chart data (injected server-side) ────────────────────────────
@@ -2752,61 +3156,81 @@
     });
   }
 
-  // EV location map
-  let _evMap = null, _evMapInit = false;
-  function initEvMap() {
+  // EV location map (ArcGIS)
+  let _evMapView = null, _evMapInit = false;
+  async function initEvMap() {
     const el = document.getElementById('ev-map');
     if (!el || _evMapInit || !_evMapPoints.length) return;
-    _evMap = L.map('ev-map', { zoomControl: false, scrollWheelZoom: false });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '', subdomains: 'abcd', maxZoom: 19,
-    }).addTo(_evMap);
-    _evMapPoints.forEach(p => {
-      L.circleMarker([p.lat, p.lon], {
-        radius: 9, fillColor: '#F59E0B', color: 'rgba(255,255,255,.5)',
-        fillOpacity: 0.85, weight: 1.5,
-      }).bindPopup(`<div style="color:#fff"><strong>${p.type}</strong><br><small style="color:#8A9BA8">${p.time}</small></div>`)
-       .addTo(_evMap);
+    const { Map, MapView, GraphicsLayer, Graphic } = await _esriReady;
+    const evMap = new Map({ basemap: "dark-gray-vector" });
+    _evMapView = new MapView({
+      container: "ev-map",
+      map: evMap,
+      ui: { components: [] },
     });
+    const layer = new GraphicsLayer();
+    _evMapPoints.forEach(p => {
+      const time = p.time ? new Date(p.time).toLocaleString() : '—';
+      layer.add(new Graphic({
+        geometry: { type: "point", longitude: p.lon, latitude: p.lat },
+        symbol: { type: "simple-marker", color: [245, 158, 11, 0.85], outline: { color: [255,255,255,0.5], width: 1.5 }, size: 10 },
+        popupTemplate: {
+          title: p.type || "EV / Battery Fire",
+          content: `<div style="font-size:12px;color:#C2C2C2;font-family:'Geist',sans-serif">${time}</div>`,
+        },
+      }));
+    });
+    evMap.add(layer);
     const lats = _evMapPoints.map(p => p.lat);
     const lons = _evMapPoints.map(p => p.lon);
-    _evMap.fitBounds([[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]], { padding: [16, 16] });
+    _evMapView.goTo({
+      target: { type: "extent", xmin: Math.min(...lons), ymin: Math.min(...lats), xmax: Math.max(...lons), ymax: Math.max(...lats), spatialReference: { wkid: 4326 } },
+    }, { padding: { top: 16, bottom: 16, left: 16, right: 16 }, animate: false });
     _evMapInit = true;
-    setTimeout(() => _evMap.invalidateSize(), 100);
   }
 
-  // Community risk map
-  let _riskMap = null, _riskMapInit = false;
+  // Community risk map (ArcGIS)
+  let _riskMapView = null, _riskMapInit = false;
   const RISK_COLORS = { Critical: '#EF4444', High: '#F97316', Medium: '#EAB308', Low: '#22C55E' };
-  function initRiskMap() {
+  async function initRiskMap() {
     const el = document.getElementById('risk-map');
     if (!el || _riskMapInit || !_riskZones.length) return;
-    _riskMap = L.map('risk-map', { zoomControl: true });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '', subdomains: 'abcd', maxZoom: 19,
-    }).addTo(_riskMap);
+    const { Map, MapView, GraphicsLayer, Graphic } = await _esriReady;
+    const riskMap = new Map({ basemap: "dark-gray-vector" });
+    _riskMapView = new MapView({
+      container: "risk-map",
+      map: riskMap,
+      ui: { components: ["zoom"] },
+    });
+    const layer = new GraphicsLayer();
     _riskZones.forEach(z => {
       const color = RISK_COLORS[z.risk_level] || '#64748B';
-      const radius = 10 + (z.risk_score / 100) * 22;
+      const size = 20 + (z.risk_score / 100) * 44;
       const rt = z.avg_response_seconds
         ? `${Math.floor(z.avg_response_seconds/60)}m ${String(z.avg_response_seconds%60).padStart(2,'0')}s`
         : '—';
-      L.circleMarker([z.lat, z.lon], {
-        radius, fillColor: color, color: 'rgba(255,255,255,.2)',
-        fillOpacity: 0.55, weight: 1,
-      }).bindPopup(`
-        <div style="min-width:180px">
-          <div style="font-size:13px;font-weight:700;color:${color};margin-bottom:5px">${z.risk_level} Risk — ${z.risk_score}/100</div>
-          <div style="font-size:11px;color:#C2C2C2">${z.incident_count} incidents</div>
-          <div style="font-size:11px;color:#8A9BA8;margin-top:2px">${z.dominant_type}</div>
-          <div style="font-size:11px;color:#8A9BA8;margin-top:2px">Avg response: ${rt}</div>
-        </div>`).addTo(_riskMap);
+      const hexToRgb = h => { const r = parseInt(h.slice(1,3),16), g = parseInt(h.slice(3,5),16), b = parseInt(h.slice(5,7),16); return [r,g,b]; };
+      const [r,g,b] = hexToRgb(color);
+      layer.add(new Graphic({
+        geometry: { type: "point", longitude: z.lon, latitude: z.lat },
+        symbol: { type: "simple-marker", color: [r,g,b,0.55], outline: { color: [255,255,255,0.2], width: 1 }, size: `${size}px` },
+        popupTemplate: {
+          title: `${z.risk_level} Risk — ${z.risk_score}/100`,
+          content: `<div style="font-size:12px;color:#C2C2C2;font-family:'Geist',sans-serif">
+            <div><strong style="color:#fff">${z.incident_count}</strong> incidents</div>
+            <div style="margin-top:4px">${z.dominant_type}</div>
+            <div style="margin-top:4px">Avg response: ${rt}</div>
+          </div>`,
+        },
+      }));
     });
+    riskMap.add(layer);
     const lats = _riskZones.map(z => z.lat);
     const lons = _riskZones.map(z => z.lon);
-    _riskMap.fitBounds([[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]], { padding: [24, 24] });
+    _riskMapView.goTo({
+      target: { type: "extent", xmin: Math.min(...lons), ymin: Math.min(...lats), xmax: Math.max(...lons), ymax: Math.max(...lats), spatialReference: { wkid: 4326 } },
+    }, { padding: { top: 24, bottom: 24, left: 24, right: 24 }, animate: false });
     _riskMapInit = true;
-    setTimeout(() => _riskMap.invalidateSize(), 100);
   }
 
   // ── Dashboard ─────────────────────────────────────────────────────────────
@@ -2854,43 +3278,39 @@
       });
     }
 
-    // Mini map (non-interactive preview)
+    // Mini map — ArcGIS non-interactive preview
     const miniMapEl = document.getElementById('dash-mini-map');
     if (miniMapEl && !_dashMiniMap) {
       const mapPoints = {{ dashboard.map_points | tojson }};
-      _dashMiniMap = L.map('dash-mini-map', {
-        zoomControl: false,
-        dragging: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        boxZoom: false,
-        keyboard: false,
-        tap: false,
+      _esriReady.then(({ Map, MapView, GraphicsLayer, Graphic }) => {
+        const miniEsriMap = new Map({ basemap: "dark-gray-vector" });
+        _dashMiniMap = new MapView({
+          container: "dash-mini-map",
+          map: miniEsriMap,
+          ui: { components: [] },
+          constraints: { snapToZoom: false },
+          popup: { autoOpenEnabled: false },
+        });
+        const layer = new GraphicsLayer({ listMode: "hide" });
+        mapPoints.forEach(p => {
+          const cat   = typeCategory(p.type);
+          const color = TYPE_COLORS[cat] || DEFAULT_COLOR;
+          const hexToRgba = (h, a) => { const r = parseInt(h.slice(1,3),16), g = parseInt(h.slice(3,5),16), b = parseInt(h.slice(5,7),16); return [r,g,b,a]; };
+          layer.add(new Graphic({
+            geometry: { type: "point", longitude: p.lon, latitude: p.lat },
+            symbol: { type: "simple-marker", color: hexToRgba(color, 0.75), outline: { color: [255,255,255,0.3], width: 0.5 }, size: 6 },
+          }));
+        });
+        miniEsriMap.add(layer);
+        if (mapPoints.length) {
+          const lats = mapPoints.map(p => p.lat);
+          const lons = mapPoints.map(p => p.lon);
+          _dashMiniMap.goTo({
+            target: { type: "extent", xmin: Math.min(...lons), ymin: Math.min(...lats), xmax: Math.max(...lons), ymax: Math.max(...lats), spatialReference: { wkid: 4326 } },
+          }, { padding: { top: 16, bottom: 16, left: 16, right: 16 }, animate: false });
+        }
+        miniMapEl.style.pointerEvents = 'none';
       });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '', subdomains: 'abcd', maxZoom: 19,
-      }).addTo(_dashMiniMap);
-
-      mapPoints.forEach(p => {
-        const cat   = typeCategory(p.type);
-        const color = TYPE_COLORS[cat] || DEFAULT_COLOR;
-        L.circleMarker([p.lat, p.lon], {
-          radius: 4, fillColor: color, color: '#fff',
-          fillOpacity: 0.75, weight: 0.5, opacity: 0.3,
-        }).addTo(_dashMiniMap);
-      });
-
-      if (mapPoints.length) {
-        const lats = mapPoints.map(p => p.lat);
-        const lons = mapPoints.map(p => p.lon);
-        _dashMiniMap.fitBounds(
-          [[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]],
-          { padding: [16, 16] }
-        );
-      }
-
-      // Make map non-interactive so the card click-through works
-      miniMapEl.style.pointerEvents = 'none';
     }
   }
 
