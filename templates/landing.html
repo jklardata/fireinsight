@@ -280,6 +280,32 @@
     .logo-pill-icon { width: 30px; height: 30px; background: var(--navy-3); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
     .logo-pill-icon svg { width: 16px; height: 16px; }
 
+    /* ── URGENCY STRIP ── */
+    .urgency-strip {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(214,55,55,.05);
+      padding: 0 24px;
+    }
+    .urgency-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px; background: var(--border);
+    }
+    .urgency-card {
+      background: var(--navy);
+      padding: 32px 28px;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .urgency-icon {
+      width: 42px; height: 42px; flex-shrink: 0;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .urgency-card h4 { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 5px; }
+    .urgency-card p { font-size: 13px; color: var(--gray-3); line-height: 1.6; }
+
     /* ── FEATURES ── */
     .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
 
@@ -629,6 +655,7 @@
     <li><a href="#features">Features</a></li>
     <li><a href="#how-it-works">How It Works</a></li>
     <li><a href="#use-cases">Use Cases</a></li>
+    <li><a href="/app" style="color:#F87171;font-weight:700">Try It Free</a></li>
   </ul>
   <div class="nav-cta">
     <a href="/app" class="btn btn-sm btn-ghost">Open App</a>
@@ -660,9 +687,9 @@
     <div class="preview-body">
       <div class="preview-sidebar">
         <div class="preview-tabs">
-          <div class="preview-tab active">Trends</div>
-          <div class="preview-tab">Chief</div>
-          <div class="preview-tab">Grant</div>
+          <div class="preview-tab active">Compliance</div>
+          <div class="preview-tab">ISO Pack</div>
+          <div class="preview-tab">Staffing</div>
         </div>
         <div class="preview-field-label"></div>
         <div class="preview-field"></div>
@@ -749,6 +776,21 @@
     <h2 class="section-title">The analytics team your<br />department can't afford to hire</h2>
     <p class="section-body">Export from your RMS. Upload to FireInsight. Get back the documents, insights, and reports that used to take hours—automatically.</p>
     <div class="features-grid">
+      <div class="feature-card featured">
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>NERIS Compliance Tracker <span class="new-badge">NEW</span></h3>
+        <p>The Jan 2026 mandate already passed. FireInsight checks all 6 NERIS mandatory modules against your data and shows exactly where your department has gaps—before an auditor does.</p>
+      </div>
+      <div class="feature-card featured">
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>
+        <h3>ISO Evidence Pack <span class="new-badge">NEW</span></h3>
+        <p>Your ISO rating affects every homeowner's insurance premium in your district. FireInsight analyzes response times against ISO benchmarks and generates a formatted evidence narrative for your PPC submission.</p>
+      </div>
+      <div class="feature-card featured">
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>
+        <h3>Staffing Justification <span class="new-badge">NEW</span></h3>
+        <p>Detect simultaneous incidents, quantify response time degradation under load, and generate a board-presentation-ready narrative that makes the staffing budget case with hard numbers—not gut feel.</p>
+      </div>
       <div class="feature-card">
         <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zm0 11h7v7H3zm11-11h7v7h-7zm4 11v3m0 3v-3m0 0h-3m3 0h3"/></svg></div>
         <h3>Incident Trend Analysis</h3>
@@ -757,31 +799,58 @@
       <div class="feature-card">
         <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg></div>
         <h3>Chief's Monthly Report</h3>
-        <p>A complete, board-ready narrative report—generated in seconds from your incident data. Stop spending Sunday nights writing what AI can write in 30 seconds.</p>
+        <p>A complete, board-ready narrative report generated in seconds from your incident data. Stop spending Sunday nights writing what AI can write in 30 seconds.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
         <h3>Grant Narrative Generator</h3>
-        <p>AFG and SAFER grant narratives written from your actual incident data. A won grant can be worth $500K+. No competitor automates this.</p>
+        <p>AFG and SAFER grant narratives written from your actual incident data. A won grant can be worth $500K+. No competitor automates this the way FireInsight does.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
         <h3>Data Quality Scorer</h3>
-        <p>Bad data means bad reports and weak grant applications. FireInsight scores every record for completeness and flags issues before they cost you.</p>
-      </div>
-      <div class="feature-card featured">
-        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg></div>
-        <h3>NFIRS → NERIS Converter <span class="new-badge">NEW</span></h3>
-        <p>Mid-transition to NERIS? Upload your NFIRS export and get NERIS-compatible data instantly. No waiting on your RMS vendor to finish their migration.</p>
+        <p>Bad data means weak grant applications and unreliable reports. FireInsight scores every record, flags gaps, and tells you exactly what to fix before it costs you.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div>
-        <h3>Works With Your Existing RMS</h3>
-        <p>Not a replacement—an upgrade. Export from ESO, FIREHOUSE, ImageTrend, or NERIS directly. FireInsight adds intelligence on top of whatever you already have.</p>
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg></div>
+        <h3>NFIRS → NERIS Converter</h3>
+        <p>Still on NFIRS? Upload your existing export and get NERIS-compatible data instantly—no waiting months for your RMS vendor to finish their migration.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Peer Benchmark &amp; Community Risk</h3>
+        <p>See how your response times, call mix, and structure fire rates compare against peer departments. Map community risk zones to guide station placement and resource decisions.</p>
       </div>
     </div>
   </div>
 </section>
+
+<!-- COMPLIANCE URGENCY STRIP -->
+<div class="urgency-strip">
+  <div class="urgency-inner">
+    <div class="urgency-card">
+      <div class="urgency-icon" style="background:rgba(214,55,55,.12)">&#9888;</div>
+      <div>
+        <h4>NERIS Mandate — Deadline Passed</h4>
+        <p>January 1, 2026 was the federal reporting deadline. FireInsight's Compliance Tracker shows exactly which NERIS fields your department is missing before it costs you.</p>
+      </div>
+    </div>
+    <div class="urgency-card" style="background:var(--navy-2)">
+      <div class="urgency-icon" style="background:rgba(20,184,166,.1)">&#127795;</div>
+      <div>
+        <h4>ISO Rating Affects Every Homeowner</h4>
+        <p>A one-point improvement in your PPC rating can lower homeowner insurance premiums across your entire district. The ISO Evidence Pack gives you the formatted data to back your next review.</p>
+      </div>
+    </div>
+    <div class="urgency-card">
+      <div class="urgency-icon" style="background:rgba(168,85,247,.1)">&#128101;</div>
+      <div>
+        <h4>Staffing Requests Die Without Data</h4>
+        <p>Concurrent incident analysis quantifies exactly how often simultaneous calls degrade response times — turning a gut-feel staffing request into an argument the budget committee can't ignore.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- HOW IT WORKS -->
 <section class="section how-bg" id="how-it-works">
@@ -798,7 +867,7 @@
       <div class="step">
         <div class="step-num">2</div>
         <h3>Choose What You Need</h3>
-        <p>Grant narrative for an upcoming AFG application? Monthly board report? Data quality audit before ISO review? Pick the output that matters right now.</p>
+        <p>NERIS compliance check? Staffing justification for the budget meeting? ISO evidence pack? AFG grant narrative? Pick the output your department needs right now.</p>
       </div>
       <div class="step">
         <div class="step-num">3</div>
@@ -867,6 +936,27 @@
     <h2 class="section-title">Hours of work.<br />Done in seconds.</h2>
     <p class="section-body">Every one of these used to mean a chief manually pulling data and writing prose. Not anymore.</p>
     <div class="use-cases-grid">
+      <div class="use-case" style="border-color:rgba(214,55,55,.2)">
+        <div class="use-case-icon"><svg viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div>
+          <h4>NERIS Compliance Audit <span style="font-size:10px;font-weight:700;background:var(--red);color:#fff;padding:1px 7px;border-radius:25px;margin-left:6px;vertical-align:middle">NEW</span></h4>
+          <p>Run a full 6-module compliance check against the NERIS mandatory schema in under 10 seconds. See exactly which fields are missing and what they'll cost you in audits and grant eligibility.</p>
+        </div>
+      </div>
+      <div class="use-case" style="border-color:rgba(168,85,247,.2)">
+        <div class="use-case-icon" style="background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.2)"><svg viewBox="0 0 24 24"><path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" fill="none" stroke="#C084FC" stroke-width="1.5"/></svg></div>
+        <div>
+          <h4>Staffing Budget Requests <span style="font-size:10px;font-weight:700;background:rgba(168,85,247,.8);color:#fff;padding:1px 7px;border-radius:25px;margin-left:6px;vertical-align:middle">NEW</span></h4>
+          <p>FireInsight detects simultaneous incidents, measures response time degradation under concurrent load, and writes the board presentation that makes the staffing case — backed entirely by your own data.</p>
+        </div>
+      </div>
+      <div class="use-case" style="border-color:rgba(20,184,166,.2)">
+        <div class="use-case-icon" style="background:rgba(20,184,166,.1);border-color:rgba(20,184,166,.2)"><svg viewBox="0 0 24 24"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" fill="none" stroke="#5EEAD4" stroke-width="1.5"/></svg></div>
+        <div>
+          <h4>ISO Rating Review Prep <span style="font-size:10px;font-weight:700;background:rgba(20,184,166,.7);color:#fff;padding:1px 7px;border-radius:25px;margin-left:6px;vertical-align:middle">NEW</span></h4>
+          <p>ISO measures at the 80th percentile — most departments don't know their number. FireInsight computes it, compares against ISO benchmarks, and generates an evidence narrative ready for submission.</p>
+        </div>
+      </div>
       <div class="use-case">
         <div class="use-case-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
         <div>
@@ -882,31 +972,10 @@
         </div>
       </div>
       <div class="use-case">
-        <div class="use-case-icon"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-        <div>
-          <h4>ISO Rating Evidence</h4>
-          <p>Your ISO rating affects insurance premiums across your entire coverage area. FireInsight formats response time and incident data exactly the way ISO auditors expect to see it.</p>
-        </div>
-      </div>
-      <div class="use-case">
         <div class="use-case-icon"><svg viewBox="0 0 24 24"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg></div>
         <div>
           <h4>NFIRS → NERIS Transition</h4>
-          <p>Don't wait months for your RMS vendor to finish migrating. Convert your existing NFIRS history to NERIS format in one upload and keep moving.</p>
-        </div>
-      </div>
-      <div class="use-case">
-        <div class="use-case-icon"><svg viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div>
-          <h4>Pre-Report Data Audits</h4>
-          <p>Catch incomplete records before they undermine your grant application or annual report. FireInsight scores every incident and tells you exactly what to fix and why it matters.</p>
-        </div>
-      </div>
-      <div class="use-case">
-        <div class="use-case-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6"/></svg></div>
-        <div>
-          <h4>Staffing &amp; Resource Decisions</h4>
-          <p>Know your busiest hours, highest-demand areas, and trending incident types—so resource requests to city council are backed by data, not gut feel.</p>
+          <p>Don't wait months for your RMS vendor to finish migrating. Convert your existing NFIRS history to NERIS format in one upload and keep all your historical data intact.</p>
         </div>
       </div>
     </div>
