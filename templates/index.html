@@ -96,7 +96,7 @@
     /* ── LAYOUT ── */
     .layout {
       display: grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 220px 1fr;
       min-height: calc(100vh - 60px);
     }
 
@@ -104,38 +104,112 @@
     .sidebar {
       background: var(--navy-2);
       border-right: 1px solid var(--border);
-      padding: 24px 20px;
+      padding: 12px 10px;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
-    .sidebar-label {
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .7px;
-      color: var(--gray-4); margin-bottom: 16px;
+    /* Nav groups */
+    .nav-group-label {
+      font-size: 9px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .8px;
+      color: var(--gray-4);
+      padding: 14px 10px 5px;
+      margin-top: 2px;
     }
 
-    /* Tabs */
-    .tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 22px; }
-
-    .tab {
-      flex: 1; min-width: calc(50% - 3px);
-      padding: 7px 6px;
-      font-size: 11px; font-weight: 700;
-      text-align: center;
-      border: 1px solid var(--border-2);
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px;
       border-radius: 8px;
-      cursor: pointer;
-      background: transparent;
+      font-size: 12.5px; font-weight: 500;
       color: var(--gray-3);
-      transition: all .15s;
-      letter-spacing: .2px;
+      cursor: pointer;
+      transition: background .12s, color .12s;
+      user-select: none;
+      border: 1px solid transparent;
+      text-decoration: none;
     }
-    .tab:hover { color: var(--gray-1); border-color: var(--border-2); }
-    .tab.active {
-      border-color: rgba(214,55,55,.4);
+    .nav-item:hover { background: var(--navy-3); color: var(--gray-1); }
+    .nav-item.active {
       background: rgba(214,55,55,.1);
+      border-color: rgba(214,55,55,.2);
+      color: #F87171;
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      width: 26px; height: 26px; flex-shrink: 0;
+      border-radius: 6px;
+      background: var(--navy-4);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-icon svg { width: 13px; height: 13px; }
+    .nav-item.active .nav-icon { background: rgba(214,55,55,.18); }
+    .nav-item.active .nav-icon svg { stroke: #F87171; fill: none; }
+
+    /* ── CONTROL BAR ── */
+    .ctrl-bar {
+      display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px;
+      padding: 14px 20px;
+      background: var(--navy-2);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+      margin-bottom: 28px;
+    }
+    .ctrl-bar.hidden { display: none; }
+    .ctrl-field { display: flex; flex-direction: column; gap: 3px; }
+    .ctrl-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .4px;
+      color: var(--gray-4);
+    }
+    .ctrl-bar input[type="date"],
+    .ctrl-bar input[type="text"],
+    .ctrl-bar input[type="number"],
+    .ctrl-bar select {
+      height: 34px; padding: 0 10px;
+      font-size: 12px; font-family: inherit;
+      background: var(--navy-3);
+      border: 1px solid var(--border-2);
+      border-radius: 7px;
+      color: var(--white); outline: none;
+      transition: border-color .15s;
+    }
+    .ctrl-bar input:focus, .ctrl-bar select:focus { border-color: rgba(214,55,55,.5); }
+    .ctrl-bar select option { background: var(--navy-3); }
+    .ctrl-date-pair { display: flex; gap: 4px; }
+    .ctrl-date-pair input[type="date"] { width: 128px; }
+    .ctrl-toggle-wrap {
+      display: flex; align-items: center; gap: 7px;
+      height: 34px; padding: 0 12px;
+      background: var(--navy-3);
+      border: 1px solid var(--border-2);
+      border-radius: 7px;
+      cursor: pointer; font-size: 12px; font-weight: 500; color: var(--gray-2);
+    }
+    .ctrl-toggle-wrap:has(input:checked) {
+      border-color: rgba(214,55,55,.35);
+      background: rgba(214,55,55,.07);
       color: #F87171;
     }
+    .ctrl-toggle-wrap input[type="checkbox"] { accent-color: var(--red); width: 13px; height: 13px; }
+    .ctrl-divider { width: 1px; height: 34px; background: var(--border-2); align-self: flex-end; }
+    .ctrl-spacer { flex: 1; }
+    .btn-run {
+      height: 34px; padding: 0 18px;
+      font-size: 12.5px; font-weight: 700; font-family: inherit;
+      background: var(--red); color: #fff;
+      border: none; border-radius: 7px;
+      cursor: pointer; display: flex; align-items: center; gap: 7px;
+      white-space: nowrap;
+      box-shadow: 0 2px 10px var(--red-glow);
+      transition: background .15s;
+    }
+    .btn-run:hover { background: var(--red-dk); }
+    .btn-run svg { width: 13px; height: 13px; }
 
     /* Form elements */
     .field { margin-bottom: 14px; }
@@ -797,7 +871,11 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       .layout { grid-template-columns: 1fr; }
-      .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--border); flex-direction: row; flex-wrap: wrap; padding: 8px; }
+      .nav-group-label { display: none; }
+      .ctrl-bar { flex-wrap: wrap; }
+      .ctrl-date-pair input { width: 100% !important; }
       .main { padding: 20px; }
     }
   </style>
@@ -811,10 +889,12 @@
 </div>
 
 <header>
-  <div class="logo">
-    <svg viewBox="0 0 24 24"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
-  </div>
-  <h1>Fire<span>Insight</span></h1>
+  <a href="/app" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
+    </div>
+    <h1>Fire<span>Insight</span></h1>
+  </a>
   <div class="header-right">
     <span class="badge">BETA</span>
     <button id="neris-status-btn" onclick="toggleNerisPanel()" style="font-size:11px;font-weight:700;font-family:inherit;padding:5px 12px;border-radius:25px;border:1px solid var(--border-2);background:transparent;color:var(--gray-3);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s">
@@ -829,384 +909,88 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-label">Generate Report</div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <div class="tab {% if not form and not convert and not quality and not dashboard and active_tab not in ['benchmark','ev','risk','compliance','iso','staffing'] %}active{% elif form and form.report_type == 'trends' %}active{% endif %}" data-value="trends" onclick="selectTab(this)">Trends</div>
-      <div class="tab {% if form and form.report_type == 'report' %}active{% endif %}" data-value="report" onclick="selectTab(this)">Chief Report</div>
-      <div class="tab {% if form and form.report_type == 'grant' %}active{% endif %}" data-value="grant" onclick="selectTab(this)">Grant</div>
-      <div class="tab {% if convert %}active{% endif %}" data-value="convert" onclick="selectTab(this)">Convert</div>
-      <div class="tab {% if quality %}active{% endif %}" data-value="quality" onclick="selectTab(this)">Quality</div>
-      <div class="tab" data-value="map" onclick="selectTab(this)">Map</div>
-      <div class="tab {% if active_tab == 'benchmark' %}active{% endif %}" data-value="benchmark" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(214,55,55,.3);background:rgba(214,55,55,.06)">&#9650; Benchmark Peers</div>
-      <div class="tab {% if active_tab == 'ev' %}active{% endif %}" data-value="ev" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06)">&#9889; EV / Battery Fires</div>
-      <div class="tab {% if active_tab == 'risk' %}active{% endif %}" data-value="risk" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.06)">&#9888; Community Risk</div>
-      <div class="tab {% if active_tab == 'compliance' %}active{% endif %}" data-value="compliance" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06)">&#10003; NERIS Compliance</div>
-      <div class="tab {% if active_tab == 'iso' %}active{% endif %}" data-value="iso" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(20,184,166,.3);background:rgba(20,184,166,.06)">&#127795; ISO Evidence Pack</div>
-      <div class="tab {% if active_tab == 'staffing' %}active{% endif %}" data-value="staffing" onclick="selectTab(this)" style="min-width:100%;border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.06)">&#128101; Staffing Justification</div>
+    <!-- Dashboard -->
+    <a class="nav-item {% if dashboard %}active{% endif %}" href="/app">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </span>
+      Dashboard
+    </a>
+
+    <div class="nav-group-label">Reports</div>
+
+    <div class="nav-item {% if form and form.report_type == 'trends' %}active{% elif not form and not convert and not quality and not dashboard and active_tab not in ['benchmark','ev','risk','compliance','iso','staffing','map'] %}active{% endif %}" data-value="trends" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+      Trend Analysis
+    </div>
+    <div class="nav-item {% if form and form.report_type == 'report' %}active{% endif %}" data-value="report" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+      Chief's Report
+    </div>
+    <div class="nav-item {% if form and form.report_type == 'grant' %}active{% endif %}" data-value="grant" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+      Grant Narrative
     </div>
 
-    <!-- Report form -->
-    <form method="POST" action="/generate" id="main-form">
-      <input type="hidden" name="report_type" id="report_type" value="{{ form.report_type if form else 'trends' }}" />
+    <div class="nav-group-label">Compliance & Audit</div>
 
-      <label class="toggle-row">
-        <input type="checkbox" name="use_mock" id="use_mock" {% if not form or form.use_mock %}checked{% endif %} />
-        <span>Use sample data (no credentials needed)</span>
-      </label>
-
-      <div class="field" id="neris-field" style="{% if not form or form.use_mock %}display:none{% endif %}">
-        <label>Department NERIS ID</label>
-        <input type="text" name="neris_id" value="{{ form.neris_id if form else 'MOCK-001' }}" placeholder="e.g. VA-1234" />
-      </div>
-
-      <div class="field">
-        <label>Date Range (optional)</label>
-        <div class="date-row">
-          <input type="date" name="start" value="{{ form.start if form else '' }}" />
-          <input type="date" name="end" value="{{ form.end if form else '' }}" />
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Period Label <span style="font-weight:400;color:var(--gray-4)">(appears in report)</span></label>
-        <input type="text" name="period" value="{{ form.period if form else '' }}" placeholder="e.g. January 2025" />
-      </div>
-
-      <div id="grant-fields" style="{% if not form or form.report_type != 'grant' %}display:none{% endif %}">
-        <div class="field">
-          <label>Grant Program</label>
-          <select name="grant_type">
-            <option value="AFG" {% if form and form.grant_type == 'AFG' %}selected{% endif %}>FEMA AFG — Assistance to Firefighters</option>
-            <option value="SAFER" {% if form and form.grant_type == 'SAFER' %}selected{% endif %}>FEMA SAFER — Staffing</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>What are you requesting?</label>
-          <textarea name="grant_request" placeholder="e.g. 2 thermal imaging cameras for structural firefighting">{{ form.grant_request if form else '' }}</textarea>
-        </div>
-      </div>
-
-      <button type="submit" class="btn-generate" onclick="showLoading()">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
-        Generate Report
-      </button>
-    </form>
-
-    <!-- Convert panel -->
-    <div id="convert-panel" style="{% if not convert %}display:none{% endif %}">
-      <form method="POST" action="/convert" enctype="multipart/form-data" id="convert-form">
-        <label
-          class="convert-drop"
-          id="drop-zone"
-          for="nfirs-file"
-          ondragover="event.preventDefault();this.classList.add('drag-over')"
-          ondragleave="this.classList.remove('drag-over')"
-          ondrop="handleDrop(event)"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-          </svg>
-          <p id="drop-label">{% if convert and convert.filename %}{{ convert.filename }}{% else %}Drop NFIRS CSV here{% endif %}</p>
-          <small>or click to browse &nbsp;&middot;&nbsp; .csv only</small>
-          <input type="file" name="file" id="nfirs-file" accept=".csv,text/csv" onchange="onFileSelect(this)" />
-        </label>
-
-        {% if convert and convert.error %}
-        <div class="error-banner">{{ convert.error }}</div>
-        {% endif %}
-
-        <button type="submit" class="btn-generate" onclick="showLoading()" id="convert-submit" style="{% if convert and convert.summary %}display:flex{% else %}display:none{% endif %}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-          Convert Another File
-        </button>
-      </form>
+    <div class="nav-item {% if active_tab == 'compliance' %}active{% endif %}" data-value="compliance" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      NERIS Compliance
+    </div>
+    <div class="nav-item {% if active_tab == 'iso' %}active{% endif %}" data-value="iso" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      ISO Evidence Pack
+    </div>
+    <div class="nav-item {% if quality %}active{% endif %}" data-value="quality" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Data Quality
     </div>
 
-    <!-- Quality panel -->
-    <div id="quality-panel" style="{% if not quality %}display:none{% endif %}">
-      <form method="POST" action="/quality" id="quality-form">
-        <label class="toggle-row">
-          <input type="checkbox" name="use_mock" id="quality-use-mock" checked />
-          <span>Use sample data</span>
-        </label>
-        <div class="field" id="quality-neris-field" style="display:none">
-          <label>Department NERIS ID</label>
-          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
-        </div>
-        <div class="field">
-          <label>Date Range (optional)</label>
-          <div class="date-row">
-            <input type="date" name="start" />
-            <input type="date" name="end" />
-          </div>
-        </div>
-        <label class="toggle-row" style="margin-bottom:14px">
-          <input type="checkbox" name="narrative" id="quality-narrative" value="1" />
-          <span>Generate AI fix recommendations</span>
-        </label>
-        <button type="submit" class="btn-generate" onclick="showLoading()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          Score Data Quality
-        </button>
-      </form>
+    <div class="nav-group-label">Operations</div>
+
+    <div class="nav-item {% if active_tab == 'staffing' %}active{% endif %}" data-value="staffing" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Staffing Justification
+    </div>
+    <div class="nav-item {% if active_tab == 'ev' %}active{% endif %}" data-value="ev" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      EV / Battery Fires
+    </div>
+    <div class="nav-item {% if active_tab == 'risk' %}active{% endif %}" data-value="risk" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Community Risk
+    </div>
+    <div class="nav-item {% if active_tab == 'benchmark' %}active{% endif %}" data-value="benchmark" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13.5l7.5 7.5 10.5-10.5M3 6l7.5 7.5 10.5-10.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Peer Benchmark
     </div>
 
-    <!-- EV panel -->
-    <div id="ev-panel" style="{% if active_tab == 'ev' %}display:block{% else %}display:none{% endif %}">
-      <form method="POST" action="/ev">
-        <label class="toggle-row">
-          <input type="checkbox" name="use_mock" id="ev-use-mock" checked />
-          <span>Use sample data</span>
-        </label>
-        <div class="field" id="ev-neris-field" style="display:none">
-          <label>Department NERIS ID</label>
-          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
-        </div>
-        <div class="field">
-          <label>Date Range (optional)</label>
-          <div class="date-row">
-            <input type="date" name="start" />
-            <input type="date" name="end" />
-          </div>
-        </div>
-        <button type="submit" class="btn-generate" onclick="showLoading()">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
-          Analyze EV Incidents
-        </button>
-      </form>
-      <div style="margin-top:20px;padding:12px 14px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:10px;font-size:11px;color:#FDE68A;line-height:1.7">
-        <div style="font-weight:700;color:#F59E0B;margin-bottom:6px">Why this matters</div>
-        EV battery fires require 3–5× more water, extended scene commitment, and risk of re-ignition up to 24 hours later. Standard vehicle fire protocols are insufficient.
-      </div>
+    <div class="nav-group-label">Tools</div>
+
+    <div class="nav-item {% if convert %}active{% endif %}" data-value="convert" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      NFIRS Converter
+    </div>
+    <div class="nav-item" data-value="map" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Incident Map
     </div>
 
-    <!-- Risk panel -->
-    <div id="risk-panel" style="{% if active_tab == 'risk' %}display:block{% else %}display:none{% endif %}">
-      <form method="POST" action="/risk">
-        <label class="toggle-row">
-          <input type="checkbox" name="use_mock" id="risk-use-mock" checked />
-          <span>Use sample data</span>
-        </label>
-        <div class="field" id="risk-neris-field" style="display:none">
-          <label>Department NERIS ID</label>
-          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
-        </div>
-        <div class="field">
-          <label>Date Range (optional)</label>
-          <div class="date-row">
-            <input type="date" name="start" />
-            <input type="date" name="end" />
-          </div>
-        </div>
-        <button type="submit" class="btn-generate" onclick="showLoading()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-          Generate Risk Map
-        </button>
-      </form>
-      <div style="margin-top:20px;padding:12px 14px;background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.2);border-radius:10px;font-size:11px;color:#FED7AA;line-height:1.7">
-        <div style="font-weight:700;color:#F97316;margin-bottom:6px">Risk scoring model</div>
-        Zones scored 0–100 by incident density, type severity, and response time gap vs. the NFPA 8-minute benchmark.
+    <!-- NERIS Connect panel -->
+    <div id="neris-connect-panel" style="display:none;margin-top:8px;padding:14px 10px;border-top:1px solid var(--border)">
+      <div style="font-size:11px;color:var(--gray-4);margin-bottom:12px;line-height:1.5">Connect your NERIS API credentials to pull live data.</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-4);margin-bottom:4px">Client ID</div>
+        <input type="text" id="neris-client-id" placeholder="NERIS Client ID" style="width:100%;padding:7px 10px;font-size:12px;font-family:inherit;background:var(--navy-3);border:1px solid var(--border-2);border-radius:7px;color:var(--white);outline:none" />
       </div>
-    </div>
-
-    <!-- Benchmark panel -->
-    <div id="benchmark-panel" style="{% if active_tab == 'benchmark' %}display:block{% else %}display:none{% endif %}">
-      <form method="POST" action="/benchmark" id="benchmark-form">
-        <label class="toggle-row">
-          <input type="checkbox" name="use_mock" id="bench-use-mock" checked />
-          <span>Use sample data</span>
-        </label>
-        <div class="field" id="bench-neris-field" style="display:none">
-          <label>Department NERIS ID</label>
-          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
-        </div>
-
-        <div class="field">
-          <label>State</label>
-          <select name="state" id="bench-state">
-            {% set states = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),("CA","California"),("CO","Colorado"),("CT","Connecticut"),("DE","Delaware"),("FL","Florida"),("GA","Georgia"),("HI","Hawaii"),("ID","Idaho"),("IL","Illinois"),("IN","Indiana"),("IA","Iowa"),("KS","Kansas"),("KY","Kentucky"),("LA","Louisiana"),("ME","Maine"),("MD","Maryland"),("MA","Massachusetts"),("MI","Michigan"),("MN","Minnesota"),("MS","Mississippi"),("MO","Missouri"),("MT","Montana"),("NE","Nebraska"),("NV","Nevada"),("NH","New Hampshire"),("NJ","New Jersey"),("NM","New Mexico"),("NY","New York"),("NC","North Carolina"),("ND","North Dakota"),("OH","Ohio"),("OK","Oklahoma"),("OR","Oregon"),("PA","Pennsylvania"),("RI","Rhode Island"),("SC","South Carolina"),("SD","South Dakota"),("TN","Tennessee"),("TX","Texas"),("UT","Utah"),("VT","Vermont"),("VA","Virginia"),("WA","Washington"),("WV","West Virginia"),("WI","Wisconsin"),("WY","Wyoming")] %}
-            {% for abbr, name in states %}
-            <option value="{{ abbr }}" {% if benchmark and benchmark.form.state == abbr %}selected{% elif not benchmark and abbr == 'VA' %}selected{% endif %}>{{ abbr }} — {{ name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Department Type</label>
-          <select name="dept_type" id="bench-dept-type">
-            <option value="volunteer"    {% if benchmark and benchmark.form.dept_type == 'volunteer'    %}selected{% endif %}>Volunteer</option>
-            <option value="combination" {% if benchmark and benchmark.form.dept_type == 'combination' %}selected{% elif not benchmark %}selected{% endif %}>Combination</option>
-            <option value="career"      {% if benchmark and benchmark.form.dept_type == 'career'      %}selected{% endif %}>Career</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Population Served</label>
-          <input type="number" name="population" min="100" max="2000000" step="500"
-            value="{{ benchmark.form.population if benchmark else 25000 }}" />
-        </div>
-
-        <label class="toggle-row" style="margin-bottom:14px">
-          <input type="checkbox" name="narrative" value="1" />
-          <span>Generate AI executive summary</span>
-        </label>
-
-        <button type="submit" class="btn-generate" onclick="showLoading()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5l7.5 7.5 10.5-10.5M3 6l7.5 7.5 10.5-10.5"/></svg>
-          Run Benchmark
-        </button>
-      </form>
-    </div>
-
-    <!-- Map panel -->
-    <div id="map-panel" style="display:none">
-      <label class="toggle-row">
-        <input type="checkbox" id="map-use-mock" checked />
-        <span>Use sample data</span>
-      </label>
-      <div class="field" id="map-neris-field" style="display:none">
-        <label>Department NERIS ID</label>
-        <input type="text" id="map-neris-id" value="MOCK-001" placeholder="e.g. VA-1234" />
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-4);margin-bottom:4px">Client Secret</div>
+        <input type="password" id="neris-client-secret" placeholder="Client Secret" style="width:100%;padding:7px 10px;font-size:12px;font-family:inherit;background:var(--navy-3);border:1px solid var(--border-2);border-radius:7px;color:var(--white);outline:none" />
       </div>
-      <div class="field">
-        <label>Date Range (optional)</label>
-        <div class="date-row">
-          <input type="date" id="map-start" />
-          <input type="date" id="map-end" />
-        </div>
-      </div>
-      <div class="field">
-        <label>Filter by Type</label>
-        <select id="map-type-filter">
-          <option value="">All Types</option>
-          <option value="Fire">Fire</option>
-          <option value="EMS">EMS</option>
-          <option value="Hazmat">Hazmat</option>
-          <option value="Rescue">Rescue</option>
-          <option value="False Alarm">False Alarm</option>
-          <option value="Service Call">Service Call</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      <button class="btn-generate" onclick="loadMap()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497z"/></svg>
-        Load Map
-      </button>
-
-      <!-- Type counts legend (populated by JS) -->
-      <div id="map-counts" style="margin-top:18px;display:none">
-        <div class="sidebar-label" style="margin-bottom:10px">Incident Breakdown</div>
-        <div id="map-counts-inner"></div>
-      </div>
-    </div>
-
-    <!-- Compliance panel -->
-    <div id="compliance-panel" style="{% if active_tab == 'compliance' %}display:block{% else %}display:none{% endif %}">
-      <form method="POST" action="/compliance">
-        <label class="toggle-row">
-          <input type="checkbox" name="use_mock" id="compliance-use-mock" checked />
-          <span>Use sample data</span>
-        </label>
-        <div class="field" id="compliance-neris-field" style="display:none">
-          <label>Department NERIS ID</label>
-          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
-        </div>
-        <div class="field">
-          <label>Date Range (optional)</label>
-          <div class="date-row">
-            <input type="date" name="start" />
-            <input type="date" name="end" />
-          </div>
-        </div>
-        <button class="btn-generate" type="submit" onclick="showLoading()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          Check Compliance
-        </button>
-      </form>
-    </div>
-
-    <!-- ISO panel -->
-    <div id="iso-panel" style="{% if active_tab == 'iso' %}display:block{% else %}display:none{% endif %}">
-      <form method="POST" action="/iso">
-        <label class="toggle-row">
-          <input type="checkbox" name="use_mock" id="iso-use-mock" checked />
-          <span>Use sample data</span>
-        </label>
-        <div class="field" id="iso-neris-field" style="display:none">
-          <label>Department NERIS ID</label>
-          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
-        </div>
-        <div class="field">
-          <label>Date Range (optional)</label>
-          <div class="date-row">
-            <input type="date" name="start" />
-            <input type="date" name="end" />
-          </div>
-        </div>
-        <div class="field">
-          <label>Period Label (optional)</label>
-          <input type="text" name="period" placeholder="e.g. Calendar Year 2025" />
-        </div>
-        <label class="toggle-row">
-          <input type="checkbox" name="narrative" id="iso-narrative-toggle" />
-          <span>Generate AI evidence narrative</span>
-        </label>
-        <button class="btn-generate" type="submit" onclick="showLoading()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-          Build Evidence Pack
-        </button>
-      </form>
-    </div>
-
-    <!-- Staffing panel -->
-    <div id="staffing-panel" style="{% if active_tab == 'staffing' %}display:block{% else %}display:none{% endif %}">
-      <form method="POST" action="/staffing">
-        <label class="toggle-row">
-          <input type="checkbox" name="use_mock" id="staffing-use-mock" checked />
-          <span>Use sample data</span>
-        </label>
-        <div class="field" id="staffing-neris-field" style="display:none">
-          <label>Department NERIS ID</label>
-          <input type="text" name="neris_id" value="MOCK-001" placeholder="e.g. VA-1234" />
-        </div>
-        <div class="field">
-          <label>Date Range (optional)</label>
-          <div class="date-row">
-            <input type="date" name="start" />
-            <input type="date" name="end" />
-          </div>
-        </div>
-        <label class="toggle-row">
-          <input type="checkbox" name="narrative" id="staffing-narrative-toggle" />
-          <span>Generate board presentation narrative</span>
-        </label>
-        <button class="btn-generate" type="submit" onclick="showLoading()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
-          Analyze Staffing
-        </button>
-      </form>
-    </div>
-
-    <!-- NERIS Connect panel (always hidden; opened from header button) -->
-    <div id="neris-connect-panel" style="display:none">
-      <div style="font-size:11px;color:var(--gray-3);margin-bottom:14px;line-height:1.5">
-        Enter your NERIS API credentials to pull live incident data directly from NERIS instead of using sample data.
-      </div>
-      <div class="field">
-        <label>Client ID</label>
-        <input type="text" id="neris-client-id" placeholder="Your NERIS Client ID" />
-      </div>
-      <div class="field">
-        <label>Client Secret</label>
-        <input type="password" id="neris-client-secret" placeholder="Your NERIS Client Secret" />
-      </div>
-      <button class="btn-generate" type="button" onclick="connectNeris()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
-        Connect to NERIS
-      </button>
-      <div id="neris-connect-result" style="margin-top:12px;font-size:12px;display:none"></div>
+      <button onclick="connectNeris()" style="width:100%;padding:8px;font-size:12px;font-weight:700;font-family:inherit;background:var(--red);color:#fff;border:none;border-radius:7px;cursor:pointer">Connect to NERIS</button>
+      <div id="neris-connect-result" style="margin-top:10px;font-size:11px;display:none"></div>
     </div>
 
   </aside>
@@ -1223,6 +1007,357 @@
 
   <!-- MAIN PANEL -->
   <main class="main" id="main-panel">
+
+  <!-- ── CONTROL BARS (one per feature, shown/hidden by selectTab) ── -->
+
+  <!-- Report controls (trends / chief / grant) -->
+  <form method="POST" action="/generate" id="main-form" class="ctrl-bar" style="{% if not form %}display:none{% endif %}">
+    <input type="hidden" name="report_type" id="report_type" value="{{ form.report_type if form else 'trends' }}" />
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="use_mock" id="use_mock" {% if not form or form.use_mock %}checked{% endif %} />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="neris-field" style="{% if not form or form.use_mock %}display:none{% endif %}">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" name="neris_id" value="{{ form.neris_id if form else 'MOCK-001' }}" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" value="{{ form.start if form else '' }}" />
+        <input type="date" name="end" value="{{ form.end if form else '' }}" />
+      </div>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Period Label</label>
+      <input type="text" name="period" value="{{ form.period if form else '' }}" placeholder="e.g. Jan 2025" style="width:120px" />
+    </div>
+    <!-- Grant-specific fields (shown inline when grant tab active) -->
+    <div id="grant-fields" style="display:flex;gap:10px;align-items:flex-end;{% if not form or form.report_type != 'grant' %}display:none{% endif %}">
+      <div class="ctrl-field">
+        <label class="ctrl-label">Program</label>
+        <select name="grant_type" style="width:100px">
+          <option value="AFG" {% if form and form.grant_type == 'AFG' %}selected{% endif %}>AFG</option>
+          <option value="SAFER" {% if form and form.grant_type == 'SAFER' %}selected{% endif %}>SAFER</option>
+        </select>
+      </div>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+      Generate
+    </button>
+  </form>
+  <!-- Grant request textarea row (below ctrl bar when grant is active) -->
+  <div id="grant-request-row" style="{% if not form or form.report_type != 'grant' %}display:none{% endif %};margin-top:-18px;margin-bottom:28px">
+    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-top:none;border-radius:0 0 12px 12px;padding:12px 20px;display:flex;gap:12px;align-items:flex-end">
+      <div class="ctrl-field" style="flex:1">
+        <label class="ctrl-label">What are you requesting?</label>
+        <textarea name="grant_request" form="main-form" placeholder="e.g. 2 thermal imaging cameras for structural firefighting" style="width:100%;padding:8px 10px;font-size:12px;font-family:inherit;background:var(--navy-3);border:1px solid var(--border-2);border-radius:7px;color:var(--white);outline:none;resize:vertical;min-height:56px">{{ form.grant_request if form else '' }}</textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quality controls -->
+  <form method="POST" action="/quality" id="quality-controls" class="ctrl-bar" style="display:none">
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="use_mock" id="quality-use-mock" checked />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="quality-neris-field" style="display:none">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" />
+        <input type="date" name="end" />
+      </div>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">AI Recommendations</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="narrative" id="quality-narrative" value="1" />
+        Generate narrative
+      </label>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Score Quality
+    </button>
+  </form>
+
+  <!-- EV controls -->
+  <form method="POST" action="/ev" id="ev-controls" class="ctrl-bar" style="display:none">
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="use_mock" id="ev-use-mock" checked />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="ev-neris-field" style="display:none">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" />
+        <input type="date" name="end" />
+      </div>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+      Analyze EV
+    </button>
+  </form>
+
+  <!-- Risk controls -->
+  <form method="POST" action="/risk" id="risk-controls" class="ctrl-bar" style="display:none">
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="use_mock" id="risk-use-mock" checked />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="risk-neris-field" style="display:none">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" />
+        <input type="date" name="end" />
+      </div>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+      Map Risk Zones
+    </button>
+  </form>
+
+  <!-- Benchmark controls -->
+  <form method="POST" action="/benchmark" id="benchmark-controls" class="ctrl-bar" style="display:none">
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="use_mock" id="bench-use-mock" checked />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="bench-neris-field" style="display:none">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">State</label>
+      <select name="state" id="bench-state" style="width:80px">
+        {% set states = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),("CA","California"),("CO","Colorado"),("CT","Connecticut"),("DE","Delaware"),("FL","Florida"),("GA","Georgia"),("HI","Hawaii"),("ID","Idaho"),("IL","Illinois"),("IN","Indiana"),("IA","Iowa"),("KS","Kansas"),("KY","Kentucky"),("LA","Louisiana"),("ME","Maine"),("MD","Maryland"),("MA","Massachusetts"),("MI","Michigan"),("MN","Minnesota"),("MS","Mississippi"),("MO","Missouri"),("MT","Montana"),("NE","Nebraska"),("NV","Nevada"),("NH","New Hampshire"),("NJ","New Jersey"),("NM","New Mexico"),("NY","New York"),("NC","North Carolina"),("ND","North Dakota"),("OH","Ohio"),("OK","Oklahoma"),("OR","Oregon"),("PA","Pennsylvania"),("RI","Rhode Island"),("SC","South Carolina"),("SD","South Dakota"),("TN","Tennessee"),("TX","Texas"),("UT","Utah"),("VT","Vermont"),("VA","Virginia"),("WA","Washington"),("WV","West Virginia"),("WI","Wisconsin"),("WY","Wyoming")] %}
+        {% for abbr, name in states %}
+        <option value="{{ abbr }}" {% if benchmark and benchmark.form.state == abbr %}selected{% elif not benchmark and abbr == 'VA' %}selected{% endif %}>{{ abbr }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Dept Type</label>
+      <select name="dept_type" id="bench-dept-type" style="width:116px">
+        <option value="volunteer" {% if benchmark and benchmark.form.dept_type == 'volunteer' %}selected{% endif %}>Volunteer</option>
+        <option value="combination" {% if benchmark and benchmark.form.dept_type == 'combination' %}selected{% elif not benchmark %}selected{% endif %}>Combination</option>
+        <option value="career" {% if benchmark and benchmark.form.dept_type == 'career' %}selected{% endif %}>Career</option>
+      </select>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Population</label>
+      <input type="number" name="population" min="100" max="2000000" step="500" value="{{ benchmark.form.population if benchmark else 25000 }}" style="width:90px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">AI Summary</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="narrative" value="1" />
+        Generate
+      </label>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5l7.5 7.5 10.5-10.5M3 6l7.5 7.5 10.5-10.5"/></svg>
+      Run Benchmark
+    </button>
+  </form>
+
+  <!-- Compliance controls -->
+  <form method="POST" action="/compliance" id="compliance-controls" class="ctrl-bar" style="display:none">
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="use_mock" id="compliance-use-mock" checked />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="compliance-neris-field" style="display:none">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" />
+        <input type="date" name="end" />
+      </div>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Check Compliance
+    </button>
+  </form>
+
+  <!-- ISO controls -->
+  <form method="POST" action="/iso" id="iso-controls" class="ctrl-bar" style="display:none">
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="use_mock" id="iso-use-mock" checked />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="iso-neris-field" style="display:none">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" />
+        <input type="date" name="end" />
+      </div>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Period Label</label>
+      <input type="text" name="period" placeholder="Calendar Year 2025" style="width:140px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">AI Narrative</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="narrative" id="iso-narrative-toggle" />
+        Generate
+      </label>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5"/></svg>
+      Build Evidence Pack
+    </button>
+  </form>
+
+  <!-- Staffing controls -->
+  <form method="POST" action="/staffing" id="staffing-controls" class="ctrl-bar" style="display:none">
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="use_mock" id="staffing-use-mock" checked />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="staffing-neris-field" style="display:none">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" />
+        <input type="date" name="end" />
+      </div>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Board Narrative</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="narrative" id="staffing-narrative-toggle" />
+        Generate
+      </label>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+      Analyze Staffing
+    </button>
+  </form>
+
+  <!-- Convert controls -->
+  <div id="convert-controls" class="ctrl-bar" style="display:none;flex-direction:column;align-items:stretch;gap:12px">
+    <form method="POST" action="/convert" enctype="multipart/form-data" id="convert-form">
+      <label class="convert-drop" id="drop-zone" for="nfirs-file"
+        ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="handleDrop(event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+        <p id="drop-label">{% if convert and convert.filename %}{{ convert.filename }}{% else %}Drop NFIRS CSV here{% endif %}</p>
+        <small>or click to browse &nbsp;&middot;&nbsp; .csv only</small>
+        <input type="file" name="file" id="nfirs-file" accept=".csv,text/csv" onchange="onFileSelect(this)" />
+      </label>
+      {% if convert and convert.error %}<div class="error-banner">{{ convert.error }}</div>{% endif %}
+      <button type="submit" class="btn-run" onclick="showLoading()" id="convert-submit" style="{% if convert and convert.summary %}display:flex{% else %}display:none{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+        Convert Another File
+      </button>
+    </form>
+  </div>
+
+  <!-- Map controls -->
+  <div id="map-controls" class="ctrl-bar" style="display:none">
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" id="map-use-mock" checked />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="map-neris-field" style="display:none">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" id="map-neris-id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" id="map-start" />
+        <input type="date" id="map-end" />
+      </div>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Filter Type</label>
+      <select id="map-type-filter" style="width:130px">
+        <option value="">All Types</option>
+        <option value="Fire">Fire</option>
+        <option value="EMS">EMS</option>
+        <option value="Hazmat">Hazmat</option>
+        <option value="Rescue">Rescue</option>
+        <option value="False Alarm">False Alarm</option>
+        <option value="Service Call">Service Call</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button class="btn-run" onclick="loadMap()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497z"/></svg>
+      Load Map
+    </button>
+    <div id="map-counts" style="display:none;margin-left:8px">
+      <div id="map-counts-inner" style="font-size:11px;color:var(--gray-3)"></div>
+    </div>
+  </div>
 
     {% if ev and ev.report %}
     {%- set r = ev.report %}
@@ -2137,8 +2272,12 @@
 
 <script>
   // ── Tab switching ──────────────────────────────────────────────────────────
+  const _ctrlBars = ['main-form','quality-controls','ev-controls','risk-controls',
+    'benchmark-controls','compliance-controls','iso-controls','staffing-controls',
+    'convert-controls','map-controls'];
+
   function selectTab(el) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item[data-value]').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     const val = el.dataset.value;
     const isConvert    = val === 'convert';
@@ -2152,16 +2291,18 @@
     const isStaffing   = val === 'staffing';
     const isReport     = !isConvert && !isQuality && !isMap && !isBenchmark && !isEv && !isRisk && !isCompliance && !isIso && !isStaffing;
 
-    document.getElementById('main-form').style.display          = isReport     ? 'block' : 'none';
-    document.getElementById('convert-panel').style.display      = isConvert    ? 'block' : 'none';
-    document.getElementById('quality-panel').style.display      = isQuality    ? 'block' : 'none';
-    document.getElementById('benchmark-panel').style.display    = isBenchmark  ? 'block' : 'none';
-    document.getElementById('ev-panel').style.display           = isEv         ? 'block' : 'none';
-    document.getElementById('risk-panel').style.display         = isRisk       ? 'block' : 'none';
-    document.getElementById('compliance-panel').style.display   = isCompliance ? 'block' : 'none';
-    document.getElementById('iso-panel').style.display          = isIso        ? 'block' : 'none';
-    document.getElementById('staffing-panel').style.display     = isStaffing   ? 'block' : 'none';
-    document.getElementById('map-panel').style.display          = isMap        ? 'block' : 'none';
+    // Hide all ctrl bars, show the right one
+    _ctrlBars.forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
+    if (isReport)     { document.getElementById('main-form').style.display = 'flex'; }
+    if (isQuality)    { document.getElementById('quality-controls').style.display = 'flex'; }
+    if (isEv)         { document.getElementById('ev-controls').style.display = 'flex'; }
+    if (isRisk)       { document.getElementById('risk-controls').style.display = 'flex'; }
+    if (isBenchmark)  { document.getElementById('benchmark-controls').style.display = 'flex'; }
+    if (isCompliance) { document.getElementById('compliance-controls').style.display = 'flex'; }
+    if (isIso)        { document.getElementById('iso-controls').style.display = 'flex'; }
+    if (isStaffing)   { document.getElementById('staffing-controls').style.display = 'flex'; }
+    if (isConvert)    { document.getElementById('convert-controls').style.display = 'flex'; }
+    if (isMap)        { document.getElementById('map-controls').style.display = 'flex'; }
     document.getElementById('neris-connect-panel').style.display = 'none';
 
     // Init EV map/chart when tab first opened
@@ -2178,56 +2319,52 @@
 
     if (isReport) {
       document.getElementById('report_type').value = val;
-      document.getElementById('grant-fields').style.display = val === 'grant' ? 'block' : 'none';
+      const isGrant = val === 'grant';
+      document.getElementById('grant-fields').style.display = isGrant ? 'flex' : 'none';
+      document.getElementById('grant-request-row').style.display = isGrant ? 'block' : 'none';
     }
 
     if (isMap && !_mapInitialized) loadMap();
   }
 
-  {% if convert %}
-  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="convert"]')));
-  {% elif quality %}
-  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="quality"]')));
-  {% elif active_tab == 'benchmark' %}
-  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="benchmark"]')));
-  {% elif active_tab == 'ev' %}
-  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="ev"]')));
-  {% elif active_tab == 'risk' %}
-  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="risk"]')));
-  {% elif active_tab == 'compliance' %}
-  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="compliance"]')));
-  {% elif active_tab == 'iso' %}
-  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="iso"]')));
-  {% elif active_tab == 'staffing' %}
-  document.addEventListener('DOMContentLoaded', () => selectTab(document.querySelector('[data-value="staffing"]')));
-  {% endif %}
+  document.addEventListener('DOMContentLoaded', () => {
+    {% if convert %}
+    selectTab(document.querySelector('.nav-item[data-value="convert"]'));
+    {% elif quality %}
+    selectTab(document.querySelector('.nav-item[data-value="quality"]'));
+    {% elif active_tab == 'benchmark' %}
+    selectTab(document.querySelector('.nav-item[data-value="benchmark"]'));
+    {% elif active_tab == 'ev' %}
+    selectTab(document.querySelector('.nav-item[data-value="ev"]'));
+    {% elif active_tab == 'risk' %}
+    selectTab(document.querySelector('.nav-item[data-value="risk"]'));
+    {% elif active_tab == 'compliance' %}
+    selectTab(document.querySelector('.nav-item[data-value="compliance"]'));
+    {% elif active_tab == 'iso' %}
+    selectTab(document.querySelector('.nav-item[data-value="iso"]'));
+    {% elif active_tab == 'staffing' %}
+    selectTab(document.querySelector('.nav-item[data-value="staffing"]'));
+    {% elif form %}
+    selectTab(document.querySelector('.nav-item[data-value="{{ form.report_type }}"]'));
+    {% endif %}
+  });
 
-  document.getElementById('use_mock').addEventListener('change', function() {
-    document.getElementById('neris-field').style.display = this.checked ? 'none' : 'block';
-  });
-  document.getElementById('quality-use-mock').addEventListener('change', function() {
-    document.getElementById('quality-neris-field').style.display = this.checked ? 'none' : 'block';
-  });
-  document.getElementById('map-use-mock').addEventListener('change', function() {
-    document.getElementById('map-neris-field').style.display = this.checked ? 'none' : 'block';
-  });
-  document.getElementById('bench-use-mock').addEventListener('change', function() {
-    document.getElementById('bench-neris-field').style.display = this.checked ? 'none' : 'block';
-  });
-  document.getElementById('ev-use-mock').addEventListener('change', function() {
-    document.getElementById('ev-neris-field').style.display = this.checked ? 'none' : 'block';
-  });
-  document.getElementById('risk-use-mock').addEventListener('change', function() {
-    document.getElementById('risk-neris-field').style.display = this.checked ? 'none' : 'block';
-  });
-  document.getElementById('compliance-use-mock').addEventListener('change', function() {
-    document.getElementById('compliance-neris-field').style.display = this.checked ? 'none' : 'block';
-  });
-  document.getElementById('iso-use-mock').addEventListener('change', function() {
-    document.getElementById('iso-neris-field').style.display = this.checked ? 'none' : 'block';
-  });
-  document.getElementById('staffing-use-mock').addEventListener('change', function() {
-    document.getElementById('staffing-neris-field').style.display = this.checked ? 'none' : 'block';
+  [
+    ['use_mock',            'neris-field'],
+    ['quality-use-mock',    'quality-neris-field'],
+    ['map-use-mock',        'map-neris-field'],
+    ['bench-use-mock',      'bench-neris-field'],
+    ['ev-use-mock',         'ev-neris-field'],
+    ['risk-use-mock',       'risk-neris-field'],
+    ['compliance-use-mock', 'compliance-neris-field'],
+    ['iso-use-mock',        'iso-neris-field'],
+    ['staffing-use-mock',   'staffing-neris-field'],
+  ].forEach(([cbId, fieldId]) => {
+    const cb = document.getElementById(cbId);
+    const field = document.getElementById(fieldId);
+    if (cb && field) cb.addEventListener('change', function() {
+      field.style.display = this.checked ? 'none' : 'flex';
+    });
   });
 
   // ── NERIS API connection ──────────────────────────────────────────────────
@@ -2237,13 +2374,8 @@
     _nerisConnectOpen = !_nerisConnectOpen;
     const panel = document.getElementById('neris-connect-panel');
     if (_nerisConnectOpen) {
-      // Close all other panels, show connect panel
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      ['main-form','convert-panel','quality-panel','benchmark-panel','ev-panel','risk-panel',
-       'compliance-panel','iso-panel','staffing-panel','map-panel'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-      });
+      document.querySelectorAll('.nav-item[data-value]').forEach(t => t.classList.remove('active'));
+      _ctrlBars.forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
       const dash = document.getElementById('dashboard');
       if (dash) dash.style.display = 'none';
       panel.style.display = 'block';
