@@ -954,6 +954,10 @@
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       NERIS Compliance
     </div>
+    <div class="nav-item {% if active_tab == 'submit' or pre_val %}active{% endif %}" data-value="submit" onclick="selectTab(this, true)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      NERIS Submit
+    </div>
     <div class="nav-item {% if active_tab == 'iso' %}active{% endif %}" data-value="iso" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       ISO Evidence Pack
@@ -1329,6 +1333,37 @@
     <button type="submit" class="btn-run" onclick="showLoading()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       Check Compliance
+    </button>
+  </form>
+
+  <!-- NERIS Submit controls -->
+  <form method="POST" action="/neris/pre-validate" id="submit-controls" class="ctrl-bar" style="{% if active_tab == 'submit' or pre_val %}{% else %}display:none{% endif %}">
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="use_mock" id="submit-use-mock" checked />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="submit-neris-field" style="display:none">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Dept NERIS ID</label>
+      <input type="text" name="dept_neris_id" placeholder="FD12345678" style="width:120px" title="Your department's NERIS ID (FD########)" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" />
+        <input type="date" name="end" />
+      </div>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Run Pre-Flight Check
     </button>
   </form>
 
@@ -2974,6 +3009,249 @@
   </script>
   {% endif %}
 
+  <!-- ── NERIS Submit — Pre-Validation Results ── -->
+  {% if pre_val %}
+  {% set pv = pre_val %}
+  <div id="submit-results" style="max-width:900px;margin:0 auto">
+
+    <!-- Step tabs -->
+    <div style="display:flex;gap:0;margin-bottom:24px;border:1px solid var(--border-2);border-radius:12px;overflow:hidden">
+      <div id="step-tab-1" style="flex:1;padding:12px 16px;background:var(--navy-2);border-right:1px solid var(--border-2);cursor:default">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#60A5FA;margin-bottom:2px">Step 1 — Complete</div>
+        <div style="font-size:13px;font-weight:700;color:var(--white)">Pre-Flight Check</div>
+      </div>
+      <div id="step-tab-2" style="flex:1;padding:12px 16px;background:var(--navy-3);border-right:1px solid var(--border-2);cursor:pointer" onclick="runApiValidate()">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:2px">Step 2 — Click to run</div>
+        <div style="font-size:13px;font-weight:700;color:var(--gray-3)">NERIS API Validate</div>
+      </div>
+      <div id="step-tab-3" style="flex:1;padding:12px 16px;background:var(--navy-3);cursor:pointer" onclick="runSubmit()">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:2px">Step 3 — Submit</div>
+        <div style="font-size:13px;font-weight:700;color:var(--gray-3)">Send to NERIS</div>
+      </div>
+    </div>
+
+    <!-- Summary hero -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+      <div class="dash-stat" style="border-top:3px solid #4ADE80">
+        <div class="dash-stat-label">Ready to Submit</div>
+        <div class="dash-stat-value" style="color:#4ADE80">{{ pv.submittable }}</div>
+        <div class="dash-stat-sub">{{ pv.pct_ready }}% of total</div>
+      </div>
+      <div class="dash-stat" style="border-top:3px solid #FCD34D">
+        <div class="dash-stat-label">Warnings</div>
+        <div class="dash-stat-value" style="color:#FCD34D">{{ pv.with_warnings }}</div>
+        <div class="dash-stat-sub">submittable with notes</div>
+      </div>
+      <div class="dash-stat" style="border-top:3px solid #F87171">
+        <div class="dash-stat-label">Blocked</div>
+        <div class="dash-stat-value" style="color:#F87171">{{ pv.with_errors }}</div>
+        <div class="dash-stat-sub">critical errors — fix first</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Total Incidents</div>
+        <div class="dash-stat-value">{{ pv.total }}</div>
+        <div class="dash-stat-sub">{{ pv.dept_name }}</div>
+      </div>
+    </div>
+
+    <!-- Top errors action guide -->
+    {% if pv.top_errors %}
+    <div class="result-card" style="margin-bottom:16px">
+      <div class="result-header">
+        <span>Fix These Errors First</span>
+        <span style="font-size:11px;color:var(--gray-4)">{{ pv.with_errors }} incidents blocked</span>
+      </div>
+      <div style="padding:0 4px">
+        {% for msg, count in pv.top_errors %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" width="14" height="14"><path d="M12 9v3.75m9.303 3.376c.866 1.5-.217 3.374-1.948 3.374H4.645c-1.73 0-2.813-1.874-1.948-3.374l7.018-12.124c.866-1.5 3.032-1.5 3.898 0l7.018 12.124z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-size:12px;color:var(--gray-2)">{{ msg }}</span>
+          </div>
+          <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(214,55,55,.12);color:#F87171">{{ count }} records</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if pv.top_warnings %}
+    <div class="result-card" style="margin-bottom:16px">
+      <div class="result-header">
+        <span>Warnings — Review Before Submitting</span>
+        <span style="font-size:11px;color:var(--gray-4)">{{ pv.with_warnings }} incidents</span>
+      </div>
+      <div style="padding:0 4px">
+        {% for msg, count in pv.top_warnings %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FCD34D" stroke-width="2" width="14" height="14"><path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-size:12px;color:var(--gray-2)">{{ msg }}</span>
+          </div>
+          <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(252,211,77,.1);color:#FCD34D">{{ count }} records</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Per-incident table -->
+    <div class="result-card" style="margin-bottom:16px">
+      <div class="result-header">
+        <span>Incident-Level Status</span>
+        <span style="font-size:11px;color:var(--gray-4)">click row to see details</span>
+      </div>
+      <table class="worst-table" id="submit-drill-table">
+        <thead>
+          <tr>
+            <th>Incident</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Issues</th>
+            <th style="width:24px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rec in pv.incidents %}
+          {% set si = loop.index %}
+          <tr onclick="toggleSubmitDrill({{ si }})" style="cursor:pointer">
+            <td style="font-weight:600;color:var(--gray-1)">{{ rec.incident_id }}</td>
+            <td style="font-size:11px;color:var(--gray-3)">{{ rec.incident_type | truncate(22, true, '…') }}</td>
+            <td>
+              {% if rec.status == 'ready' %}
+              <span class="score-pill high">Ready</span>
+              {% elif rec.status == 'warning' %}
+              <span class="score-pill mid">Warning</span>
+              {% else %}
+              <span class="score-pill low">Blocked</span>
+              {% endif %}
+            </td>
+            <td style="font-size:11px;color:var(--gray-4)">
+              {% if rec.error_count %}{{ rec.error_count }} error{% if rec.error_count != 1 %}s{% endif %}{% endif %}
+              {% if rec.warning_count and rec.error_count %}, {% endif %}
+              {% if rec.warning_count %}{{ rec.warning_count }} warning{% if rec.warning_count != 1 %}s{% endif %}{% endif %}
+              {% if not rec.error_count and not rec.warning_count %}All checks passed{% endif %}
+            </td>
+            <td style="color:var(--gray-4);font-size:12px" id="sdrill-chevron-{{ si }}">›</td>
+          </tr>
+          <tr id="sdrill-detail-{{ si }}" style="display:none">
+            <td colspan="5" style="padding:0;background:var(--navy-3)">
+              <div style="padding:12px 18px;border-bottom:2px solid var(--border-2)">
+                {% if rec.errors %}
+                <div style="margin-bottom:8px">
+                  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#F87171;margin-bottom:6px">Errors (must fix)</div>
+                  {% for e in rec.errors %}
+                  <div style="font-size:12px;color:var(--gray-2);padding:4px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    {{ e }}
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                {% if rec.warnings %}
+                <div style="margin-bottom:8px">
+                  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#FCD34D;margin-bottom:6px">Warnings (review)</div>
+                  {% for w in rec.warnings %}
+                  <div style="font-size:12px;color:var(--gray-2);padding:4px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#FCD34D" stroke-width="2" width="12" height="12"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                    {{ w }}
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                {% if rec.passed %}
+                <div style="font-size:11px;color:var(--gray-4)">{{ rec.passed | length }} check{% if rec.passed|length != 1 %}s{% endif %} passed: {{ rec.passed | join(' · ') }}</div>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Submit action panel -->
+    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:14px;padding:20px 24px">
+      <div style="font-size:14px;font-weight:800;color:var(--white);margin-bottom:4px">Ready to Submit</div>
+      <div style="font-size:12px;color:var(--gray-3);margin-bottom:16px">
+        <strong style="color:#4ADE80">{{ pv.submittable }}</strong> incidents will be submitted.
+        {% if pv.with_errors %}<strong style="color:#F87171">{{ pv.with_errors }}</strong> blocked — fix errors above first.{% endif %}
+        Connecting to NERIS API requires your credentials (see NERIS Connect in the sidebar).
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button onclick="runApiValidate()" style="padding:9px 18px;font-size:12px;font-weight:700;font-family:inherit;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.4);color:#93C5FD;border-radius:8px;cursor:pointer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" style="vertical-align:middle;margin-right:4px"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Validate via NERIS API
+        </button>
+        <button onclick="runSubmit(false)" style="padding:9px 18px;font-size:12px;font-weight:700;font-family:inherit;background:var(--red);border:none;color:#fff;border-radius:8px;cursor:pointer;box-shadow:0 4px 12px var(--red-glow)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" style="vertical-align:middle;margin-right:4px"><path d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Submit {{ pv.submittable }} Incidents to NERIS
+        </button>
+        <button onclick="runSubmit(true)" style="padding:9px 18px;font-size:12px;font-weight:700;font-family:inherit;background:var(--navy-3);border:1px solid var(--border-2);color:var(--gray-3);border-radius:8px;cursor:pointer">
+          Dry Run (preview only)
+        </button>
+      </div>
+      <div id="submit-action-result" style="margin-top:14px;font-size:12px;display:none"></div>
+    </div>
+  </div>
+  <script>
+    function toggleSubmitDrill(id) {
+      const detail  = document.getElementById('sdrill-detail-' + id);
+      const chevron = document.getElementById('sdrill-chevron-' + id);
+      if (!detail) return;
+      const open = detail.style.display !== 'none';
+      document.querySelectorAll('[id^="sdrill-detail-"]').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('[id^="sdrill-chevron-"]').forEach(el => el.textContent = '›');
+      if (!open) { detail.style.display = ''; if (chevron) chevron.textContent = '⌄'; }
+    }
+
+    async function runApiValidate() {
+      const resultEl = document.getElementById('submit-action-result');
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = '<span style="color:var(--gray-3)">Calling NERIS validate API…</span>';
+      try {
+        const fd = new FormData();
+        fd.append('neris_id', 'MOCK-001');
+        fd.append('dept_neris_id', document.querySelector('[name="dept_neris_id"]')?.value || '');
+        fd.append('use_mock', 'true');
+        const r = await fetch('/neris/api-validate', { method: 'POST', body: fd });
+        const d = await r.json();
+        if (d.ok) {
+          resultEl.innerHTML = `<span style="color:#4ADE80">&#10003; API Validation: ${d.passed}/${d.validated} incidents passed NERIS validation.</span>`;
+        } else {
+          resultEl.innerHTML = `<span style="color:#F87171">&#9888; ${d.message}</span>`;
+        }
+      } catch(e) {
+        resultEl.innerHTML = `<span style="color:#F87171">Error: ${e.message}</span>`;
+      }
+    }
+
+    async function runSubmit(dryRun = false) {
+      const resultEl = document.getElementById('submit-action-result');
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = `<span style="color:var(--gray-3)">${dryRun ? 'Running dry run…' : 'Submitting to NERIS…'}</span>`;
+      try {
+        const fd = new FormData();
+        fd.append('neris_id', 'MOCK-001');
+        fd.append('dept_neris_id', document.querySelector('[name="dept_neris_id"]')?.value || '');
+        fd.append('use_mock', 'true');
+        fd.append('dry_run', dryRun ? 'true' : 'false');
+        const r = await fetch('/neris/submit', { method: 'POST', body: fd });
+        const d = await r.json();
+        if (d.ok && dryRun) {
+          resultEl.innerHTML = `<span style="color:#60A5FA">&#9654; Dry run: ${d.would_submit} incidents would be submitted, ${d.blocked} blocked.</span>`;
+        } else if (d.ok) {
+          resultEl.innerHTML = `<span style="color:#4ADE80">&#10003; Submitted: ${d.submitted} incidents sent to NERIS. ${d.failed ? d.failed + ' failed.' : ''}</span>`;
+        } else {
+          resultEl.innerHTML = `<span style="color:#F87171">&#9888; ${d.message}</span>`;
+        }
+      } catch(e) {
+        resultEl.innerHTML = `<span style="color:#F87171">Error: ${e.message}</span>`;
+      }
+    }
+  </script>
+  {% endif %}
+
   <!-- ── Report Builder Results ── -->
   {% if report_builder %}
   <div id="report-builder-results">
@@ -3274,7 +3552,7 @@
 <script>
   // ── Tab switching ──────────────────────────────────────────────────────────
   const _ctrlBars = ['main-form','trends-controls','quality-controls','ev-controls','risk-controls',
-    'benchmark-controls','compliance-controls','iso-controls','staffing-controls',
+    'benchmark-controls','compliance-controls','submit-controls','iso-controls','staffing-controls',
     'convert-controls','map-controls','report_builder-controls','state_export-controls'];
 
   // Server-rendered flags for showing results on initial load
@@ -3294,11 +3572,12 @@
     const isIso           = val === 'iso';
     const isStaffing      = val === 'staffing';
     const isTrends        = val === 'trends';
+    const isSubmit        = val === 'submit';
     const isReportBuilder = val === 'report_builder';
     const isStateExport   = val === 'state_export';
     const isArchive       = val === 'archive';
     const isReport = !isConvert && !isQuality && !isMap && !isBenchmark && !isEv && !isRisk
-                  && !isCompliance && !isIso && !isStaffing && !isTrends && !isReportBuilder && !isStateExport && !isArchive;
+                  && !isCompliance && !isSubmit && !isIso && !isStaffing && !isTrends && !isReportBuilder && !isStateExport && !isArchive;
 
     // Hide all ctrl bars, show the right one
     _ctrlBars.forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
@@ -3313,6 +3592,7 @@
     if (isConvert)       { document.getElementById('convert-controls').style.display = 'flex'; }
     if (isMap)           { document.getElementById('map-controls').style.display = 'flex'; }
     if (isTrends)        { document.getElementById('trends-controls').style.display = 'flex'; }
+    if (isSubmit)        { document.getElementById('submit-controls').style.display = 'flex'; }
     if (isReportBuilder) { const e = document.getElementById('report_builder-controls'); if (e) e.style.display = 'flex'; }
     if (isStateExport)   { const e = document.getElementById('state_export-controls'); if (e) e.style.display = 'flex'; }
     document.getElementById('neris-connect-panel').style.display = 'none';
@@ -3334,10 +3614,12 @@
     if (seResults)      seResults.style.display      = isStateExport ? '' : 'none';
     if (archiveResults) archiveResults.style.display = isArchive ? '' : 'none';
     if (trendsResults)  trendsResults.style.display  = isTrends ? '' : 'none';
+    const submitResults = document.getElementById('submit-results');
+    if (submitResults)  submitResults.style.display  = isSubmit ? '' : 'none';
 
     // Hide results when switching to convert/map/archive (no auto-submit for these)
     if (resultsArea) {
-      if (isMap || isReportBuilder || isStateExport || isArchive || isTrends) {
+      if (isMap || isReportBuilder || isStateExport || isArchive || isTrends || isSubmit) {
         resultsArea.style.display = 'none';
       } else if (isConvert) {
         resultsArea.style.display = _hasConvertResult ? '' : 'none';
@@ -3372,7 +3654,8 @@
       const formIds = {
         ev: 'ev-controls', risk: 'risk-controls', benchmark: 'benchmark-controls',
         compliance: 'compliance-controls', iso: 'iso-controls', staffing: 'staffing-controls',
-        quality: 'quality-controls', trends: 'trends-controls', report: 'main-form', grant: 'main-form',
+        quality: 'quality-controls', trends: 'trends-controls', submit: 'submit-controls',
+        report: 'main-form', grant: 'main-form',
         report_builder: 'report_builder-controls', state_export: 'state_export-controls',
       };
       const formId = formIds[val];
@@ -3401,6 +3684,8 @@
     selectTab(document.querySelector('.nav-item[data-value="iso"]'));
     {% elif active_tab == 'staffing' %}
     selectTab(document.querySelector('.nav-item[data-value="staffing"]'));
+    {% elif active_tab == 'submit' or pre_val %}
+    selectTab(document.querySelector('.nav-item[data-value="submit"]'));
     {% elif active_tab == 'trends' or trends_data %}
     selectTab(document.querySelector('.nav-item[data-value="trends"]'));
     {% elif active_tab == 'report_builder' %}
@@ -3417,6 +3702,7 @@
   [
     ['use_mock',            'neris-field'],
     ['trends-use-mock',     'trends-neris-field'],
+    ['submit-use-mock',     'submit-neris-field'],
     ['quality-use-mock',    'quality-neris-field'],
     ['map-use-mock',        'map-neris-field'],
     ['bench-use-mock',      'bench-neris-field'],

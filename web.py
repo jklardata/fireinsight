@@ -561,6 +561,153 @@ async def staffing_report(
     })
 
 
+# ── NERIS Submit & Validate ──────────────────────────────────────────────────
+
+@app.post("/neris/pre-validate", response_class=HTMLResponse)
+async def neris_pre_validate(
+    request:       Request,
+    neris_id:      str  = Form("MOCK-001"),
+    use_mock:      bool = Form(False),
+    dept_neris_id: str  = Form(""),
+    start:         str  = Form(""),
+    end:           str  = Form(""),
+):
+    error    = None
+    pre_val  = None
+    try:
+        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        if not incidents:
+            error = "No incidents found for the given parameters."
+        else:
+            from submission.pre_validator import pre_validate
+            pre_val = pre_validate(incidents, dept_neris_id or None)
+            pre_val["dept_name"] = dept_name
+    except Exception as e:
+        error = str(e)
+
+    return templates.TemplateResponse("index.html", {
+        "request":    request,
+        "pre_val":    pre_val,
+        "error":      error,
+        "active_tab": "submit",
+    })
+
+
+@app.post("/neris/api-validate", response_class=JSONResponse)
+async def neris_api_validate(
+    neris_id:      str = Form(...),
+    dept_neris_id: str = Form(...),
+    use_mock:      bool = Form(False),
+    start:         str = Form(""),
+    end:           str = Form(""),
+):
+    """Call NERIS validate_incident for each incident (requires API credentials)."""
+    if not _neris_creds.get("connected"):
+        return JSONResponse({"ok": False, "message": "Not connected to NERIS API. Enter your credentials first."}, status_code=401)
+    try:
+        incidents, _ = load_incidents(neris_id, use_mock, start, end)
+        from neris_api_client import NerisApiClient
+        from neris_api_client.config import Config, GrantType
+        cfg = Config(
+            base_url="https://api.neris.fsri.org/v1",
+            grant_type=GrantType.CLIENT_CREDENTIALS,
+            client_id=_neris_creds["client_id"],
+            client_secret=_neris_creds["client_secret"],
+        )
+        client = NerisApiClient(cfg)
+        results = []
+        for inc in incidents[:50]:  # cap at 50 for the validate preview
+            try:
+                body = {
+                    "base": {
+                        "department_neris_id": dept_neris_id,
+                        "incident_number": str(inc.get("neris_id_incident") or inc.get("incident_id") or ""),
+                        "location": {"address": inc.get("address", "")},
+                    },
+                    "incident_types": [{"type": inc.get("incident_type", "OTHER")}],
+                    "dispatch": {
+                        "incident_number": str(inc.get("neris_id_incident") or inc.get("incident_id") or ""),
+                        "call_arrival": inc.get("call_create", ""),
+                        "call_answered": inc.get("call_create", ""),
+                    },
+                }
+                resp = client.validate_incident(dept_neris_id, body)
+                results.append({"incident_id": inc.get("neris_id_incident"), "ok": True, "detail": resp})
+            except Exception as ex:
+                results.append({"incident_id": inc.get("neris_id_incident"), "ok": False, "detail": str(ex)})
+        ok_count = sum(1 for r in results if r["ok"])
+        return JSONResponse({"ok": True, "validated": len(results), "passed": ok_count, "results": results})
+    except Exception as e:
+        return JSONResponse({"ok": False, "message": str(e)}, status_code=500)
+
+
+@app.post("/neris/submit", response_class=JSONResponse)
+async def neris_submit(
+    neris_id:      str  = Form(...),
+    dept_neris_id: str  = Form(...),
+    use_mock:      bool = Form(False),
+    start:         str  = Form(""),
+    end:           str  = Form(""),
+    dry_run:       bool = Form(False),
+):
+    """Submit incidents to NERIS API. Requires API credentials."""
+    if not _neris_creds.get("connected"):
+        return JSONResponse({"ok": False, "message": "Not connected to NERIS API."}, status_code=401)
+    try:
+        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        from submission.pre_validator import pre_validate
+        pre = pre_validate(incidents, dept_neris_id)
+        submittable = [
+            inc for inc, res in zip(incidents, pre["incidents"])
+            if res["status"] in ("ready", "warning")
+        ]
+        if dry_run:
+            return JSONResponse({
+                "ok": True, "dry_run": True,
+                "would_submit": len(submittable),
+                "blocked": pre["with_errors"],
+                "dept_name": dept_name,
+            })
+        from neris_api_client import NerisApiClient
+        from neris_api_client.config import Config, GrantType
+        cfg = Config(
+            base_url="https://api.neris.fsri.org/v1",
+            grant_type=GrantType.CLIENT_CREDENTIALS,
+            client_id=_neris_creds["client_id"],
+            client_secret=_neris_creds["client_secret"],
+        )
+        client = NerisApiClient(cfg)
+        submitted, failed = 0, 0
+        errors = []
+        for inc in submittable:
+            try:
+                body = {
+                    "base": {
+                        "department_neris_id": dept_neris_id,
+                        "incident_number": str(inc.get("neris_id_incident") or inc.get("incident_id") or ""),
+                        "location": {"address": inc.get("address", "")},
+                    },
+                    "incident_types": [{"type": inc.get("incident_type", "OTHER")}],
+                    "dispatch": {
+                        "incident_number": str(inc.get("neris_id_incident") or inc.get("incident_id") or ""),
+                        "call_arrival": inc.get("call_create", ""),
+                        "call_answered": inc.get("call_create", ""),
+                    },
+                }
+                client.create_incident(dept_neris_id, body)
+                submitted += 1
+            except Exception as ex:
+                failed += 1
+                errors.append(str(ex)[:120])
+        return JSONResponse({
+            "ok": True, "submitted": submitted, "failed": failed,
+            "blocked": pre["with_errors"], "errors": errors[:5],
+            "dept_name": dept_name,
+        })
+    except Exception as e:
+        return JSONResponse({"ok": False, "message": str(e)}, status_code=500)
+
+
 # ── NERIS API Connection ──────────────────────────────────────────────────────
 
 @app.post("/neris/connect", response_class=JSONResponse)
