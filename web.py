@@ -123,6 +123,65 @@ async def generate(
     })
 
 
+@app.post("/trends-data", response_class=HTMLResponse)
+async def trends_data(
+    request:  Request,
+    neris_id: str  = Form("MOCK-001"),
+    use_mock: bool = Form(False),
+    start:    str  = Form(""),
+    end:      str  = Form(""),
+    period:   str  = Form(""),
+):
+    error  = None
+    trends = None
+    try:
+        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        if not incidents:
+            error = "No incidents found for the given parameters."
+        else:
+            stats = summarize_incidents(incidents)
+            period_label = period or ("the selected period" if start or end else "the past year")
+
+            by_month = stats.get("by_month", {})
+            months   = sorted(by_month.keys())[-12:]
+            month_counts = [by_month[m] for m in months]
+
+            by_year: dict = {}
+            for m, c in by_month.items():
+                yr = m.split()[-1] if " " in m else m[:4]
+                by_year[yr] = by_year.get(yr, 0) + c
+
+            call_types = stats.get("call_types", {})
+            rt = stats.get("response_time_seconds", {})
+            avg_rt = rt.get("average")
+            avg_rt_fmt = (f"{int(avg_rt) // 60}m {int(avg_rt) % 60:02d}s") if avg_rt else None
+
+            trends = {
+                "dept_name":    dept_name,
+                "period":       period_label,
+                "total":        len(incidents),
+                "stats":        stats,
+                "months":       months,
+                "month_counts": month_counts,
+                "by_year":      by_year,
+                "call_types":   call_types,
+                "top_types":    list(call_types.items())[:5],
+                "avg_rt":       avg_rt,
+                "avg_rt_fmt":   avg_rt_fmt,
+                "rt_sample":    rt.get("sample_size", 0),
+                "busiest_days": stats.get("busiest_days", []),
+            }
+    except Exception as e:
+        error = str(e)
+
+    return templates.TemplateResponse("index.html", {
+        "request":     request,
+        "trends_data": trends,
+        "error":       error,
+        "active_tab":  "trends",
+    })
+
+
 @app.post("/download")
 async def download(content: str = Form(...), filename: str = Form("fireinsight-report.md")):
     return PlainTextResponse(

@@ -948,21 +948,6 @@
       Dashboard
     </a>
 
-    <div class="nav-group-label">Reports</div>
-
-    <div class="nav-item {% if form and form.report_type == 'trends' %}active{% elif not form and not convert and not quality and not dashboard and active_tab not in ['benchmark','ev','risk','compliance','iso','staffing','map'] %}active{% endif %}" data-value="trends" onclick="selectTab(this, true)">
-      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
-      Trend Analysis
-    </div>
-    <div class="nav-item {% if form and form.report_type == 'report' %}active{% endif %}" data-value="report" onclick="selectTab(this, true)">
-      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
-      Chief's Report
-    </div>
-    <div class="nav-item {% if form and form.report_type == 'grant' %}active{% endif %}" data-value="grant" onclick="selectTab(this, true)">
-      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
-      Grant Narrative
-    </div>
-
     <div class="nav-group-label">Compliance & Audit</div>
 
     <div class="nav-item {% if active_tab == 'compliance' %}active{% endif %}" data-value="compliance" onclick="selectTab(this, true)">
@@ -976,6 +961,21 @@
     <div class="nav-item {% if quality %}active{% endif %}" data-value="quality" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       Data Quality
+    </div>
+
+    <div class="nav-group-label">Reports</div>
+
+    <div class="nav-item {% if active_tab == 'trends' or trends_data %}active{% elif form and form.report_type == 'trends' %}active{% endif %}" data-value="trends" onclick="selectTab(this, true)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+      Trend Analysis
+    </div>
+    <div class="nav-item {% if form and form.report_type == 'report' %}active{% endif %}" data-value="report" onclick="selectTab(this, true)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+      Chief's Report
+    </div>
+    <div class="nav-item {% if form and form.report_type == 'grant' %}active{% endif %}" data-value="grant" onclick="selectTab(this, true)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+      Grant Narrative
     </div>
 
     <div class="nav-group-label">Operations</div>
@@ -1137,6 +1137,37 @@
       </div>
     </div>
   </div>
+
+  <!-- Trend Analysis controls (fast — no LLM) -->
+  <form method="POST" action="/trends-data" id="trends-controls" class="ctrl-bar" style="{% if active_tab == 'trends' or trends_data %}{% else %}display:none{% endif %}">
+    <div class="ctrl-field">
+      <label class="ctrl-label">Data Source</label>
+      <label class="ctrl-toggle-wrap">
+        <input type="checkbox" name="use_mock" id="trends-use-mock" checked />
+        Sample Data
+      </label>
+    </div>
+    <div class="ctrl-field" id="trends-neris-field" style="display:none">
+      <label class="ctrl-label">NERIS ID</label>
+      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" />
+        <input type="date" name="end" />
+      </div>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Period Label</label>
+      <input type="text" name="period" placeholder="e.g. Jan 2025" style="width:120px" />
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Analyze Trends
+    </button>
+  </form>
 
   <!-- Quality controls -->
   <form method="POST" action="/quality" id="quality-controls" class="ctrl-bar" style="display:none">
@@ -1765,17 +1796,54 @@
     <!-- Top zones table + response gap -->
     <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px">
       <div class="result-card">
-        <div class="result-header"><span>Highest-Risk Zones</span><span style="font-size:11px;color:var(--gray-4)">top {{ s.top_zones | length }}</span></div>
-        <table class="risk-zone-table">
-          <thead><tr><th>Level</th><th>Score</th><th>Incidents</th><th>Dominant Type</th><th>Avg Response</th></tr></thead>
+        <div class="result-header"><span>Highest-Risk Zones</span><span style="font-size:11px;color:var(--gray-4)">click row to drill in</span></div>
+        <table class="risk-zone-table" id="risk-drill-table">
+          <thead><tr><th>Level</th><th>Score</th><th>Incidents</th><th>Dominant Type</th><th>Avg Response</th><th style="width:24px"></th></tr></thead>
           <tbody>
             {% for z in s.top_zones %}
-            <tr>
+            {% set zi = loop.index %}
+            {%- set RISK_ACTIONS = {
+              'Critical': 'Deploy additional pre-positioned units to this zone. Consider targeted community fire prevention outreach. Evaluate station coverage for gaps.',
+              'High':     'Review apparatus routing for this zone. Increase fire prevention inspections for high-occupancy or commercial structures.',
+              'Medium':   'Monitor this zone monthly. Consider targeted public education campaigns based on dominant incident type.',
+              'Low':      'Maintain current coverage. No immediate action required — continue routine monitoring.',
+            } %}
+            <tr onclick="toggleRiskDrill({{ zi }})" style="cursor:pointer" data-drill="{{ zi }}">
               <td><span class="risk-badge {{ z.risk_level }}">{{ z.risk_level }}</span></td>
               <td style="font-weight:700;color:var(--white)">{{ z.risk_score }}</td>
               <td>{{ z.incident_count }}</td>
               <td style="font-size:11px;color:var(--gray-3)">{{ z.dominant_type | truncate(24, true, '…') }}</td>
               <td>{% if z.avg_response_seconds %}{{ (z.avg_response_seconds // 60) }}m {{ '%02d'|format(z.avg_response_seconds % 60) }}s{% else %}—{% endif %}</td>
+              <td style="color:var(--gray-4);font-size:12px" id="risk-chevron-{{ zi }}">›</td>
+            </tr>
+            <tr id="risk-detail-{{ zi }}" style="display:none">
+              <td colspan="6" style="padding:0;background:var(--navy-3)">
+                <div style="padding:14px 18px;border-bottom:2px solid var(--border-2)">
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+                    <div style="padding:10px 12px;background:var(--navy-2);border-radius:8px;border:1px solid var(--border)">
+                      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:4px">Risk Score</div>
+                      <div style="font-size:22px;font-weight:900;color:{% if z.risk_level == 'Critical' %}#EF4444{% elif z.risk_level == 'High' %}#F97316{% elif z.risk_level == 'Medium' %}#EAB308{% else %}#22C55E{% endif %}">{{ z.risk_score }}<span style="font-size:11px;color:var(--gray-4)">/100</span></div>
+                    </div>
+                    <div style="padding:10px 12px;background:var(--navy-2);border-radius:8px;border:1px solid var(--border)">
+                      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:4px">Incidents in Zone</div>
+                      <div style="font-size:22px;font-weight:900;color:var(--white)">{{ z.incident_count }}</div>
+                    </div>
+                    <div style="padding:10px 12px;background:var(--navy-2);border-radius:8px;border:1px solid var(--border)">
+                      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:4px">Avg Response</div>
+                      <div style="font-size:22px;font-weight:900;color:{% if z.avg_response_seconds and z.avg_response_seconds > 480 %}#F87171{% else %}#4ADE80{% endif %}">
+                        {% if z.avg_response_seconds %}{{ (z.avg_response_seconds // 60) }}m {{ '%02d'|format(z.avg_response_seconds % 60) }}s{% else %}—{% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  <div style="margin-bottom:8px">
+                    <div style="font-size:11px;font-weight:700;color:var(--gray-2);margin-bottom:3px">Dominant Incident Type</div>
+                    <div style="font-size:12px;color:var(--gray-3)">{{ z.dominant_type }}</div>
+                  </div>
+                  <div style="font-size:11px;color:var(--gray-3);line-height:1.5;padding:10px 12px;background:rgba({% if z.risk_level == 'Critical' %}214,55,55{% elif z.risk_level == 'High' %}249,115,22{% elif z.risk_level == 'Medium' %}234,179,8{% else %}34,197,94{% endif %},.08);border-radius:8px;border:1px solid rgba({% if z.risk_level == 'Critical' %}214,55,55{% elif z.risk_level == 'High' %}249,115,22{% elif z.risk_level == 'Medium' %}234,179,8{% else %}34,197,94{% endif %},.2)">
+                    <strong style="color:var(--gray-1)">Recommended Action:</strong> {{ RISK_ACTIONS[z.risk_level] }}
+                  </div>
+                </div>
+              </td>
             </tr>
             {% endfor %}
           </tbody>
@@ -2048,18 +2116,45 @@
         {% endif %}
 
         <div class="result-card">
-          <div class="result-header"><span>Lowest-Scoring Records</span></div>
-          <table class="worst-table">
-            <thead><tr><th>Incident</th><th>Type</th><th>Score</th><th>Missing</th></tr></thead>
+          <div class="result-header"><span>Lowest-Scoring Records</span><span style="font-size:11px;color:var(--gray-4)">click any row to see details</span></div>
+          <table class="worst-table" id="quality-drill-table">
+            <thead><tr><th>Incident</th><th>Type</th><th>Score</th><th>Missing Fields</th><th style="width:24px"></th></tr></thead>
             <tbody>
               {% for rec in r.worst_records %}
               {% set sc = rec.score %}
               {% set pill = 'high' if sc >= 70 else ('mid' if sc >= 50 else 'low') %}
-              <tr>
+              {% set rid = loop.index %}
+              <tr onclick="toggleQualityDrill({{ rid }})" style="cursor:pointer" class="drill-row" data-drill="{{ rid }}">
                 <td style="font-weight:600;color:var(--gray-1)">{{ rec.incident_id }}</td>
                 <td>{{ rec.incident_type | truncate(22, true, '…') }}</td>
                 <td><span class="score-pill {{ pill }}">{{ sc }}</span></td>
-                <td style="font-size:11px;color:var(--gray-4)">{{ rec.missing | join(', ') | truncate(36, true, '…') }}</td>
+                <td style="font-size:11px;color:var(--gray-4)">{{ rec.missing | length }} field{% if rec.missing | length != 1 %}s{% endif %} missing</td>
+                <td style="color:var(--gray-4);font-size:12px" id="drill-chevron-{{ rid }}">›</td>
+              </tr>
+              <tr id="drill-detail-{{ rid }}" style="display:none">
+                <td colspan="5" style="padding:0;background:var(--navy-3)">
+                  <div style="padding:14px 18px;border-bottom:2px solid var(--border-2)">
+                    <div style="font-size:11px;font-weight:700;color:var(--gray-4);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">Missing Fields — {{ rec.incident_id }}</div>
+                    {% if rec.missing %}
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+                      {% for field in rec.missing %}
+                      <span style="font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(214,55,55,.12);border:1px solid rgba(214,55,55,.25);color:#F87171;font-weight:600">{{ field }}</span>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if rec.flags %}
+                    <div style="font-size:11px;font-weight:700;color:var(--gray-4);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;margin-top:10px">Validity Flags</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+                      {% for f in rec.flags %}
+                      <span style="font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(252,211,77,.1);border:1px solid rgba(252,211,77,.25);color:#FCD34D">⚠ {{ f }}</span>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div style="font-size:11px;color:var(--gray-3);line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+                      <strong style="color:var(--gray-2)">Fix:</strong> Open incident {{ rec.incident_id }} in your RMS and complete all highlighted fields above. For timestamp fields, check CAD export logs. For location fields, verify address geocoding.
+                    </div>
+                  </div>
+                </td>
               </tr>
               {% endfor %}
             </tbody>
@@ -2159,11 +2254,59 @@
     </div>
     {% endif %}
 
-    <!-- Next steps -->
+    <!-- Fix-It Action Guide -->
+    {% if cr.top_gaps %}
+    {%- set FIELD_TIPS = {
+      'Arrival time':           {'icon': '⏱', 'action': 'Ensure crew marks on-scene in your CAD/RMS. Enable mandatory arrival timestamp in DispatchPro or RMS settings.'},
+      'Clear time':             {'icon': '✅', 'action': 'Require units to mark clear before closing an incident. Set RMS to block close if clear time is missing.'},
+      'GPS / Latitude':         {'icon': '📍', 'action': 'Enable auto-geocoding in your RMS address lookup. Verify mobile app GPS is on during incident creation.'},
+      'GPS / Longitude':        {'icon': '📍', 'action': 'Enable auto-geocoding in your RMS address lookup. Verify mobile app GPS is on during incident creation.'},
+      'Incident type':          {'icon': '🗂', 'action': 'Make incident type a required field in your RMS dispatch screen. Provide crews a quick-reference code card.'},
+      'Property use':           {'icon': '🏠', 'action': 'Add property use as a required field in your RMS. Pre-populate from address lookup when available.'},
+      'Apparatus':              {'icon': '🚒', 'action': 'Configure your CAD to auto-assign apparatus to incidents. Audit unit assignment workflows with dispatch.'},
+      'Personnel count':        {'icon': '👨‍🚒', 'action': 'Log personnel assignments at unit level in your RMS. Auto-populate from crew roster when units are assigned.'},
+      'Injuries (firefighter)': {'icon': '⚕️', 'action': 'Add injury fields to incident close-out checklist. Zero-fill when no injuries (do not leave blank).'},
+      'Injuries (civilian)':    {'icon': '⚕️', 'action': 'Add injury fields to incident close-out checklist. Zero-fill when no injuries (do not leave blank).'},
+      'Dollar loss':            {'icon': '💰', 'action': 'Estimate property loss at scene and record in RMS before clearing. Even rough estimates are better than blank.'},
+      'Structure type':         {'icon': '🏗', 'action': 'Make structure type a required field for structure fire incidents. Train crews to classify at scene.'},
+      'Mutual aid':             {'icon': '🤝', 'action': 'Log mutual aid agreements in your RMS for every cross-jurisdiction response. Flag given vs. received.'},
+    } -%}
+    <div class="result-card" style="margin-bottom:20px">
+      <div class="result-header">
+        <span>Fix-It Action Guide</span>
+        <span style="font-size:11px;color:var(--gray-4)">prioritized by compliance impact</span>
+      </div>
+      <div style="padding:0 4px">
+        {% for g in cr.top_gaps %}
+        {%- set tip = FIELD_TIPS.get(g.field, {'icon': '🔧', 'action': 'Work with your RMS vendor to make this a required field captured at time of dispatch or incident close-out.'}) %}
+        <div style="display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:14px 16px;border-bottom:1px solid var(--border)">
+          <div style="font-size:18px;line-height:1;padding-top:2px">{{ tip.icon }}</div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span style="font-size:13px;font-weight:700;color:var(--white)">{{ g.field }}</span>
+              <span style="font-size:10px;color:var(--gray-4)">{{ g.module }}</span>
+            </div>
+            <div style="font-size:12px;color:var(--gray-3);line-height:1.5;margin-bottom:6px">{{ tip.action }}</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(214,55,55,.12);color:#F87171">{{ g.missing }} records missing</span>
+              <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(96,165,250,.1);color:#93C5FD">+{{ g.total - g.missing }} already complete</span>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:22px;font-weight:900;color:{% if g.pct >= 70 %}#FCD34D{% else %}#F87171{% endif %}">{{ g.pct }}%</div>
+            <div style="font-size:9px;color:var(--gray-4);text-transform:uppercase;letter-spacing:.4px;margin-top:2px">compliant</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Next steps workflow -->
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
       <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:14px;border-top:2px solid #60A5FA">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#60A5FA;margin-bottom:6px">① Fix your gaps</div>
-        <div style="font-size:11px;color:var(--gray-2);line-height:1.55">Work with your RMS vendor to ensure all required fields are captured at dispatch. Prioritize the top gaps table above.</div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#60A5FA;margin-bottom:6px">① Fix your RMS</div>
+        <div style="font-size:11px;color:var(--gray-2);line-height:1.55">Use the action guide above to configure required fields. Share it with your RMS admin and training officer this week.</div>
       </div>
       <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:14px;border-top:2px solid #4ADE80">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#4ADE80;margin-bottom:6px">② Submit to NERIS</div>
@@ -2575,6 +2718,27 @@
         </div>
       </div>
 
+      <!-- Compliance status card -->
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:14px;padding:18px 22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        <div style="width:50px;height:50px;border-radius:50%;border:3px solid #FCD34D;display:flex;align-items:center;justify-content:center;background:var(--navy-3);flex-shrink:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FCD34D" stroke-width="2" width="22" height="22"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:14px;font-weight:800;color:var(--white);margin-bottom:3px">NERIS Compliance — Not Yet Checked</div>
+          <div style="font-size:12px;color:var(--gray-3);line-height:1.5">NERIS reporting became mandatory January 1, 2026. Run a compliance check to see your score across all 6 modules and get a field-by-field action plan.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+          <button onclick="selectTab(document.querySelector('[data-value=\'compliance\']'), true)" class="btn-run" style="font-size:12px;height:34px;padding:0 16px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Check Compliance Now
+          </button>
+          <div style="display:flex;gap:6px;justify-content:center">
+            <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(252,211,77,.1);color:#FCD34D;font-weight:600">6 Modules</span>
+            <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(74,222,128,.1);color:#4ADE80;font-weight:600">Instant Results</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Charts row: types bar + busiest days -->
       <div class="dash-row dash-row-3">
         <div class="dash-card">
@@ -2661,6 +2825,154 @@
     {% endif %}
 
   </div><!-- /results-area -->
+
+  <!-- ── Trend Analysis Results (fast, no LLM) ── -->
+  {% if trends_data %}
+  {% set td = trends_data %}
+  <div id="trends-results" style="max-width:900px;margin:0 auto">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:18px;font-weight:800;color:var(--white)">{{ td.dept_name }} — Trend Analysis</div>
+        <div style="font-size:12px;color:var(--gray-4);margin-top:3px">{{ td.period }} &middot; {{ td.total }} incidents</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="font-size:11px;padding:4px 14px;border-radius:25px;color:#60A5FA;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25)">Live Data View</div>
+        <!-- AI Narrative on demand -->
+        <form method="POST" action="/generate" style="display:inline">
+          <input type="hidden" name="report_type" value="trends" />
+          <input type="hidden" name="use_mock" value="true" />
+          <button type="submit" class="btn-run" style="font-size:12px;height:32px;padding:0 14px" onclick="showLoading()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M13 2L4 14h7l-1 8 9-12h-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            AI Narrative
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- KPI row -->
+    <div class="dash-stat-row" style="margin-bottom:20px">
+      <div class="dash-stat">
+        <div class="dash-stat-label">Total Incidents</div>
+        <div class="dash-stat-value">{{ td.total }}</div>
+        <div class="dash-stat-sub">{{ td.period }}</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Avg Response</div>
+        <div class="dash-stat-value" style="font-size:22px">{{ td.avg_rt_fmt or '—' }}</div>
+        <div class="dash-stat-sub">dispatch to arrival ({{ td.rt_sample }} calls timed)</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Incident Types</div>
+        <div class="dash-stat-value">{{ td.call_types | length }}</div>
+        <div class="dash-stat-sub">distinct types reported</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Top Type</div>
+        {% if td.top_types %}
+        <div class="dash-stat-value" style="font-size:14px;line-height:1.2;margin-top:4px">{{ td.top_types[0][0] | truncate(18, true, '…') }}</div>
+        <div class="dash-stat-sub">{{ td.top_types[0][1] }} incidents</div>
+        {% else %}
+        <div class="dash-stat-value">—</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Monthly trend chart + type breakdown -->
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:20px">
+      <div class="result-card" style="margin-bottom:0">
+        <div class="result-header"><span>Monthly Incident Volume</span><span style="font-size:11px;color:var(--gray-4)">last 12 months</span></div>
+        <div class="dash-card-body dash-chart-wrap" style="height:220px;padding:16px">
+          <canvas id="trend-monthly-chart"></canvas>
+        </div>
+      </div>
+      <div class="result-card" style="margin-bottom:0">
+        <div class="result-header"><span>Incident Type Breakdown</span></div>
+        <div style="padding:8px 16px">
+          {% set max_type_count = td.top_types[0][1] if td.top_types else 1 %}
+          {% for type_name, count in td.top_types %}
+          <div style="padding:6px 0;border-bottom:1px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:12px;color:var(--gray-2)">{{ type_name | truncate(26, true, '…') }}</span>
+              <span style="font-size:12px;font-weight:700;color:var(--white)">{{ count }}</span>
+            </div>
+            <div style="background:var(--navy-4);border-radius:3px;height:4px">
+              <div style="height:4px;border-radius:3px;background:#60A5FA;width:{{ (count / max_type_count * 100) | int }}%"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Year-over-year + busiest days -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      {% if td.by_year | length > 1 %}
+      <div class="result-card" style="margin-bottom:0">
+        <div class="result-header"><span>Year-over-Year Volume</span></div>
+        <div style="padding:8px 16px">
+          {% set max_yr_count = td.by_year.values() | max %}
+          {% for yr, cnt in td.by_year.items() | sort %}
+          <div class="dash-month-row">
+            <span class="dash-month-name" style="width:44px;font-size:12px">{{ yr }}</span>
+            <div class="dash-month-bar-wrap"><div class="dash-month-bar" style="width:{{ (cnt / max_yr_count * 100) | int }}%"></div></div>
+            <span class="dash-month-count">{{ cnt }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      <div class="result-card" style="margin-bottom:0">
+        <div class="result-header"><span>Busiest Days of Week</span></div>
+        <div style="padding:8px 16px">
+          {% if td.busiest_days %}
+          {% set max_day = td.busiest_days[0].count %}
+          {% for item in td.busiest_days %}
+          <div class="dash-day-row">
+            <span class="dash-day-name">{{ item.day }}</span>
+            <div class="dash-day-bar-wrap"><div class="dash-day-bar" style="width:{{ (item.count / max_day * 100) | int }}%"></div></div>
+            <span class="dash-day-count">{{ item.count }}</span>
+          </div>
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- AI insight nudge -->
+    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px">
+      <div style="width:36px;height:36px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2" width="16" height="16"><path d="M13 2L4 14h7l-1 8 9-12h-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:3px">Want AI-written trend insights?</div>
+        <div style="font-size:12px;color:var(--gray-3)">Click "AI Narrative" above to generate a plain-English trend summary written for your fire chief — takes 10–20 seconds.</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function() {
+      const months = {{ td.months | tojson }};
+      const counts = {{ td.month_counts | tojson }};
+      const ctx = document.getElementById('trend-monthly-chart');
+      if (ctx) new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: months,
+          datasets: [{ data: counts, backgroundColor: 'rgba(96,165,250,0.7)', borderRadius: 4, borderSkipped: false }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#9CA3AF', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,.05)' } },
+            y: { ticks: { color: '#9CA3AF', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' }, beginAtZero: true }
+          }
+        }
+      });
+    })();
+  </script>
+  {% endif %}
 
   <!-- ── Report Builder Results ── -->
   {% if report_builder %}
@@ -2961,7 +3273,7 @@
 
 <script>
   // ── Tab switching ──────────────────────────────────────────────────────────
-  const _ctrlBars = ['main-form','quality-controls','ev-controls','risk-controls',
+  const _ctrlBars = ['main-form','trends-controls','quality-controls','ev-controls','risk-controls',
     'benchmark-controls','compliance-controls','iso-controls','staffing-controls',
     'convert-controls','map-controls','report_builder-controls','state_export-controls'];
 
@@ -2981,11 +3293,12 @@
     const isCompliance    = val === 'compliance';
     const isIso           = val === 'iso';
     const isStaffing      = val === 'staffing';
+    const isTrends        = val === 'trends';
     const isReportBuilder = val === 'report_builder';
     const isStateExport   = val === 'state_export';
     const isArchive       = val === 'archive';
     const isReport = !isConvert && !isQuality && !isMap && !isBenchmark && !isEv && !isRisk
-                  && !isCompliance && !isIso && !isStaffing && !isReportBuilder && !isStateExport && !isArchive;
+                  && !isCompliance && !isIso && !isStaffing && !isTrends && !isReportBuilder && !isStateExport && !isArchive;
 
     // Hide all ctrl bars, show the right one
     _ctrlBars.forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
@@ -2999,6 +3312,7 @@
     if (isStaffing)      { document.getElementById('staffing-controls').style.display = 'flex'; }
     if (isConvert)       { document.getElementById('convert-controls').style.display = 'flex'; }
     if (isMap)           { document.getElementById('map-controls').style.display = 'flex'; }
+    if (isTrends)        { document.getElementById('trends-controls').style.display = 'flex'; }
     if (isReportBuilder) { const e = document.getElementById('report_builder-controls'); if (e) e.style.display = 'flex'; }
     if (isStateExport)   { const e = document.getElementById('state_export-controls'); if (e) e.style.display = 'flex'; }
     document.getElementById('neris-connect-panel').style.display = 'none';
@@ -3011,6 +3325,7 @@
     const rbResults        = document.getElementById('report-builder-results');
     const seResults        = document.getElementById('state-export-results');
     const archiveResults   = document.getElementById('archive-results');
+    const trendsResults    = document.getElementById('trends-results');
 
     if (convertPage)    convertPage.style.display    = isConvert ? 'block' : 'none';
     if (archivePage)    archivePage.style.display    = isArchive ? 'block' : 'none';
@@ -3018,10 +3333,11 @@
     if (rbResults)      rbResults.style.display      = isReportBuilder ? '' : 'none';
     if (seResults)      seResults.style.display      = isStateExport ? '' : 'none';
     if (archiveResults) archiveResults.style.display = isArchive ? '' : 'none';
+    if (trendsResults)  trendsResults.style.display  = isTrends ? '' : 'none';
 
     // Hide results when switching to convert/map/archive (no auto-submit for these)
     if (resultsArea) {
-      if (isMap || isReportBuilder || isStateExport || isArchive) {
+      if (isMap || isReportBuilder || isStateExport || isArchive || isTrends) {
         resultsArea.style.display = 'none';
       } else if (isConvert) {
         resultsArea.style.display = _hasConvertResult ? '' : 'none';
@@ -3056,7 +3372,7 @@
       const formIds = {
         ev: 'ev-controls', risk: 'risk-controls', benchmark: 'benchmark-controls',
         compliance: 'compliance-controls', iso: 'iso-controls', staffing: 'staffing-controls',
-        quality: 'quality-controls', trends: 'main-form', report: 'main-form', grant: 'main-form',
+        quality: 'quality-controls', trends: 'trends-controls', report: 'main-form', grant: 'main-form',
         report_builder: 'report_builder-controls', state_export: 'state_export-controls',
       };
       const formId = formIds[val];
@@ -3085,6 +3401,8 @@
     selectTab(document.querySelector('.nav-item[data-value="iso"]'));
     {% elif active_tab == 'staffing' %}
     selectTab(document.querySelector('.nav-item[data-value="staffing"]'));
+    {% elif active_tab == 'trends' or trends_data %}
+    selectTab(document.querySelector('.nav-item[data-value="trends"]'));
     {% elif active_tab == 'report_builder' %}
     selectTab(document.querySelector('.nav-item[data-value="report_builder"]'));
     {% elif active_tab == 'state_export' %}
@@ -3098,6 +3416,7 @@
 
   [
     ['use_mock',            'neris-field'],
+    ['trends-use-mock',     'trends-neris-field'],
     ['quality-use-mock',    'quality-neris-field'],
     ['map-use-mock',        'map-neris-field'],
     ['bench-use-mock',      'bench-neris-field'],
@@ -3134,6 +3453,35 @@
       if (nerisMain) nerisMain.style.display = 'block';
     } else {
       if (nerisMain) nerisMain.style.display = 'none';
+    }
+  }
+
+  // ── Data Quality record drilldown ─────────────────────────────────────────
+  function toggleQualityDrill(id) {
+    const detail  = document.getElementById('drill-detail-' + id);
+    const chevron = document.getElementById('drill-chevron-' + id);
+    if (!detail) return;
+    const open = detail.style.display !== 'none';
+    // Close all others
+    document.querySelectorAll('[id^="drill-detail-"]').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('[id^="drill-chevron-"]').forEach(el => el.textContent = '›');
+    if (!open) {
+      detail.style.display = '';
+      if (chevron) chevron.textContent = '⌄';
+    }
+  }
+
+  // ── Community Risk zone drilldown ─────────────────────────────────────────
+  function toggleRiskDrill(id) {
+    const detail  = document.getElementById('risk-detail-' + id);
+    const chevron = document.getElementById('risk-chevron-' + id);
+    if (!detail) return;
+    const open = detail.style.display !== 'none';
+    document.querySelectorAll('[id^="risk-detail-"]').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('[id^="risk-chevron-"]').forEach(el => el.textContent = '›');
+    if (!open) {
+      detail.style.display = '';
+      if (chevron) chevron.textContent = '⌄';
     }
   }
 
