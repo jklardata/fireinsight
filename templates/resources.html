@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Resources — FireInsight</title>
   <meta name="description" content="Practical guides to help fire departments navigate NERIS compliance, ISO ratings, grant writing, and data-driven operations." />
+  <link rel="canonical" href="https://fireinsight.app/resources" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="FireInsight" />
+  <meta property="og:title" content="Resources — FireInsight" />
+  <meta property="og:description" content="Practical guides for fire departments: NERIS compliance, ISO ratings, grant writing, and data-driven operations." />
+  <meta property="og:url" content="https://fireinsight.app/resources" />
+  <meta property="og:image" content="https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Resources — FireInsight" />
+  <meta name="twitter:description" content="Practical guides for fire departments: NERIS compliance, ISO ratings, grant writing, and data-driven operations." />
+  <meta name="twitter:image" content="https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
@@ -275,13 +286,38 @@
       color: var(--muted); font-size: 13px; background: var(--bg);
     }
 
+    .nav-hamburger {
+      display: none; flex-direction: column; justify-content: center; align-items: center;
+      gap: 5px; width: 40px; height: 40px; background: none; border: none;
+      cursor: pointer; color: var(--ink2); padding: 4px; flex-shrink: 0;
+    }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: currentColor; border-radius: 2px; }
+    .mobile-nav {
+      display: none; position: absolute; top: 64px; left: 0; right: 0; z-index: 40;
+      background: rgba(247,244,239,0.98); border-bottom: 1px solid var(--border);
+      padding: 8px 20px 20px; flex-direction: column; backdrop-filter: blur(12px);
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a { display: block; padding: 13px 4px; font-size: 16px; font-weight: 500; color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .mobile-nav a:hover { color: var(--ink); }
+    .mobile-nav .mobile-cta { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .mobile-nav .mobile-cta a { text-align: center; border-radius: 25px; padding: 13px 20px; font-weight: 700; font-size: 15px; border-bottom: none; }
     @media (max-width: 900px) {
       .featured-row { grid-template-columns: 1fr; }
       .articles-grid { grid-template-columns: 1fr 1fr; }
       nav, .page-header, .filter-row, .content-wrap, footer { padding-left: 24px; padding-right: 24px; }
     }
+    @media (max-width: 768px) {
+      nav { position: relative; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+      footer { flex-direction: column; gap: 14px; align-items: flex-start; }
+    }
     @media (max-width: 600px) {
       .articles-grid { grid-template-columns: 1fr; }
+      .horiz-card { flex-wrap: wrap; gap: 10px; }
+      .spotlight { padding: 32px 24px; }
     }
   </style>
 </head>
@@ -303,7 +339,18 @@
     <a href="/app" class="btn btn-sm btn-ghost">Open App</a>
     <a href="/app" class="btn btn-sm btn-primary">Try Free</a>
   </div>
+  <button class="nav-hamburger" onclick="toggleMobileNav()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="/">Home</a>
+  <a href="/neris">NERIS Guide</a>
+  <a href="/resources">Resources</a>
+  <div class="mobile-cta">
+    <a href="/app" class="btn btn-primary" style="background:var(--ink);color:#fff">Open App</a>
+  </div>
+</div>
 
 <!-- HEADER -->
 <div class="page-header">
@@ -312,7 +359,14 @@
     <h1>Learn the<br>fire data landscape.</h1>
     <p>Guides for chiefs, data officers, and grant writers navigating NERIS, ISO ratings, and modern fire service analytics.</p>
   </div>
+  <div style="flex-shrink:0;width:340px;height:220px;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(15,26,32,0.15);display:none;position:relative" class="header-photo">
+    <img src="https://images.pexels.com/photos/3013675/pexels-photo-3013675.jpeg?auto=compress&cs=tinysrgb&w=680&h=440&fit=crop"
+         alt="Firefighter in gear" loading="lazy"
+         style="width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(20%)" />
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom right, transparent 50%, rgba(15,26,32,0.3))"></div>
+  </div>
 </div>
+<style>@media(min-width:900px){.header-photo{display:block !important}}</style>
 
 <!-- FILTER -->
 <div class="filter-row" id="filterRow">
@@ -334,6 +388,9 @@
     <!-- Featured left -->
     <a href="/resources/{{ articles[0].slug }}" class="article-card card-featured" data-cat="{{ articles[0].category }}">
       <div class="card-featured-bg" style="background: {{ articles[0].color }};"></div>
+      <img src="https://images.pexels.com/photos/14776571/pexels-photo-14776571.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop"
+           alt="" loading="lazy"
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.12;pointer-events:none" />
       <div class="card-featured-content">
         <div class="cat-pill" style="background: {{ articles[0].bg }}; color: {{ articles[0].color }};">
           <span class="cat-dot" style="background: {{ articles[0].color }};"></span>
@@ -412,6 +469,9 @@
 </footer>
 
 <script>
+  function toggleMobileNav() {
+    document.getElementById('mobile-nav').classList.toggle('open');
+  }
   const filterBtns = document.querySelectorAll('.filter-btn');
   const featuredRow = document.getElementById('featuredRow');
   const allCards = document.querySelectorAll('[data-cat]');

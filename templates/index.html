@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FireInsight — AI Analytics for Fire Departments</title>
+  <meta name="description" content="FireInsight: AI-powered fire department analytics. Generate grant narratives, chief's reports, NERIS compliance checks, ISO evidence packs, and incident maps from your data." />
+  <link rel="canonical" href="https://fireinsight.app/app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="FireInsight" />
+  <meta property="og:title" content="FireInsight — AI Analytics for Fire Departments" />
+  <meta property="og:description" content="AI-powered fire department analytics. Generate grant narratives, chief's reports, compliance checks, and incident maps." />
+  <meta property="og:url" content="https://fireinsight.app/app" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="FireInsight — AI Analytics for Fire Departments" />
+  <meta name="twitter:description" content="AI-powered analytics for fire departments. Generate reports and insights from your incident data." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -884,12 +894,26 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       .layout { grid-template-columns: 1fr; }
-      .layout { grid-template-columns: 1fr; }
-      .sidebar { border-right: none; border-bottom: 1px solid var(--border); flex-direction: row; flex-wrap: wrap; padding: 8px; }
+      .sidebar {
+        border-right: none; border-bottom: 1px solid var(--border);
+        flex-direction: row; flex-wrap: nowrap;
+        padding: 6px 8px; gap: 4px;
+        overflow-x: auto; -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .sidebar::-webkit-scrollbar { display: none; }
       .nav-group-label { display: none; }
-      .ctrl-bar { flex-wrap: wrap; }
+      .nav-item { white-space: nowrap; flex-shrink: 0; font-size: 12px; padding: 6px 10px; gap: 6px; }
+      .nav-icon { width: 22px; height: 22px; }
+      .nav-icon svg { width: 11px; height: 11px; }
+      .ctrl-bar { flex-wrap: wrap; padding: 12px 16px; gap: 8px; }
+      .ctrl-date-pair { flex-direction: column; width: 100%; }
       .ctrl-date-pair input { width: 100% !important; }
-      .main { padding: 20px; }
+      .main { padding: 16px; }
+      .result-header { flex-wrap: wrap; gap: 8px; }
+      header { padding: 0 16px; }
+      .header-right { gap: 8px; }
+      #neris-status-btn { display: none; }
     }
   </style>
 </head>

@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NERIS Guide — FireInsight</title>
   <meta name="description" content="Everything fire departments need to know about NERIS — the federal mandate, compliance requirements, FAQ, and what it means for grants and ISO ratings." />
+  <link rel="canonical" href="https://fireinsight.app/neris" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="FireInsight" />
+  <meta property="og:title" content="NERIS Guide — FireInsight" />
+  <meta property="og:description" content="Everything fire departments need to know about NERIS: the federal mandate, compliance requirements, FAQ, and what it means for grants and ISO ratings." />
+  <meta property="og:url" content="https://fireinsight.app/neris" />
+  <meta property="og:image" content="https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="NERIS Guide — FireInsight" />
+  <meta name="twitter:description" content="Everything fire departments need to know about NERIS: compliance requirements, FAQ, and what it means for grants and ISO ratings." />
+  <meta name="twitter:image" content="https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
@@ -62,9 +73,21 @@
 
     /* ── HERO ── */
     .hero {
-      background: var(--ink);
+      background: linear-gradient(rgba(15,26,32,0.80) 0%, rgba(15,26,32,0.92) 100%),
+                  url('https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1600&h=700&fit=crop') center/cover no-repeat;
       padding: 80px 48px 72px;
       position: relative; overflow: hidden; color: #fff;
+    }
+
+    /* ── PHOTO BREAKS ── */
+    .photo-break {
+      position: relative;
+      height: 340px;
+      overflow: hidden;
+    }
+    .photo-break img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
     }
     .hero-grid {
       position: absolute; inset: 0;
@@ -357,6 +380,22 @@
     /* ── FOOTER ── */
     footer { border-top: 1px solid var(--border); padding: 28px 48px; display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 13px; background: var(--bg); }
 
+    .nav-hamburger {
+      display: none; flex-direction: column; justify-content: center; align-items: center;
+      gap: 5px; width: 40px; height: 40px; background: none; border: none;
+      cursor: pointer; color: var(--ink2); padding: 4px; flex-shrink: 0;
+    }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: currentColor; border-radius: 2px; }
+    .mobile-nav {
+      display: none; position: absolute; top: 64px; left: 0; right: 0; z-index: 40;
+      background: rgba(247,244,239,0.98); border-bottom: 1px solid var(--border);
+      padding: 8px 24px 20px; flex-direction: column; backdrop-filter: blur(12px);
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a { display: block; padding: 13px 4px; font-size: 16px; font-weight: 500; color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .mobile-nav a:hover { color: var(--ink); }
+    .mobile-nav .mobile-cta { margin-top: 16px; }
+    .mobile-nav .mobile-cta a { text-align: center; border-radius: 25px; padding: 13px 20px; font-weight: 700; font-size: 15px; border-bottom: none; display: block; }
     @media (max-width: 960px) {
       .modules-grid { grid-template-columns: 1fr 1fr; }
       .timeline { grid-template-columns: 1fr 1fr; gap: 28px; }
@@ -369,6 +408,13 @@
       .status-inner { grid-template-columns: 1fr; }
       .status-item { border-right: none; border-bottom: 1px solid var(--border); padding: 20px 0 !important; }
       nav, .hero, .status-bar, .section, .cta-band, footer { padding-left: 24px; padding-right: 24px; }
+    }
+    @media (max-width: 768px) {
+      nav { position: relative; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+      footer { flex-direction: column; gap: 14px; align-items: flex-start; }
     }
     @media (max-width: 600px) {
       .modules-grid, .neris-articles { grid-template-columns: 1fr; }
@@ -395,7 +441,18 @@
     <a href="/app" class="btn btn-sm btn-ghost">Open App</a>
     <a href="/app" class="btn btn-sm btn-primary">Try Free</a>
   </div>
+  <button class="nav-hamburger" onclick="document.getElementById('mobile-nav').classList.toggle('open')" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="/">Home</a>
+  <a href="/resources">Resources</a>
+  <a href="/neris">NERIS Guide</a>
+  <div class="mobile-cta">
+    <a href="/app" class="btn btn-primary" style="background:var(--ink);color:#fff">Open App</a>
+  </div>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -519,6 +576,20 @@
     </div>
   </div>
 </section>
+
+<!-- PHOTO BREAK 1 -->
+<div class="photo-break">
+  <img src="https://images.pexels.com/photos/16735581/pexels-photo-16735581.jpeg?auto=compress&cs=tinysrgb&w=1600&h=340&fit=crop"
+       alt="Fire engine responding on city street" loading="lazy" />
+  <div style="position:absolute;inset:0;background:linear-gradient(to right, rgba(15,26,32,0.82) 0%, rgba(15,26,32,0.3) 60%, rgba(15,26,32,0.6) 100%)"></div>
+  <div style="position:absolute;inset:0;display:flex;align-items:center;padding:0 64px">
+    <div style="max-width:560px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.45);margin-bottom:10px">NERIS Compliance</div>
+      <div style="font-size:clamp(20px,3vw,32px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:14px">Every call your crew responds to<br />is a data point that matters.</div>
+      <div style="font-size:14px;color:rgba(255,255,255,.6);line-height:1.6">NERIS captures that data in a standardized format so it can be used for grants, ISO ratings, staffing arguments, and national benchmarks.</div>
+    </div>
+  </div>
+</div>
 
 <!-- 6 MODULES -->
 <section class="section" id="modules">
@@ -1012,6 +1083,20 @@
     </div>
   </div>
 </section>
+
+<!-- PHOTO BREAK 2 -->
+<div class="photo-break" style="height:300px">
+  <img src="https://images.pexels.com/photos/8553493/pexels-photo-8553493.jpeg?auto=compress&cs=tinysrgb&w=1600&h=300&fit=crop"
+       alt="Firefighter walking toward fire" loading="lazy" />
+  <div style="position:absolute;inset:0;background:linear-gradient(rgba(15,26,32,0.5), rgba(15,26,32,0.8))"></div>
+  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 48px">
+    <div style="max-width:640px">
+      <div style="font-size:clamp(18px,2.5vw,28px);font-weight:800;color:#fff;line-height:1.25;margin-bottom:12px">Have questions about NERIS requirements<br />for your department?</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:20px">The FAQ below covers the most common questions from chiefs and compliance officers.</div>
+      <a href="#faq" style="display:inline-flex;align-items:center;gap:8px;background:rgba(200,57,43,0.9);color:#fff;font-weight:700;font-size:13px;padding:10px 24px;border-radius:25px;text-decoration:none">Jump to FAQ ↓</a>
+    </div>
+  </div>
+</div>
 
 <!-- FAQ -->
 <section class="section" id="faq">

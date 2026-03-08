@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ article.title }} — FireInsight</title>
   <meta name="description" content="{{ article.excerpt }}" />
+  <link rel="canonical" href="https://fireinsight.app/resources/{{ article.slug }}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="FireInsight" />
+  <meta property="og:title" content="{{ article.title }} — FireInsight" />
+  <meta property="og:description" content="{{ article.excerpt }}" />
+  <meta property="og:url" content="https://fireinsight.app/resources/{{ article.slug }}" />
+  <meta property="og:image" content="https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{ article.title }}" />
+  <meta name="twitter:description" content="{{ article.excerpt }}" />
+  <meta name="twitter:image" content="https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Article","headline":"{{ article.title }}","description":"{{ article.excerpt }}","publisher":{"@type":"Organization","name":"FireInsight","url":"https://fireinsight.app"},"url":"https://fireinsight.app/resources/{{ article.slug }}"}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
@@ -201,11 +215,36 @@
       color: var(--muted); font-size: 13px; background: var(--bg);
     }
 
+    .nav-hamburger {
+      display: none; flex-direction: column; justify-content: center; align-items: center;
+      gap: 5px; width: 40px; height: 40px; background: none; border: none;
+      cursor: pointer; color: var(--ink2); padding: 4px; flex-shrink: 0;
+    }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: currentColor; border-radius: 2px; }
+    .mobile-nav {
+      display: none; position: absolute; top: 64px; left: 0; right: 0; z-index: 40;
+      background: rgba(247,244,239,0.98); border-bottom: 1px solid var(--border);
+      padding: 8px 20px 20px; flex-direction: column; backdrop-filter: blur(12px);
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a { display: block; padding: 13px 4px; font-size: 16px; font-weight: 500; color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--border); }
+    .mobile-nav a:last-child { border-bottom: none; }
+    .mobile-nav a:hover { color: var(--ink); }
+    .mobile-nav .mobile-cta { margin-top: 16px; }
+    .mobile-nav .mobile-cta a { text-align: center; border-radius: 25px; padding: 13px 20px; font-weight: 700; font-size: 15px; border-bottom: none; display: block; }
     @media (max-width: 900px) {
-      .page-body { grid-template-columns: 1fr; }
+      .page-body { grid-template-columns: 1fr; padding: 32px 24px 64px; }
       .sidebar { position: static; }
       .article-nav { grid-template-columns: 1fr; }
-      nav, .article-hero, .page-body, footer { padding-left: 24px; padding-right: 24px; }
+      nav, .article-hero, footer { padding-left: 24px; padding-right: 24px; }
+      .article-hero { padding: 48px 24px 40px; }
+    }
+    @media (max-width: 768px) {
+      nav { position: relative; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+      footer { flex-direction: column; gap: 14px; align-items: flex-start; }
     }
   </style>
 </head>
@@ -227,7 +266,18 @@
     <a href="/app" class="btn btn-sm btn-ghost">Open App</a>
     <a href="/app" class="btn btn-sm btn-primary">Try Free</a>
   </div>
+  <button class="nav-hamburger" onclick="this.closest('nav').nextElementSibling.classList.toggle('open')" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="mobile-nav">
+  <a href="/">Home</a>
+  <a href="/resources">Resources</a>
+  <a href="/neris">NERIS Guide</a>
+  <div class="mobile-cta">
+    <a href="/app" class="btn btn-primary" style="background:var(--ink);color:#fff">Open App</a>
+  </div>
+</div>
 
 <!-- HERO -->
 <div class="article-hero">
