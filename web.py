@@ -8,6 +8,7 @@ from typing import Optional
 # In-memory NERIS API credential store (per server process)
 _neris_creds: dict = {"client_id": None, "client_secret": None, "connected": False, "entity": None}
 
+from config import RESEND_API_KEY, DEMO_EMAIL_TO
 from analytics import summarize_incidents
 from insights.trends import generate_trend_summary
 from insights.report import generate_chiefs_report
@@ -590,3 +591,217 @@ async def convert_download(
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
         media_type="application/json",
     )
+
+
+# ── Demo Request ──────────────────────────────────────────────────────────────
+
+@app.post("/demo", response_class=JSONResponse)
+async def demo_request(
+    name:       str = Form(...),
+    email:      str = Form(...),
+    department: str = Form(...),
+    role:       str = Form(""),
+):
+    try:
+        import httpx
+        body = f"""New demo request from FireInsight:\n
+Name:       {name}
+Email:      {email}
+Department: {department}
+Role:       {role or "Not specified"}
+"""
+        resp = httpx.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {RESEND_API_KEY}", "Content-Type": "application/json"},
+            json={
+                "from":    "FireInsight <info@fireinsight.app>",
+                "to":      [DEMO_EMAIL_TO],
+                "subject": f"Demo Request: {department}",
+                "text":    body,
+            },
+            timeout=10,
+        )
+        if resp.status_code in (200, 201):
+            return JSONResponse({"ok": True})
+        else:
+            return JSONResponse({"ok": False, "error": f"Email send failed ({resp.status_code})"}, status_code=500)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+# ── Custom Report Builder ─────────────────────────────────────────────────────
+
+@app.post("/report-builder", response_class=HTMLResponse)
+async def report_builder(
+    request:   Request,
+    neris_id:  str  = Form("MOCK-001"),
+    use_mock:  bool = Form(False),
+    start:     str  = Form(""),
+    end:       str  = Form(""),
+    compare_start: str = Form(""),
+    compare_end:   str = Form(""),
+    metrics:   str  = Form(""),   # comma-separated list
+    period_label: str = Form(""),
+):
+    error  = None
+    report = None
+    dept_name = ""
+
+    try:
+        from report_builder.builder import build_custom_report
+        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+
+        compare_incidents = []
+        if compare_start and compare_end:
+            compare_incidents, _ = load_incidents(neris_id, use_mock, compare_start, compare_end)
+
+        selected_metrics = [m.strip() for m in metrics.split(",") if m.strip()] if metrics else []
+
+        if not incidents:
+            error = "No incidents found for the given parameters."
+        else:
+            report = build_custom_report(
+                dept_name=dept_name,
+                incidents=incidents,
+                compare_incidents=compare_incidents,
+                metrics=selected_metrics,
+                period_label=period_label or (f"{start} to {end}" if start and end else "the past year"),
+            )
+    except Exception as e:
+        error = str(e)
+
+    return templates.TemplateResponse("index.html", {
+        "request":    request,
+        "active_tab": "report_builder",
+        "report_builder": {
+            "dept_name": dept_name,
+            "report":    report,
+            "error":     error,
+            "form": {
+                "neris_id":     neris_id,
+                "start":        start,
+                "end":          end,
+                "compare_start": compare_start,
+                "compare_end":   compare_end,
+                "metrics":      metrics,
+                "period_label": period_label,
+            },
+        },
+    })
+
+
+@app.post("/report-builder/export")
+async def report_builder_export(
+    content:  str = Form(...),
+    filename: str = Form("custom-report.md"),
+):
+    return PlainTextResponse(
+        content,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        media_type="text/markdown",
+    )
+
+
+# ── State NERIS Coordinator Export ───────────────────────────────────────────
+
+@app.post("/state-export", response_class=HTMLResponse)
+async def state_export(
+    request:   Request,
+    neris_id:  str  = Form("MOCK-001"),
+    use_mock:  bool = Form(False),
+    start:     str  = Form(""),
+    end:       str  = Form(""),
+    state:     str  = Form("VA"),
+):
+    error     = None
+    result    = None
+    dept_name = ""
+
+    try:
+        from exports.state_coordinator import generate_state_export
+        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        if not incidents:
+            error = "No incidents found for the given parameters."
+        else:
+            result = generate_state_export(incidents, state, dept_name)
+    except Exception as e:
+        error = str(e)
+
+    return templates.TemplateResponse("index.html", {
+        "request":    request,
+        "active_tab": "state_export",
+        "state_export": {
+            "dept_name": dept_name,
+            "result":    result,
+            "error":     error,
+            "form": {"state": state, "start": start, "end": end},
+        },
+    })
+
+
+@app.post("/state-export/download")
+async def state_export_download(
+    content:  str = Form(...),
+    filename: str = Form("state-neris-export.csv"),
+):
+    return PlainTextResponse(
+        content,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        media_type="text/csv",
+    )
+
+
+# ── Historical NFIRS Archive Analyzer ────────────────────────────────────────
+
+@app.post("/archive", response_class=HTMLResponse)
+async def archive_analysis(
+    request: Request,
+    file:    UploadFile = File(...),
+    neris_id: str  = Form("MOCK-001"),
+    use_mock: bool = Form(False),
+):
+    error     = None
+    result    = None
+    dept_name = ""
+    filename  = file.filename or "upload.csv"
+
+    try:
+        from archive.nfirs_analyzer import analyze_nfirs_archive
+        from mock_data import DEPT
+        raw_bytes = await file.read()
+        csv_text  = None
+        for enc in ("utf-8", "latin-1", "cp1252"):
+            try:
+                csv_text = raw_bytes.decode(enc)
+                break
+            except UnicodeDecodeError:
+                continue
+        if csv_text is None:
+            raise ValueError("Could not decode file. Please export as UTF-8 or Latin-1 CSV.")
+
+        # Load current NERIS data for comparison baseline
+        current_incidents = []
+        if use_mock:
+            from mock_data import generate_incidents
+            current_incidents = generate_incidents()
+            dept_name = DEPT["name"]
+        else:
+            from neris import fetch_incidents, fetch_entity
+            current_incidents = fetch_incidents(neris_id)
+            dept_name = fetch_entity(neris_id).get("name", neris_id)
+
+        result = analyze_nfirs_archive(csv_text, current_incidents, dept_name)
+
+    except Exception as e:
+        error = str(e)
+
+    return templates.TemplateResponse("index.html", {
+        "request":    request,
+        "active_tab": "archive",
+        "archive": {
+            "dept_name": dept_name,
+            "filename":  filename,
+            "result":    result,
+            "error":     error,
+        },
+    })

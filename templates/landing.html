@@ -690,12 +690,12 @@
       <h2>Request a Demo</h2>
       <p>Tell us about your department and we'll be in touch within 1 business day.</p>
       <form id="demo-form" onsubmit="submitDemo(event)">
-        <div class="form-field"><label>Name</label><input type="text" placeholder="Chief Jane Smith" required /></div>
-        <div class="form-field"><label>Email</label><input type="email" placeholder="jane@firedept.gov" required /></div>
-        <div class="form-field"><label>Department Name</label><input type="text" placeholder="Springfield Fire Department" required /></div>
+        <div class="form-field"><label>Name</label><input type="text" name="name" placeholder="Chief Jane Smith" required /></div>
+        <div class="form-field"><label>Email</label><input type="email" name="email" placeholder="jane@firedept.gov" required /></div>
+        <div class="form-field"><label>Department Name</label><input type="text" name="department" placeholder="Springfield Fire Department" required /></div>
         <div class="form-field">
           <label>Role</label>
-          <select>
+          <select name="role">
             <option value="">Select your role...</option>
             <option>Fire Chief</option><option>Assistant Chief</option>
             <option>Battalion Chief</option><option>Captain</option>
@@ -1136,10 +1136,29 @@
   function closeModalOutside(e) {
     if (e.target === document.getElementById('demo-modal')) closeModal();
   }
-  function submitDemo(e) {
+  async function submitDemo(e) {
     e.preventDefault();
-    document.getElementById('modal-form-content').style.display = 'none';
-    document.getElementById('modal-success').style.display = 'block';
+    const form = e.target;
+    const btn  = form.querySelector('button[type="submit"]');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+    const data = new FormData(form);
+    try {
+      const res  = await fetch('/demo', { method: 'POST', body: data });
+      const json = await res.json();
+      if (json.ok) {
+        document.getElementById('modal-form-content').style.display = 'none';
+        document.getElementById('modal-success').style.display = 'block';
+      } else {
+        btn.textContent = 'Request Demo';
+        btn.disabled = false;
+        alert('Something went wrong. Please email us at info@fireinsight.app');
+      }
+    } catch {
+      btn.textContent = 'Request Demo';
+      btn.disabled = false;
+      alert('Something went wrong. Please email us at info@fireinsight.app');
+    }
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
   function toggleMobileNav() {

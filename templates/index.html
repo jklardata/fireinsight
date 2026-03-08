@@ -19,8 +19,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/dark/main.css" />
-  <script src="https://js.arcgis.com/4.31/"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -850,26 +853,16 @@
     }
     .map-stat-chip span { color: var(--gray-4); font-weight: 500; margin-left: 4px; }
 
-    /* Override ArcGIS popup for dark theme */
-    .esri-popup__main-container {
+    /* Override Leaflet popup for dark theme */
+    .leaflet-popup-content-wrapper {
       background: var(--navy-2) !important;
       border: 1px solid var(--border-2) !important;
       border-radius: 10px !important;
       box-shadow: 0 8px 32px rgba(0,0,0,.5) !important;
       color: var(--white) !important;
-      font-family: 'Geist', sans-serif !important;
     }
-    .esri-popup__header { background: var(--navy-2) !important; border-bottom: 1px solid var(--border-2) !important; }
-    .esri-popup__header-title { color: var(--white) !important; font-family: 'Geist', sans-serif !important; font-weight: 700 !important; font-size: 13px !important; }
-    .esri-popup__content { color: var(--gray-2) !important; font-family: 'Geist', sans-serif !important; font-size: 12px !important; }
-    .esri-popup__button { color: var(--gray-4) !important; }
-    .esri-popup__button:hover { color: var(--white) !important; }
-    .esri-view .esri-view-surface--inset-outline:focus::after { outline: none !important; }
-    /* ArcGIS widget theme overrides */
-    .esri-ui-corner .esri-component { border-radius: 8px !important; overflow: hidden; }
-    .esri-zoom .esri-widget--button { background: var(--navy-2) !important; border-color: var(--border-2) !important; color: var(--gray-2) !important; }
-    .esri-zoom .esri-widget--button:hover { background: var(--navy-3) !important; color: var(--white) !important; }
-    .esri-compass { background: var(--navy-2) !important; border-color: var(--border-2) !important; }
+    .leaflet-popup-tip { background: var(--navy-2) !important; }
+    .leaflet-popup-content { margin: 12px 14px !important; font-family: 'Geist', sans-serif !important; }
 
     /* ── LOADING ── */
     #loading {
@@ -1013,6 +1006,21 @@
     <div class="nav-item" data-value="map" onclick="selectTab(this)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       Incident Map
+    </div>
+
+    <div class="nav-group-label">Advanced</div>
+
+    <div class="nav-item {% if active_tab == 'report_builder' %}active{% endif %}" data-value="report_builder" onclick="selectTab(this, true)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9" stroke-linecap="round"/></svg></span>
+      Report Builder
+    </div>
+    <div class="nav-item {% if active_tab == 'state_export' %}active{% endif %}" data-value="state_export" onclick="selectTab(this, true)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      State Export
+    </div>
+    <div class="nav-item {% if active_tab == 'archive' %}active{% endif %}" data-value="archive" onclick="selectTab(this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      NFIRS Archive
     </div>
 
     <!-- NERIS Connect panel -->
@@ -1427,6 +1435,62 @@
       <div id="map-counts-inner" style="font-size:11px;color:var(--gray-3)"></div>
     </div>
   </div>
+
+  <!-- Report Builder controls -->
+  <form method="POST" action="/report-builder" id="report_builder-controls" class="ctrl-bar" style="display:none">
+    <input type="hidden" name="use_mock" value="true" />
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" />
+        <input type="date" name="end" />
+      </div>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Compare Period</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="compare_start" placeholder="Compare from" />
+        <input type="date" name="compare_end" placeholder="Compare to" />
+      </div>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Period Label</label>
+      <input type="text" name="period_label" placeholder="e.g. Q1 2025" style="width:120px" />
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9" stroke-linecap="round"/></svg>
+      Build Report
+    </button>
+  </form>
+
+  <!-- State Export controls -->
+  <form method="POST" action="/state-export" id="state_export-controls" class="ctrl-bar" style="display:none">
+    <input type="hidden" name="use_mock" value="true" />
+    <div class="ctrl-field">
+      <label class="ctrl-label">State</label>
+      <select name="state" style="width:80px">
+        <option value="VA">Virginia</option>
+        <option value="TX">Texas</option>
+        <option value="FL">Florida</option>
+        <option value="CA">California</option>
+        <option value="OH">Ohio</option>
+        <option value="PA">Pennsylvania</option>
+      </select>
+    </div>
+    <div class="ctrl-field">
+      <label class="ctrl-label">Date Range</label>
+      <div class="ctrl-date-pair">
+        <input type="date" name="start" />
+        <input type="date" name="end" />
+      </div>
+    </div>
+    <div class="ctrl-spacer"></div>
+    <button type="submit" class="btn-run" onclick="showLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Generate Export
+    </button>
+  </form>
 
   <!-- ── CONVERT PAGE (shown when NFIRS tab active, no auto-submit) ── -->
   <div id="convert-page" style="display:none">
@@ -2598,6 +2662,300 @@
 
   </div><!-- /results-area -->
 
+  <!-- ── Report Builder Results ── -->
+  {% if report_builder %}
+  <div id="report-builder-results">
+    {% set rb = report_builder %}
+    {% if rb.error %}
+    <div class="error-banner">{{ rb.error }}</div>
+    {% elif rb.report %}
+    {% set r = rb.report %}
+    <div style="max-width:860px;margin:0 auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:20px;font-weight:800;color:var(--white)">{{ r.dept_name }} — Custom Report</div>
+          <div style="font-size:12px;color:var(--gray-4);margin-top:3px">Period: {{ r.period }}</div>
+        </div>
+        <form method="POST" action="/report-builder/export" style="display:inline">
+          <input type="hidden" name="content" value="{{ r | tojson | replace('"', '&quot;') }}" />
+          <input type="hidden" name="filename" value="custom-report-{{ r.dept_name | lower | replace(' ', '-') }}.json" />
+          <button type="submit" class="btn-run" style="font-size:12px;height:32px;padding:0 14px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Export
+          </button>
+        </form>
+      </div>
+
+      <!-- Metric cards grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:28px">
+        {% for key, metric in r.metrics.items() %}
+        {% if metric.value is not mapping and metric.value is not iterable or metric.value is string %}
+        <div class="result-card" style="margin-bottom:0">
+          <div class="result-header">
+            <span>{{ metric.label }}</span>
+            {% if r.deltas and key in r.deltas %}
+            {% set d = r.deltas[key] %}
+            <span style="font-size:11px;font-weight:700;color:{% if d.direction == 'up' %}#4ADE80{% elif d.direction == 'down' %}#F87171{% else %}var(--gray-4){% endif %}">
+              {% if d.direction == 'up' %}▲{% elif d.direction == 'down' %}▼{% else %}—{% endif %}
+              {% if d.pct %}{{ d.pct | abs }}%{% endif %}
+            </span>
+            {% endif %}
+          </div>
+          <div style="padding:20px">
+            <div style="font-size:36px;font-weight:900;color:var(--white);line-height:1">{{ metric.value }}</div>
+            <div style="font-size:11px;color:var(--gray-4);margin-top:4px">{{ metric.unit }}</div>
+            {% if metric.note %}
+            <div style="font-size:11px;color:var(--gray-3);margin-top:6px">{{ metric.note }}</div>
+            {% endif %}
+            {% if r.has_compare and r.compare and key in r.compare %}
+            <div style="font-size:11px;color:var(--gray-4);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+              Prior period: <strong style="color:var(--gray-3)">{{ r.compare[key].value }}</strong>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- List metrics (top types, hours, days, monthly trend) -->
+      {% for key, metric in r.metrics.items() %}
+      {% if metric.value is not string and metric.unit in ('types', 'hours', 'days') %}
+      <div class="result-card" style="margin-bottom:14px">
+        <div class="result-header"><span>{{ metric.label }}</span></div>
+        <div style="padding:16px 20px">
+          {% for item in metric.value %}
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:13px;color:var(--gray-2)">{{ item[0] }}</span>
+            <span style="font-size:13px;font-weight:700;color:var(--white)">{{ item[1] }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+
+      <!-- Monthly trend chart -->
+      {% for key, metric in r.metrics.items() %}
+      {% if metric.unit == 'monthly' %}
+      <div class="result-card" style="margin-bottom:14px">
+        <div class="result-header"><span>{{ metric.label }}</span></div>
+        <div style="padding:16px 20px;height:180px">
+          <canvas id="rb-monthly-chart"></canvas>
+        </div>
+      </div>
+      <script>
+        (function(){
+          const data = {{ metric.value | tojson }};
+          new Chart(document.getElementById('rb-monthly-chart'), {
+            type: 'bar',
+            data: { labels: Object.keys(data), datasets: [{ data: Object.values(data), backgroundColor: 'rgba(214,55,55,.6)', borderColor: 'rgba(214,55,55,1)', borderWidth: 1, borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+              scales: { x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#8A9BA8', font: { size: 10 } } }, y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#8A9BA8', font: { size: 10 } }, beginAtZero: true } } }
+          });
+        })();
+      </script>
+      {% endif %}
+      {% endfor %}
+
+      <!-- Metric picker hint -->
+      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:16px 20px;margin-top:8px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:8px">Available Metrics</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          {% for key in r.all_metrics %}
+          <span style="font-size:11px;padding:4px 10px;border-radius:25px;background:{% if key in r.metrics %}rgba(214,55,55,.15);color:#F87171;border:1px solid rgba(214,55,55,.3){% else %}var(--navy-4);color:var(--gray-4);border:1px solid var(--border){% endif %}">
+            {{ r.metric_labels[key] }}
+          </span>
+          {% endfor %}
+        </div>
+        <div style="font-size:11px;color:var(--gray-4);margin-top:10px">To select specific metrics, add them via the control bar (coming: drag-and-drop UI)</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ── State Export Results ── -->
+  {% if state_export %}
+  <div id="state-export-results">
+    {% set se = state_export %}
+    {% if se.error %}
+    <div class="error-banner">{{ se.error }}</div>
+    {% elif se.result %}
+    {% set r = se.result %}
+    <div style="max-width:860px;margin:0 auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:20px;font-weight:800;color:var(--white)">{{ r.state_name }} Coordinator Export</div>
+          <div style="font-size:12px;color:var(--gray-4);margin-top:3px">{{ r.dept_name }} — {{ r.total }} incidents — {{ r.date_range }}</div>
+          <div style="font-size:11px;color:var(--gray-4);margin-top:2px">Recipient: {{ r.coordinator }}</div>
+        </div>
+        <form method="POST" action="/state-export/download" style="display:inline">
+          <input type="hidden" name="content" value="{{ r.csv_content | replace('"', '&quot;') | replace('\n', '&#10;') }}" />
+          <input type="hidden" name="filename" value="{{ r.filename }}" />
+          <button type="submit" class="btn-run">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download {{ r.state }} CSV
+          </button>
+        </form>
+      </div>
+
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+        {% for label, val in [('Total Incidents', r.total), ('FF Injuries', r.summary.injuries_ff), ('Civ Injuries', r.summary.injuries_civ), ('Fields Exported', r.field_count)] %}
+        <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:16px">
+          <div style="font-size:28px;font-weight:900;color:var(--white)">{{ val }}</div>
+          <div style="font-size:11px;color:var(--gray-4);margin-top:4px">{{ label }}</div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Fields list -->
+      <div class="result-card">
+        <div class="result-header"><span>Exported Fields ({{ r.field_count }})</span></div>
+        <div style="padding:16px 20px;display:flex;flex-wrap:wrap;gap:8px">
+          {% for f in r.fields %}
+          <span style="font-size:11px;padding:4px 10px;border-radius:25px;background:var(--navy-4);color:var(--gray-2);border:1px solid var(--border)">{{ f }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- CSV preview -->
+      <div class="result-card" style="margin-top:14px">
+        <div class="result-header"><span>CSV Preview (first 5 rows)</span></div>
+        <div style="padding:14px 20px;overflow-x:auto">
+          <pre style="font-size:10px;color:var(--gray-3);line-height:1.7;white-space:pre">{{ r.csv_content.split('\n')[:6] | join('\n') }}</pre>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ── NFIRS Archive Analysis page ── -->
+  <div id="archive-page" style="display:none">
+    <div style="max-width:680px;margin:0 auto;padding-top:8px">
+      <div style="margin-bottom:28px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div style="width:40px;height:40px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:10px;display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#818CF8" stroke-width="2" width="18" height="18"><path d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div style="font-size:17px;font-weight:800;color:var(--white)">NFIRS Archive Analyzer</div>
+            <div style="font-size:12px;color:var(--gray-4);margin-top:2px">Upload 5–20 years of NFIRS history. See how your department has changed — and where NERIS picks up.</div>
+          </div>
+        </div>
+      </div>
+      <form method="POST" action="/archive" enctype="multipart/form-data" id="archive-form" onsubmit="showLoading()">
+        <input type="hidden" name="use_mock" value="true" />
+        <div style="border:2px dashed var(--border-2);border-radius:14px;padding:40px;text-align:center;cursor:pointer;background:var(--navy-2);transition:border-color .15s"
+             ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
+             ondragleave="this.style.borderColor='var(--border-2)'"
+             ondrop="handleArchiveDrop(event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-4)" stroke-width="1.5" width="40" height="40" style="margin-bottom:12px"><path d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div id="archive-drop-label" style="font-size:14px;font-weight:600;color:var(--gray-3);margin-bottom:6px">Drop your NFIRS CSV here</div>
+          <div style="font-size:12px;color:var(--gray-4);margin-bottom:16px">Multi-year NFIRS Basic Module export from FDID, ESO, Firehouse, or ImageTrend</div>
+          <label style="cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:var(--navy-3);border:1px solid var(--border-2);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--gray-2)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.338-2.32 5.75 5.75 0 011.344 11.095" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Choose File
+            <input type="file" name="file" id="archive-file" accept=".csv" style="display:none" onchange="onArchiveFileSelect(this)" required />
+          </label>
+        </div>
+        <button type="submit" class="btn-generate" style="margin-top:16px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Analyze Archive
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── NFIRS Archive Results ── -->
+  {% if archive %}
+  <div id="archive-results">
+    {% set ar = archive %}
+    {% if ar.error %}
+    <div class="error-banner">{{ ar.error }}</div>
+    {% elif ar.result %}
+    {% set r = ar.result %}
+    <div style="max-width:860px;margin:0 auto">
+      <div style="margin-bottom:24px">
+        <div style="font-size:20px;font-weight:800;color:var(--white)">{{ r.dept_name }} — {{ r.year_span }}-Year Trend Analysis</div>
+        <div style="font-size:12px;color:var(--gray-4);margin-top:3px">{{ r.record_count | format_num if r.record_count else r.record_count }} NFIRS records · {{ r.years_in_data[0] }}–{{ r.years_in_data[-1] }} · NERIS baseline: {{ r.current_year }}</div>
+      </div>
+
+      <!-- Insights -->
+      {% if r.insights %}
+      <div style="background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.25);border-radius:12px;padding:16px 20px;margin-bottom:20px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#818CF8;margin-bottom:10px">Key Insights</div>
+        {% for insight in r.insights %}
+        <div style="display:flex;gap:10px;margin-bottom:7px;font-size:13px;color:var(--gray-2)">
+          <span style="color:#818CF8;flex-shrink:0">◆</span> {{ insight }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Trend cards per category -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:20px">
+        {% for cat in r.categories %}
+        {% set t = r.trends[cat] %}
+        {% if t.direction is defined %}
+        <div class="result-card" style="margin-bottom:0">
+          <div class="result-header">
+            <span>{{ cat }}</span>
+            {% if t.pct_change is not none %}
+            <span style="font-size:11px;font-weight:700;color:{% if t.direction == 'increasing' %}#F87171{% elif t.direction == 'decreasing' %}#4ADE80{% else %}var(--gray-4){% endif %}">
+              {% if t.pct_change > 0 %}▲{% elif t.pct_change < 0 %}▼{% endif %} {{ t.pct_change | abs }}%
+            </span>
+            {% endif %}
+          </div>
+          <div style="padding:16px 20px">
+            <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:12px">
+              <div>
+                <div style="font-size:28px;font-weight:900;color:var(--white);line-height:1">{{ t.last_value }}</div>
+                <div style="font-size:10px;color:var(--gray-4)">{{ t.last_year }} (current)</div>
+              </div>
+              <div style="color:var(--gray-4);font-size:14px">vs</div>
+              <div>
+                <div style="font-size:20px;font-weight:700;color:var(--gray-3);line-height:1">{{ t.first_value }}</div>
+                <div style="font-size:10px;color:var(--gray-4)">{{ t.first_year }}</div>
+              </div>
+            </div>
+            <!-- Mini sparkline bar chart -->
+            <div style="display:flex;align-items:flex-end;gap:2px;height:32px">
+              {% set max_val = t.values | max %}
+              {% for v in t.values %}
+              <div style="flex:1;background:rgba(99,102,241,{% if loop.last %}0.9{% else %}0.4{% endif %});border-radius:2px 2px 0 0;min-height:2px;height:{{ ((v / max_val) * 32) | int if max_val > 0 else 2 }}px" title="{{ t.years[loop.index0] }}: {{ v }}"></div>
+              {% endfor %}
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--gray-4);margin-top:3px">
+              <span>{{ t.first_year }}</span><span>{{ t.last_year }}</span>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- NERIS Baseline -->
+      <div class="result-card">
+        <div class="result-header"><span>{{ r.current_year }} NERIS Baseline (Current)</span></div>
+        <div style="padding:16px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px">
+          {% for cat, count in r.neris_baseline.items() %}
+          {% if cat != 'total' %}
+          <div style="text-align:center;padding:12px;background:var(--navy-3);border-radius:10px">
+            <div style="font-size:24px;font-weight:900;color:var(--white)">{{ count }}</div>
+            <div style="font-size:11px;color:var(--gray-4);margin-top:3px">{{ cat }}</div>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
   </main>
 </div>
 
@@ -2605,7 +2963,7 @@
   // ── Tab switching ──────────────────────────────────────────────────────────
   const _ctrlBars = ['main-form','quality-controls','ev-controls','risk-controls',
     'benchmark-controls','compliance-controls','iso-controls','staffing-controls',
-    'convert-controls','map-controls'];
+    'convert-controls','map-controls','report_builder-controls','state_export-controls'];
 
   // Server-rendered flags for showing results on initial load
   const _hasConvertResult = {{ 'true' if (convert and convert.summary) else 'false' }};
@@ -2614,45 +2972,58 @@
     document.querySelectorAll('.nav-item[data-value]').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     const val = el.dataset.value;
-    const isConvert    = val === 'convert';
-    const isQuality    = val === 'quality';
-    const isMap        = val === 'map';
-    const isBenchmark  = val === 'benchmark';
-    const isEv         = val === 'ev';
-    const isRisk       = val === 'risk';
-    const isCompliance = val === 'compliance';
-    const isIso        = val === 'iso';
-    const isStaffing   = val === 'staffing';
-    const isReport     = !isConvert && !isQuality && !isMap && !isBenchmark && !isEv && !isRisk && !isCompliance && !isIso && !isStaffing;
+    const isConvert       = val === 'convert';
+    const isQuality       = val === 'quality';
+    const isMap           = val === 'map';
+    const isBenchmark     = val === 'benchmark';
+    const isEv            = val === 'ev';
+    const isRisk          = val === 'risk';
+    const isCompliance    = val === 'compliance';
+    const isIso           = val === 'iso';
+    const isStaffing      = val === 'staffing';
+    const isReportBuilder = val === 'report_builder';
+    const isStateExport   = val === 'state_export';
+    const isArchive       = val === 'archive';
+    const isReport = !isConvert && !isQuality && !isMap && !isBenchmark && !isEv && !isRisk
+                  && !isCompliance && !isIso && !isStaffing && !isReportBuilder && !isStateExport && !isArchive;
 
     // Hide all ctrl bars, show the right one
     _ctrlBars.forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
-    if (isReport)     { document.getElementById('main-form').style.display = 'flex'; }
-    if (isQuality)    { document.getElementById('quality-controls').style.display = 'flex'; }
-    if (isEv)         { document.getElementById('ev-controls').style.display = 'flex'; }
-    if (isRisk)       { document.getElementById('risk-controls').style.display = 'flex'; }
-    if (isBenchmark)  { document.getElementById('benchmark-controls').style.display = 'flex'; }
-    if (isCompliance) { document.getElementById('compliance-controls').style.display = 'flex'; }
-    if (isIso)        { document.getElementById('iso-controls').style.display = 'flex'; }
-    if (isStaffing)   { document.getElementById('staffing-controls').style.display = 'flex'; }
-    if (isConvert)    { document.getElementById('convert-controls').style.display = 'flex'; }
-    if (isMap)        { document.getElementById('map-controls').style.display = 'flex'; }
+    if (isReport)        { document.getElementById('main-form').style.display = 'flex'; }
+    if (isQuality)       { document.getElementById('quality-controls').style.display = 'flex'; }
+    if (isEv)            { document.getElementById('ev-controls').style.display = 'flex'; }
+    if (isRisk)          { document.getElementById('risk-controls').style.display = 'flex'; }
+    if (isBenchmark)     { document.getElementById('benchmark-controls').style.display = 'flex'; }
+    if (isCompliance)    { document.getElementById('compliance-controls').style.display = 'flex'; }
+    if (isIso)           { document.getElementById('iso-controls').style.display = 'flex'; }
+    if (isStaffing)      { document.getElementById('staffing-controls').style.display = 'flex'; }
+    if (isConvert)       { document.getElementById('convert-controls').style.display = 'flex'; }
+    if (isMap)           { document.getElementById('map-controls').style.display = 'flex'; }
+    if (isReportBuilder) { const e = document.getElementById('report_builder-controls'); if (e) e.style.display = 'flex'; }
+    if (isStateExport)   { const e = document.getElementById('state_export-controls'); if (e) e.style.display = 'flex'; }
     document.getElementById('neris-connect-panel').style.display = 'none';
 
     // Show/hide tab-specific content pages
-    const convertPage   = document.getElementById('convert-page');
-    const nerisMainPage = document.getElementById('neris-connect-main');
-    const resultsArea   = document.getElementById('results-area');
+    const convertPage      = document.getElementById('convert-page');
+    const archivePage      = document.getElementById('archive-page');
+    const nerisMainPage    = document.getElementById('neris-connect-main');
+    const resultsArea      = document.getElementById('results-area');
+    const rbResults        = document.getElementById('report-builder-results');
+    const seResults        = document.getElementById('state-export-results');
+    const archiveResults   = document.getElementById('archive-results');
 
-    if (convertPage)   convertPage.style.display   = isConvert ? 'block' : 'none';
-    if (nerisMainPage) nerisMainPage.style.display  = 'none';
+    if (convertPage)    convertPage.style.display    = isConvert ? 'block' : 'none';
+    if (archivePage)    archivePage.style.display    = isArchive ? 'block' : 'none';
+    if (nerisMainPage)  nerisMainPage.style.display  = 'none';
+    if (rbResults)      rbResults.style.display      = isReportBuilder ? '' : 'none';
+    if (seResults)      seResults.style.display      = isStateExport ? '' : 'none';
+    if (archiveResults) archiveResults.style.display = isArchive ? '' : 'none';
 
-    // Hide results when switching to convert/map (no auto-submit for these)
+    // Hide results when switching to convert/map/archive (no auto-submit for these)
     if (resultsArea) {
-      if (isMap) {
+      if (isMap || isReportBuilder || isStateExport || isArchive) {
         resultsArea.style.display = 'none';
       } else if (isConvert) {
-        // Show results only if convert results already exist on this page load
         resultsArea.style.display = _hasConvertResult ? '' : 'none';
       } else {
         resultsArea.style.display = '';
@@ -2681,11 +3052,12 @@
     if (isMap && !_mapInitialized) loadMap();
 
     // Auto-submit the form on user-initiated tab clicks (not initial page load)
-    if (autoRun && !isConvert && !isMap) {
+    if (autoRun && !isConvert && !isMap && !isArchive) {
       const formIds = {
         ev: 'ev-controls', risk: 'risk-controls', benchmark: 'benchmark-controls',
         compliance: 'compliance-controls', iso: 'iso-controls', staffing: 'staffing-controls',
-        quality: 'quality-controls', trends: 'main-form', report: 'main-form', grant: 'main-form'
+        quality: 'quality-controls', trends: 'main-form', report: 'main-form', grant: 'main-form',
+        report_builder: 'report_builder-controls', state_export: 'state_export-controls',
       };
       const formId = formIds[val];
       if (formId) {
@@ -2713,6 +3085,12 @@
     selectTab(document.querySelector('.nav-item[data-value="iso"]'));
     {% elif active_tab == 'staffing' %}
     selectTab(document.querySelector('.nav-item[data-value="staffing"]'));
+    {% elif active_tab == 'report_builder' %}
+    selectTab(document.querySelector('.nav-item[data-value="report_builder"]'));
+    {% elif active_tab == 'state_export' %}
+    selectTab(document.querySelector('.nav-item[data-value="state_export"]'));
+    {% elif active_tab == 'archive' %}
+    selectTab(document.querySelector('.nav-item[data-value="archive"]'));
     {% elif form %}
     selectTab(document.querySelector('.nav-item[data-value="{{ form.report_type }}"]'));
     {% endif %}
@@ -2757,6 +3135,29 @@
     } else {
       if (nerisMain) nerisMain.style.display = 'none';
     }
+  }
+
+  // ── NFIRS Archive upload helpers ──────────────────────────────────────────
+  function handleArchiveDrop(event) {
+    event.preventDefault();
+    const zone = event.currentTarget;
+    zone.style.borderColor = 'var(--border-2)';
+    const file = event.dataTransfer.files[0];
+    if (!file) return;
+    const input = document.getElementById('archive-file');
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
+    _updateArchiveLabel(file.name);
+  }
+
+  function onArchiveFileSelect(input) {
+    if (input.files && input.files[0]) _updateArchiveLabel(input.files[0].name);
+  }
+
+  function _updateArchiveLabel(name) {
+    const label = document.getElementById('archive-drop-label');
+    if (label) label.textContent = name;
   }
 
   async function connectNerisMain() {
@@ -2930,24 +3331,11 @@
     }
   }
 
-  // ── Map (ArcGIS/ESRI) ────────────────────────────────────────────────────
-  let _mapView = null;
+  // ── Map ───────────────────────────────────────────────────────────────────
+  let _map = null;
   let _mapInitialized = false;
   let _allIncidents = [];
-  let _incidentLayer = null;
-
-  // Pre-load all ArcGIS modules once
-  const _esriReady = new Promise(resolve => {
-    require([
-      "esri/Map",
-      "esri/views/MapView",
-      "esri/layers/FeatureLayer",
-      "esri/layers/GraphicsLayer",
-      "esri/Graphic",
-    ], (Map, MapView, FeatureLayer, GraphicsLayer, Graphic) => {
-      resolve({ Map, MapView, FeatureLayer, GraphicsLayer, Graphic });
-    });
-  });
+  let _clusterGroup = null;
 
   const TYPE_COLORS = {
     'Fire':         '#EF4444',
@@ -2970,6 +3358,45 @@
     if (t.includes('false alarm') || t.includes('alarm')) return 'False Alarm';
     if (t.includes('service') || t.includes('public assist')) return 'Service Call';
     return 'Other';
+  }
+
+  function makeMarker(inc) {
+    const cat   = typeCategory(inc.type);
+    const color = TYPE_COLORS[cat] || DEFAULT_COLOR;
+
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="
+        width:12px;height:12px;
+        background:${color};
+        border:2px solid rgba(255,255,255,.5);
+        border-radius:50%;
+        box-shadow:0 0 6px ${color}88;
+      "></div>`,
+      iconSize: [12, 12],
+      iconAnchor: [6, 6],
+    });
+
+    const time = inc.time ? new Date(inc.time).toLocaleString() : '—';
+    let respTime = '—';
+    if (inc.time && inc.arrival) {
+      const secs = Math.round((new Date(inc.arrival) - new Date(inc.time)) / 1000);
+      if (secs > 0 && secs < 7200) respTime = `${Math.floor(secs/60)}m ${secs%60}s`;
+    }
+
+    const popup = `
+      <div style="min-width:180px">
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px">${inc.type || 'Unknown'}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span style="width:8px;height:8px;background:${color};border-radius:50%;display:inline-block;flex-shrink:0"></span>
+          <span style="font-size:11px;color:#8A9BA8">${cat}</span>
+        </div>
+        <div style="font-size:11px;color:#8A9BA8;margin-bottom:2px">📅 ${time}</div>
+        <div style="font-size:11px;color:#8A9BA8">⏱ Response: ${respTime}</div>
+        ${inc.id ? `<div style="font-size:10px;color:#4A5C68;margin-top:6px">${inc.id}</div>` : ''}
+      </div>`;
+
+    return L.marker([inc.lat, inc.lon], { icon }).bindPopup(popup, { maxWidth: 240 });
   }
 
   function buildLegend(counts) {
@@ -3007,74 +3434,25 @@
     document.getElementById('map-counts').style.display = 'block';
   }
 
-  function _buildIncidentLayer(incidents, FeatureLayer, Graphic, filter) {
-    const filtered = filter ? incidents.filter(inc => typeCategory(inc.type) === filter) : incidents;
-    const graphics = filtered.map((inc, i) => {
-      const cat = typeCategory(inc.type);
-      const time = inc.time ? new Date(inc.time).toLocaleString() : '—';
-      let respTime = '—';
-      if (inc.time && inc.arrival) {
-        const secs = Math.round((new Date(inc.arrival) - new Date(inc.time)) / 1000);
-        if (secs > 0 && secs < 7200) respTime = `${Math.floor(secs/60)}m ${secs%60}s`;
-      }
-      return new Graphic({
-        geometry: { type: "point", longitude: inc.lon, latitude: inc.lat },
-        attributes: { ObjectID: i, incType: inc.type || 'Unknown', category: cat, dispTime: time, respTime, incId: inc.id || '' },
-      });
-    });
+  function applyMapFilter() {
+    if (!_map || !_clusterGroup) return;
+    const filter = document.getElementById('map-type-filter').value;
+    _clusterGroup.clearLayers();
 
-    const uniqueValueInfos = Object.entries(TYPE_COLORS).map(([cat, color]) => ({
-      value: cat,
-      symbol: { type: "simple-marker", color, outline: { color: [255,255,255,0.5], width: 1 }, size: 10 },
-    }));
+    const filtered = filter
+      ? _allIncidents.filter(inc => typeCategory(inc.type) === filter)
+      : _allIncidents;
 
-    return new FeatureLayer({
-      source: graphics,
-      objectIdField: "ObjectID",
-      fields: [
-        { name: "ObjectID",  type: "oid"    },
-        { name: "incType",   type: "string" },
-        { name: "category",  type: "string" },
-        { name: "dispTime",  type: "string" },
-        { name: "respTime",  type: "string" },
-        { name: "incId",     type: "string" },
-      ],
-      renderer: {
-        type: "unique-value",
-        field: "category",
-        uniqueValueInfos,
-        defaultSymbol: { type: "simple-marker", color: DEFAULT_COLOR, outline: { color: [255,255,255,0.5], width: 1 }, size: 10 },
-      },
-      featureReduction: {
-        type: "cluster",
-        clusterRadius: "40px",
-        clusterMinSize: "24px",
-        clusterMaxSize: "54px",
-        symbol: { type: "simple-marker", style: "circle", color: [214, 55, 55, 0.85], outline: { color: [255,255,255,0.3], width: 1.5 }, size: "34px" },
-        labelingInfo: [{
-          labelExpressionInfo: { expression: "$feature.cluster_count" },
-          symbol: { type: "text", color: "white", font: { size: "12px", weight: "bold" } },
-          labelPlacement: "center-center",
-        }],
-        popupTemplate: { title: "{cluster_count} Incidents", content: "Click to zoom and see individual incidents." },
-      },
-      popupTemplate: {
-        title: "{incType}",
-        content: `<div style="font-size:12px;color:#C2C2C2;font-family:'Geist',sans-serif">
-          <div style="margin-bottom:4px"><strong style="color:#fff">Category:</strong> {category}</div>
-          <div style="margin-bottom:4px"><strong style="color:#fff">Time:</strong> {dispTime}</div>
-          <div style="margin-bottom:4px"><strong style="color:#fff">Response:</strong> {respTime}</div>
-          <div style="color:#4A5C68;margin-top:6px;font-size:10px">{incId}</div>
-        </div>`,
-      },
-    });
+    filtered.forEach(inc => _clusterGroup.addLayer(makeMarker(inc)));
+    document.getElementById('map-stat-mapped').innerHTML =
+      `${filtered.length} <span>${filter ? filter.toLowerCase() : 'mapped'}</span>`;
   }
 
   async function loadMap() {
-    const useMock = document.getElementById('map-use-mock').checked;
-    const nerisId = document.getElementById('map-neris-id')?.value || 'MOCK-001';
-    const start   = document.getElementById('map-start').value;
-    const end     = document.getElementById('map-end').value;
+    const useMock  = document.getElementById('map-use-mock').checked;
+    const nerisId  = document.getElementById('map-neris-id')?.value || 'MOCK-001';
+    const start    = document.getElementById('map-start').value;
+    const end      = document.getElementById('map-end').value;
 
     const params = new URLSearchParams({ use_mock: useMock, neris_id: nerisId, start, end });
     const res    = await fetch(`/map-data?${params}`);
@@ -3084,33 +3462,55 @@
 
     _allIncidents = data.incidents || [];
 
-    const { Map, MapView, FeatureLayer, Graphic } = await _esriReady;
-
+    // Init map once
     if (!_mapInitialized) {
-      const esriMap = new Map({ basemap: "dark-gray-vector" });
-      _mapView = new MapView({
-        container: "map",
-        map: esriMap,
-        center: [-77.4, 37.5],
+      _map = L.map('map', {
+        center: [37.5, -77.4],
         zoom: 11,
-        ui: { components: ["zoom", "compass"] },
-        popup: { dockEnabled: false, dockOptions: { buttonEnabled: false } },
+        zoomControl: true,
       });
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap © CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19,
+      }).addTo(_map);
+
       _mapInitialized = true;
     }
 
-    if (_incidentLayer) _mapView.map.remove(_incidentLayer);
-    _incidentLayer = _buildIncidentLayer(_allIncidents, FeatureLayer, Graphic, null);
-    _mapView.map.add(_incidentLayer);
+    // Rebuild cluster group
+    if (_clusterGroup) _map.removeLayer(_clusterGroup);
+    _clusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 40,
+      iconCreateFunction(cluster) {
+        const count = cluster.getChildCount();
+        return L.divIcon({
+          html: `<div style="
+            background:rgba(214,55,55,.85);
+            border:2px solid rgba(255,255,255,.3);
+            color:#fff;font-weight:700;font-size:12px;
+            width:34px;height:34px;border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            box-shadow:0 0 12px rgba(214,55,55,.4);
+          ">${count}</div>`,
+          iconSize: [34, 34], iconAnchor: [17, 17],
+          className: '',
+        });
+      },
+    });
 
+    _allIncidents.forEach(inc => _clusterGroup.addLayer(makeMarker(inc)));
+    _map.addLayer(_clusterGroup);
+
+    // Fit to data
     if (_allIncidents.length) {
       const lats = _allIncidents.map(i => i.lat);
       const lons = _allIncidents.map(i => i.lon);
-      _mapView.goTo({
-        target: { type: "extent", xmin: Math.min(...lons), ymin: Math.min(...lats), xmax: Math.max(...lons), ymax: Math.max(...lats), spatialReference: { wkid: 4326 } },
-      }, { padding: { top: 32, bottom: 32, left: 32, right: 32 }, animate: false });
+      _map.fitBounds([[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]], { padding: [32, 32] });
     }
 
+    // Stats
     const counts = {};
     _allIncidents.forEach(inc => {
       const cat = typeCategory(inc.type);
@@ -3122,18 +3522,8 @@
     document.getElementById('map-stat-bar').style.display = 'flex';
     buildLegend(counts);
     buildSidebarCounts(counts, _allIncidents.length);
-  }
 
-  async function applyMapFilter() {
-    if (!_mapView || !_allIncidents.length) return;
-    const filter = document.getElementById('map-type-filter').value;
-    const { FeatureLayer, Graphic } = await _esriReady;
-    if (_incidentLayer) _mapView.map.remove(_incidentLayer);
-    _incidentLayer = _buildIncidentLayer(_allIncidents, FeatureLayer, Graphic, filter);
-    _mapView.map.add(_incidentLayer);
-    const filtered = filter ? _allIncidents.filter(inc => typeCategory(inc.type) === filter) : _allIncidents;
-    document.getElementById('map-stat-mapped').innerHTML =
-      `${filtered.length} <span>${filter ? filter.toLowerCase() : 'mapped'}</span>`;
+    setTimeout(() => _map.invalidateSize(), 100);
   }
 
   // ── EV map & chart data (injected server-side) ────────────────────────────
@@ -3180,81 +3570,61 @@
     });
   }
 
-  // EV location map (ArcGIS)
-  let _evMapView = null, _evMapInit = false;
-  async function initEvMap() {
+  // EV location map
+  let _evMap = null, _evMapInit = false;
+  function initEvMap() {
     const el = document.getElementById('ev-map');
     if (!el || _evMapInit || !_evMapPoints.length) return;
-    const { Map, MapView, GraphicsLayer, Graphic } = await _esriReady;
-    const evMap = new Map({ basemap: "dark-gray-vector" });
-    _evMapView = new MapView({
-      container: "ev-map",
-      map: evMap,
-      ui: { components: [] },
-    });
-    const layer = new GraphicsLayer();
+    _evMap = L.map('ev-map', { zoomControl: false, scrollWheelZoom: false });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '', subdomains: 'abcd', maxZoom: 19,
+    }).addTo(_evMap);
     _evMapPoints.forEach(p => {
-      const time = p.time ? new Date(p.time).toLocaleString() : '—';
-      layer.add(new Graphic({
-        geometry: { type: "point", longitude: p.lon, latitude: p.lat },
-        symbol: { type: "simple-marker", color: [245, 158, 11, 0.85], outline: { color: [255,255,255,0.5], width: 1.5 }, size: 10 },
-        popupTemplate: {
-          title: p.type || "EV / Battery Fire",
-          content: `<div style="font-size:12px;color:#C2C2C2;font-family:'Geist',sans-serif">${time}</div>`,
-        },
-      }));
+      L.circleMarker([p.lat, p.lon], {
+        radius: 9, fillColor: '#F59E0B', color: 'rgba(255,255,255,.5)',
+        fillOpacity: 0.85, weight: 1.5,
+      }).bindPopup(`<div style="color:#fff"><strong>${p.type}</strong><br><small style="color:#8A9BA8">${p.time}</small></div>`)
+       .addTo(_evMap);
     });
-    evMap.add(layer);
     const lats = _evMapPoints.map(p => p.lat);
     const lons = _evMapPoints.map(p => p.lon);
-    _evMapView.goTo({
-      target: { type: "extent", xmin: Math.min(...lons), ymin: Math.min(...lats), xmax: Math.max(...lons), ymax: Math.max(...lats), spatialReference: { wkid: 4326 } },
-    }, { padding: { top: 16, bottom: 16, left: 16, right: 16 }, animate: false });
+    _evMap.fitBounds([[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]], { padding: [16, 16] });
     _evMapInit = true;
+    setTimeout(() => _evMap.invalidateSize(), 100);
   }
 
-  // Community risk map (ArcGIS)
-  let _riskMapView = null, _riskMapInit = false;
+  // Community risk map
+  let _riskMap = null, _riskMapInit = false;
   const RISK_COLORS = { Critical: '#EF4444', High: '#F97316', Medium: '#EAB308', Low: '#22C55E' };
-  async function initRiskMap() {
+  function initRiskMap() {
     const el = document.getElementById('risk-map');
     if (!el || _riskMapInit || !_riskZones.length) return;
-    const { Map, MapView, GraphicsLayer, Graphic } = await _esriReady;
-    const riskMap = new Map({ basemap: "dark-gray-vector" });
-    _riskMapView = new MapView({
-      container: "risk-map",
-      map: riskMap,
-      ui: { components: ["zoom"] },
-    });
-    const layer = new GraphicsLayer();
+    _riskMap = L.map('risk-map', { zoomControl: true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '', subdomains: 'abcd', maxZoom: 19,
+    }).addTo(_riskMap);
     _riskZones.forEach(z => {
       const color = RISK_COLORS[z.risk_level] || '#64748B';
-      const size = 20 + (z.risk_score / 100) * 44;
+      const radius = 10 + (z.risk_score / 100) * 22;
       const rt = z.avg_response_seconds
         ? `${Math.floor(z.avg_response_seconds/60)}m ${String(z.avg_response_seconds%60).padStart(2,'0')}s`
         : '—';
-      const hexToRgb = h => { const r = parseInt(h.slice(1,3),16), g = parseInt(h.slice(3,5),16), b = parseInt(h.slice(5,7),16); return [r,g,b]; };
-      const [r,g,b] = hexToRgb(color);
-      layer.add(new Graphic({
-        geometry: { type: "point", longitude: z.lon, latitude: z.lat },
-        symbol: { type: "simple-marker", color: [r,g,b,0.55], outline: { color: [255,255,255,0.2], width: 1 }, size: `${size}px` },
-        popupTemplate: {
-          title: `${z.risk_level} Risk — ${z.risk_score}/100`,
-          content: `<div style="font-size:12px;color:#C2C2C2;font-family:'Geist',sans-serif">
-            <div><strong style="color:#fff">${z.incident_count}</strong> incidents</div>
-            <div style="margin-top:4px">${z.dominant_type}</div>
-            <div style="margin-top:4px">Avg response: ${rt}</div>
-          </div>`,
-        },
-      }));
+      L.circleMarker([z.lat, z.lon], {
+        radius, fillColor: color, color: 'rgba(255,255,255,.2)',
+        fillOpacity: 0.55, weight: 1,
+      }).bindPopup(`
+        <div style="min-width:180px">
+          <div style="font-size:13px;font-weight:700;color:${color};margin-bottom:5px">${z.risk_level} Risk — ${z.risk_score}/100</div>
+          <div style="font-size:11px;color:#C2C2C2">${z.incident_count} incidents</div>
+          <div style="font-size:11px;color:#8A9BA8;margin-top:2px">${z.dominant_type}</div>
+          <div style="font-size:11px;color:#8A9BA8;margin-top:2px">Avg response: ${rt}</div>
+        </div>`).addTo(_riskMap);
     });
-    riskMap.add(layer);
     const lats = _riskZones.map(z => z.lat);
     const lons = _riskZones.map(z => z.lon);
-    _riskMapView.goTo({
-      target: { type: "extent", xmin: Math.min(...lons), ymin: Math.min(...lats), xmax: Math.max(...lons), ymax: Math.max(...lats), spatialReference: { wkid: 4326 } },
-    }, { padding: { top: 24, bottom: 24, left: 24, right: 24 }, animate: false });
+    _riskMap.fitBounds([[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]], { padding: [24, 24] });
     _riskMapInit = true;
+    setTimeout(() => _riskMap.invalidateSize(), 100);
   }
 
   // ── Dashboard ─────────────────────────────────────────────────────────────
@@ -3302,39 +3672,43 @@
       });
     }
 
-    // Mini map — ArcGIS non-interactive preview
+    // Mini map (non-interactive preview)
     const miniMapEl = document.getElementById('dash-mini-map');
     if (miniMapEl && !_dashMiniMap) {
       const mapPoints = {{ dashboard.map_points | tojson }};
-      _esriReady.then(({ Map, MapView, GraphicsLayer, Graphic }) => {
-        const miniEsriMap = new Map({ basemap: "dark-gray-vector" });
-        _dashMiniMap = new MapView({
-          container: "dash-mini-map",
-          map: miniEsriMap,
-          ui: { components: [] },
-          constraints: { snapToZoom: false },
-          popup: { autoOpenEnabled: false },
-        });
-        const layer = new GraphicsLayer({ listMode: "hide" });
-        mapPoints.forEach(p => {
-          const cat   = typeCategory(p.type);
-          const color = TYPE_COLORS[cat] || DEFAULT_COLOR;
-          const hexToRgba = (h, a) => { const r = parseInt(h.slice(1,3),16), g = parseInt(h.slice(3,5),16), b = parseInt(h.slice(5,7),16); return [r,g,b,a]; };
-          layer.add(new Graphic({
-            geometry: { type: "point", longitude: p.lon, latitude: p.lat },
-            symbol: { type: "simple-marker", color: hexToRgba(color, 0.75), outline: { color: [255,255,255,0.3], width: 0.5 }, size: 6 },
-          }));
-        });
-        miniEsriMap.add(layer);
-        if (mapPoints.length) {
-          const lats = mapPoints.map(p => p.lat);
-          const lons = mapPoints.map(p => p.lon);
-          _dashMiniMap.goTo({
-            target: { type: "extent", xmin: Math.min(...lons), ymin: Math.min(...lats), xmax: Math.max(...lons), ymax: Math.max(...lats), spatialReference: { wkid: 4326 } },
-          }, { padding: { top: 16, bottom: 16, left: 16, right: 16 }, animate: false });
-        }
-        miniMapEl.style.pointerEvents = 'none';
+      _dashMiniMap = L.map('dash-mini-map', {
+        zoomControl: false,
+        dragging: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        tap: false,
       });
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '', subdomains: 'abcd', maxZoom: 19,
+      }).addTo(_dashMiniMap);
+
+      mapPoints.forEach(p => {
+        const cat   = typeCategory(p.type);
+        const color = TYPE_COLORS[cat] || DEFAULT_COLOR;
+        L.circleMarker([p.lat, p.lon], {
+          radius: 4, fillColor: color, color: '#fff',
+          fillOpacity: 0.75, weight: 0.5, opacity: 0.3,
+        }).addTo(_dashMiniMap);
+      });
+
+      if (mapPoints.length) {
+        const lats = mapPoints.map(p => p.lat);
+        const lons = mapPoints.map(p => p.lon);
+        _dashMiniMap.fitBounds(
+          [[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]],
+          { padding: [16, 16] }
+        );
+      }
+
+      // Make map non-interactive so the card click-through works
+      miniMapEl.style.pointerEvents = 'none';
     }
   }
 
