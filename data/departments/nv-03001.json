@@ -1,0 +1,35 @@
+{
+  "fdid": "03001",
+  "name": "Henderson FD",
+  "state": "NV",
+  "city": "",
+  "zip": "",
+  "county": "",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 957,
+  "incident_types": {
+    "wildland_fire": 380,
+    "vehicle_fire": 106,
+    "other": 31,
+    "hazmat": 258,
+    "structure_fire": 158,
+    "other_fire": 24
+  },
+  "monthly_volume": {
+    "2020-01": 66,
+    "2020-02": 57,
+    "2020-03": 67,
+    "2020-04": 63,
+    "2020-05": 71,
+    "2020-06": 97,
+    "2020-07": 139,
+    "2020-08": 81,
+    "2020-09": 77,
+    "2020-10": 75,
+    "2020-11": 81,
+    "2020-12": 83
+  }
+}

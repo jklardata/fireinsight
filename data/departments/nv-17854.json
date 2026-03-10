@@ -1,0 +1,15 @@
+{
+  "fdid": "17854",
+  "name": "Lund VFD",
+  "state": "NV",
+  "city": "Lund",
+  "zip": "89317",
+  "county": "",
+  "num_stations": "1",
+  "num_ff_career": "0",
+  "num_ff_volunteer": "18",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {}
+}

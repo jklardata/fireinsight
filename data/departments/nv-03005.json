@@ -1,0 +1,15 @@
+{
+  "fdid": "03005",
+  "name": "Mt Charleston FPD",
+  "state": "NV",
+  "city": "Mt Charleston",
+  "zip": "89124",
+  "county": "",
+  "num_stations": "2",
+  "num_ff_career": "9",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {}
+}

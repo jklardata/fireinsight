@@ -1,0 +1,15 @@
+{
+  "fdid": "09001",
+  "name": "Battle Mountain VFD",
+  "state": "NV",
+  "city": "Battle Mountain",
+  "zip": "89820",
+  "county": "",
+  "num_stations": "2",
+  "num_ff_career": "0",
+  "num_ff_volunteer": "25",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {}
+}

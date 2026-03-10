@@ -1,0 +1,15 @@
+{
+  "fdid": "08000",
+  "name": "Winnemucca VFD",
+  "state": "NV",
+  "city": "Winnemucca",
+  "zip": "89445",
+  "county": "013",
+  "num_stations": "1",
+  "num_ff_career": "1",
+  "num_ff_volunteer": "24",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {}
+}
