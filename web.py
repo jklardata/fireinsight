@@ -844,7 +844,7 @@ async def resource_article(request: Request, slug: str):
 import json as _json
 from pathlib import Path as _Path
 
-_DEPT_DIR = _Path("data/departments")
+_DEPT_DIR = _Path(__file__).parent / "data" / "departments"
 
 STATE_NAMES = {
     "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
