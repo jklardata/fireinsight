@@ -60,5 +60,115 @@
       }
     ]
   },
-  "peers": {}
+  "peers": {},
+  "nri": {
+    "risk_score": 31.5,
+    "risk_rating": "Very Low",
+    "eal_total": 8418251,
+    "sovi_score": 63.2,
+    "sovi_rating": "Relatively High",
+    "resl_score": 31.4,
+    "resl_rating": "Relatively Low",
+    "hazards": [
+      {
+        "key": "WFIR",
+        "label": "Wildfire",
+        "score": 95.6,
+        "rating": "Relatively Moderate",
+        "eal": 3485422
+      },
+      {
+        "key": "LNDS",
+        "label": "Landslide",
+        "score": 94.6,
+        "rating": "Relatively Moderate",
+        "eal": 97489
+      },
+      {
+        "key": "LTNG",
+        "label": "Lightning",
+        "score": 77.6,
+        "rating": "Relatively Moderate",
+        "eal": 538295
+      },
+      {
+        "key": "ERQK",
+        "label": "Earthquake",
+        "score": 66.8,
+        "rating": "Relatively Low",
+        "eal": 552245
+      },
+      {
+        "key": "VLCN",
+        "label": "Volcanic Activity",
+        "score": 45.9,
+        "rating": "Very Low",
+        "eal": 8
+      },
+      {
+        "key": "AVLN",
+        "label": "Avalanche",
+        "score": 44.9,
+        "rating": "Very Low",
+        "eal": 303
+      },
+      {
+        "key": "IFLD",
+        "label": "Inland Flooding",
+        "score": 37.7,
+        "rating": "Relatively Low",
+        "eal": 3650529
+      },
+      {
+        "key": "DRGT",
+        "label": "Drought",
+        "score": 35.9,
+        "rating": "Relatively Low",
+        "eal": 37394
+      },
+      {
+        "key": "WNTW",
+        "label": "Winter Weather",
+        "score": 33.2,
+        "rating": "Relatively Low",
+        "eal": 28578
+      },
+      {
+        "key": "HWAV",
+        "label": "Heat Wave",
+        "score": 7.5,
+        "rating": "Very Low",
+        "eal": 9252
+      },
+      {
+        "key": "HAIL",
+        "label": "Hail",
+        "score": 3.4,
+        "rating": "Very Low",
+        "eal": 5617
+      },
+      {
+        "key": "SWND",
+        "label": "Strong Wind",
+        "score": 2.4,
+        "rating": "Very Low",
+        "eal": 9549
+      },
+      {
+        "key": "TRND",
+        "label": "Tornado",
+        "score": 2.4,
+        "rating": "Very Low",
+        "eal": 3572
+      },
+      {
+        "key": "CWAV",
+        "label": "Cold Wave",
+        "score": 0.0,
+        "rating": "No Rating",
+        "eal": 0
+      }
+    ],
+    "version": "v1.2 (December 2025)"
+  }
 }

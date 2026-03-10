@@ -982,6 +982,7 @@ async def directory_dept(request: Request, state_code: str, fdid: str):
         "census": dept.get("census"),
         "disasters": dept.get("disasters"),
         "peers": dept.get("peers"),
+        "nri": dept.get("nri"),
     })
 
 

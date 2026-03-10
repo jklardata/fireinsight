@@ -60,5 +60,108 @@
       }
     ]
   },
-  "peers": {}
+  "peers": {},
+  "nri": {
+    "risk_score": 85.2,
+    "risk_rating": "Relatively Moderate",
+    "eal_total": 80008769,
+    "sovi_score": 10.6,
+    "sovi_rating": "Very Low",
+    "resl_score": 55.9,
+    "resl_rating": "Relatively Moderate",
+    "hazards": [
+      {
+        "key": "LNDS",
+        "label": "Landslide",
+        "score": 97.7,
+        "rating": "Relatively Moderate",
+        "eal": 686793
+      },
+      {
+        "key": "ERQK",
+        "label": "Earthquake",
+        "score": 97.3,
+        "rating": "Relatively Moderate",
+        "eal": 49189697
+      },
+      {
+        "key": "DRGT",
+        "label": "Drought",
+        "score": 97.0,
+        "rating": "Relatively High",
+        "eal": 5455354
+      },
+      {
+        "key": "WFIR",
+        "label": "Wildfire",
+        "score": 95.4,
+        "rating": "Relatively Moderate",
+        "eal": 5530996
+      },
+      {
+        "key": "IFLD",
+        "label": "Inland Flooding",
+        "score": 69.4,
+        "rating": "Relatively Low",
+        "eal": 18158193
+      },
+      {
+        "key": "HWAV",
+        "label": "Heat Wave",
+        "score": 59.9,
+        "rating": "Relatively Low",
+        "eal": 810513
+      },
+      {
+        "key": "LTNG",
+        "label": "Lightning",
+        "score": 12.5,
+        "rating": "Very Low",
+        "eal": 61143
+      },
+      {
+        "key": "TRND",
+        "label": "Tornado",
+        "score": 10.2,
+        "rating": "Very Low",
+        "eal": 95504
+      },
+      {
+        "key": "AVLN",
+        "label": "Avalanche",
+        "score": 8.2,
+        "rating": "Very Low",
+        "eal": 8
+      },
+      {
+        "key": "HAIL",
+        "label": "Hail",
+        "score": 3.8,
+        "rating": "Very Low",
+        "eal": 10842
+      },
+      {
+        "key": "SWND",
+        "label": "Strong Wind",
+        "score": 1.7,
+        "rating": "Very Low",
+        "eal": 9013
+      },
+      {
+        "key": "WNTW",
+        "label": "Winter Weather",
+        "score": 1.6,
+        "rating": "Very Low",
+        "eal": 712
+      },
+      {
+        "key": "CWAV",
+        "label": "Cold Wave",
+        "score": 0.0,
+        "rating": "No Rating",
+        "eal": 0
+      }
+    ],
+    "version": "v1.2 (December 2025)"
+  }
 }
