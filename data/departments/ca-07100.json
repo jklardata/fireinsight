@@ -1,0 +1,64 @@
+{
+  "fdid": "07100",
+  "name": "RODEOHERCULES FD",
+  "state": "CA",
+  "city": "",
+  "zip": "94547",
+  "county": "13",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {},
+  "census": {
+    "county_name": "Contra Costa County, California",
+    "population": 1161458,
+    "median_income": 125727,
+    "median_home_value": 830800,
+    "poverty_rate": 8.3,
+    "disability_rate": 11.2,
+    "age_65_plus_pct": 16.7,
+    "vacancy_rate": 3.5,
+    "renter_pct": 32.3,
+    "pre1980_pct": 46.2
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {}
+}

@@ -1,0 +1,25 @@
+{
+  "fdid": "25060",
+  "name": "WILLOW RANCH FPD",
+  "state": "CA",
+  "city": "",
+  "zip": "97635",
+  "county": "",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 6,
+  "incident_types": {
+    "wildland_fire": 3,
+    "structure_fire": 2,
+    "vehicle_fire": 1
+  },
+  "monthly_volume": {
+    "2020-02": 2,
+    "2020-07": 1,
+    "2020-08": 1,
+    "2020-09": 1,
+    "2020-11": 1
+  }
+}

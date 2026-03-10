@@ -1,0 +1,82 @@
+{
+  "fdid": "40075",
+  "name": "TEMPLETON FD",
+  "state": "CA",
+  "city": "",
+  "zip": "93465",
+  "county": "79",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 22,
+  "incident_types": {
+    "other": 1,
+    "wildland_fire": 9,
+    "hazmat": 3,
+    "structure_fire": 9
+  },
+  "monthly_volume": {
+    "2020-08": 6,
+    "2020-09": 7,
+    "2020-10": 3,
+    "2020-11": 5,
+    "2020-12": 1
+  },
+  "census": {
+    "county_name": "San Luis Obispo County, California",
+    "population": 281486,
+    "median_income": 93398,
+    "median_home_value": 777200,
+    "poverty_rate": 12.8,
+    "disability_rate": 13.0,
+    "age_65_plus_pct": 21.6,
+    "vacancy_rate": 12.8,
+    "renter_pct": 38.1,
+    "pre1980_pct": 55.5
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 22,
+    "avg_stations": 1.0,
+    "dept_incidents": 22,
+    "dept_stations": "",
+    "incidents_vs_peers": 0
+  }
+}

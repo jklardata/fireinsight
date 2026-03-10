@@ -1,0 +1,83 @@
+{
+  "fdid": "25010",
+  "name": "ALTURAS CITY FD",
+  "state": "CA",
+  "city": "",
+  "zip": "96101",
+  "county": "49",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 18,
+  "incident_types": {
+    "hazmat": 6,
+    "other": 12
+  },
+  "monthly_volume": {
+    "2020-02": 2,
+    "2020-03": 3,
+    "2020-04": 4,
+    "2020-05": 2,
+    "2020-06": 1,
+    "2020-07": 1,
+    "2020-08": 3,
+    "2020-09": 2
+  },
+  "census": {
+    "county_name": "Modoc County, California",
+    "population": 8646,
+    "median_income": 56648,
+    "median_home_value": 212000,
+    "poverty_rate": 20.3,
+    "disability_rate": 18.9,
+    "age_65_plus_pct": 31.0,
+    "vacancy_rate": 31.6,
+    "renter_pct": 22.7,
+    "pre1980_pct": 41.8
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 18,
+    "avg_stations": 1.0,
+    "dept_incidents": 18,
+    "dept_stations": "",
+    "incidents_vs_peers": 1
+  }
+}

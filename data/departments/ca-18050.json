@@ -1,0 +1,64 @@
+{
+  "fdid": "18050",
+  "name": "WESTWOOD FD",
+  "state": "CA",
+  "city": "",
+  "zip": "96137",
+  "county": "35",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {},
+  "census": {
+    "county_name": "Lassen County, California",
+    "population": 31177,
+    "median_income": 64395,
+    "median_home_value": 259500,
+    "poverty_rate": 13.7,
+    "disability_rate": 18.1,
+    "age_65_plus_pct": 16.0,
+    "vacancy_rate": 25.9,
+    "renter_pct": 31.8,
+    "pre1980_pct": 45.1
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {}
+}

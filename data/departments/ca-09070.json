@@ -1,0 +1,64 @@
+{
+  "fdid": "09070",
+  "name": "NORTHSIDE FPD",
+  "state": "CA",
+  "city": "",
+  "zip": "",
+  "county": "17",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {},
+  "census": {
+    "county_name": "El Dorado County, California",
+    "population": 192299,
+    "median_income": 106190,
+    "median_home_value": 640500,
+    "poverty_rate": 8.3,
+    "disability_rate": 12.5,
+    "age_65_plus_pct": 22.8,
+    "vacancy_rate": 19.7,
+    "renter_pct": 23.6,
+    "pre1980_pct": 55.6
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {}
+}

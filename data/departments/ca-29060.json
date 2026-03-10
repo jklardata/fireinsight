@@ -1,0 +1,91 @@
+{
+  "fdid": "29060",
+  "name": "TRUCKEE FPD",
+  "state": "CA",
+  "city": "",
+  "zip": "96160",
+  "county": "057",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 233,
+  "incident_types": {
+    "other_fire": 19,
+    "wildland_fire": 23,
+    "hazmat": 97,
+    "structure_fire": 29,
+    "vehicle_fire": 20,
+    "other": 45
+  },
+  "monthly_volume": {
+    "2020-01": 15,
+    "2020-02": 19,
+    "2020-03": 28,
+    "2020-04": 9,
+    "2020-05": 17,
+    "2020-06": 20,
+    "2020-07": 39,
+    "2020-08": 27,
+    "2020-09": 17,
+    "2020-10": 16,
+    "2020-11": 20,
+    "2020-12": 6
+  },
+  "census": {
+    "county_name": "Nevada County, California",
+    "population": 102452,
+    "median_income": 84905,
+    "median_home_value": 602800,
+    "poverty_rate": 10.6,
+    "disability_rate": 13.8,
+    "age_65_plus_pct": 28.9,
+    "vacancy_rate": 22.4,
+    "renter_pct": 25.6,
+    "pre1980_pct": 57.5
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 199,
+    "avg_stations": null,
+    "dept_incidents": 233,
+    "dept_stations": "",
+    "incidents_vs_peers": 17
+  }
+}

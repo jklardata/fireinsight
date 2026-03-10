@@ -1,0 +1,19 @@
+{
+  "fdid": "29559",
+  "name": "CDFNEVADA UNPROTECTED AREA",
+  "state": "CA",
+  "city": "",
+  "zip": "",
+  "county": "",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 1,
+  "incident_types": {
+    "hazmat": 1
+  },
+  "monthly_volume": {
+    "2020-05": 1
+  }
+}

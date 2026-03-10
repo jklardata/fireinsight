@@ -1,0 +1,34 @@
+{
+  "fdid": "34125",
+  "name": "WILTON FPD",
+  "state": "CA",
+  "city": "",
+  "zip": "",
+  "county": "",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 118,
+  "incident_types": {
+    "hazmat": 21,
+    "structure_fire": 14,
+    "other_fire": 3,
+    "vehicle_fire": 6,
+    "wildland_fire": 66,
+    "other": 8
+  },
+  "monthly_volume": {
+    "2020-01": 4,
+    "2020-02": 11,
+    "2020-03": 3,
+    "2020-04": 7,
+    "2020-05": 11,
+    "2020-06": 24,
+    "2020-07": 24,
+    "2020-08": 12,
+    "2020-09": 11,
+    "2020-10": 6,
+    "2020-12": 5
+  }
+}

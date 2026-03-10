@@ -1,0 +1,64 @@
+{
+  "fdid": "13055",
+  "name": "SEELEY CWD",
+  "state": "CA",
+  "city": "",
+  "zip": "92273",
+  "county": "25",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {},
+  "census": {
+    "county_name": "Imperial County, California",
+    "population": 179319,
+    "median_income": 56393,
+    "median_home_value": 279500,
+    "poverty_rate": 19.6,
+    "disability_rate": 14.8,
+    "age_65_plus_pct": 13.5,
+    "vacancy_rate": 15.1,
+    "renter_pct": 43.2,
+    "pre1980_pct": 60.9
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {}
+}

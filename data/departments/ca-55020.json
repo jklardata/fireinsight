@@ -1,0 +1,91 @@
+{
+  "fdid": "55020",
+  "name": "SONORA FD",
+  "state": "CA",
+  "city": "",
+  "zip": "95370",
+  "county": "109",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 133,
+  "incident_types": {
+    "hazmat": 47,
+    "structure_fire": 34,
+    "other": 17,
+    "vehicle_fire": 17,
+    "other_fire": 2,
+    "wildland_fire": 16
+  },
+  "monthly_volume": {
+    "2020-01": 5,
+    "2020-02": 11,
+    "2020-03": 10,
+    "2020-04": 20,
+    "2020-05": 10,
+    "2020-06": 6,
+    "2020-07": 11,
+    "2020-08": 14,
+    "2020-09": 15,
+    "2020-10": 9,
+    "2020-11": 5,
+    "2020-12": 17
+  },
+  "census": {
+    "county_name": "Tuolumne County, California",
+    "population": 54873,
+    "median_income": 72259,
+    "median_home_value": 406200,
+    "poverty_rate": 10.7,
+    "disability_rate": 21.2,
+    "age_65_plus_pct": 27.7,
+    "vacancy_rate": 27.6,
+    "renter_pct": 25.9,
+    "pre1980_pct": 47.5
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 125,
+    "avg_stations": 1.0,
+    "dept_incidents": 133,
+    "dept_stations": "",
+    "incidents_vs_peers": 7
+  }
+}

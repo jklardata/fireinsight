@@ -1,0 +1,72 @@
+{
+  "fdid": "32070",
+  "name": "PENINSULA FPD",
+  "state": "CA",
+  "city": "Lake Almanor",
+  "zip": "96137",
+  "county": "32",
+  "num_stations": "2",
+  "num_ff_career": "12",
+  "num_ff_volunteer": "10",
+  "year": 2024,
+  "total_incidents": 22,
+  "incident_types": {
+    "hazmat": 7,
+    "wildland_fire": 9,
+    "other": 3,
+    "structure_fire": 3
+  },
+  "monthly_volume": {
+    "2020-07": 4,
+    "2020-08": 3,
+    "2020-09": 2,
+    "2020-10": 4,
+    "2020-11": 4,
+    "2020-12": 5
+  },
+  "census": null,
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 22,
+    "avg_stations": 1.0,
+    "dept_incidents": 22,
+    "dept_stations": "2",
+    "incidents_vs_peers": 0
+  }
+}

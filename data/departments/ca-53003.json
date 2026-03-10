@@ -1,0 +1,84 @@
+{
+  "fdid": "53003",
+  "name": "HAWKINS BAR FD",
+  "state": "CA",
+  "city": "",
+  "zip": "95563",
+  "county": "105",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 10,
+  "incident_types": {
+    "hazmat": 1,
+    "other": 1,
+    "structure_fire": 1,
+    "vehicle_fire": 1,
+    "wildland_fire": 6
+  },
+  "monthly_volume": {
+    "2020-02": 2,
+    "2020-03": 2,
+    "2020-04": 1,
+    "2020-06": 1,
+    "2020-07": 3,
+    "2020-10": 1
+  },
+  "census": {
+    "county_name": "Trinity County, California",
+    "population": 15886,
+    "median_income": 53498,
+    "median_home_value": 329000,
+    "poverty_rate": 18.0,
+    "disability_rate": 17.7,
+    "age_65_plus_pct": 29.3,
+    "vacancy_rate": 33.8,
+    "renter_pct": 27.0,
+    "pre1980_pct": 43.4
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 9,
+    "avg_stations": 1.5,
+    "dept_incidents": 10,
+    "dept_stations": "",
+    "incidents_vs_peers": 13
+  }
+}

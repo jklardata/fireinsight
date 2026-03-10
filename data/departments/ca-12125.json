@@ -1,0 +1,15 @@
+{
+  "fdid": "12125",
+  "name": "WEOTT VFD",
+  "state": "CA",
+  "city": "Weott",
+  "zip": "95571",
+  "county": "",
+  "num_stations": "1",
+  "num_ff_career": "",
+  "num_ff_volunteer": "10",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {}
+}

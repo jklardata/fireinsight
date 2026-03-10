@@ -1,0 +1,91 @@
+{
+  "fdid": "01008",
+  "name": "ALAMEDA COUNTY FD",
+  "state": "CA",
+  "city": "",
+  "zip": "94578",
+  "county": "001",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 2314,
+  "incident_types": {
+    "structure_fire": 523,
+    "hazmat": 766,
+    "wildland_fire": 812,
+    "vehicle_fire": 171,
+    "other_fire": 29,
+    "other": 13
+  },
+  "monthly_volume": {
+    "2020-01": 163,
+    "2020-02": 167,
+    "2020-03": 169,
+    "2020-04": 145,
+    "2020-05": 180,
+    "2020-06": 210,
+    "2020-07": 307,
+    "2020-08": 227,
+    "2020-09": 162,
+    "2020-10": 195,
+    "2020-11": 212,
+    "2020-12": 177
+  },
+  "census": {
+    "county_name": "Alameda County, California",
+    "population": 1651949,
+    "median_income": 126240,
+    "median_home_value": 1057400,
+    "poverty_rate": 9.2,
+    "disability_rate": 9.9,
+    "age_65_plus_pct": 14.9,
+    "vacancy_rate": 6.0,
+    "renter_pct": 45.9,
+    "pre1980_pct": 33.6
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 15,
+    "avg_incidents": 1829,
+    "avg_stations": 100.0,
+    "dept_incidents": 2314,
+    "dept_stations": "",
+    "incidents_vs_peers": 27
+  }
+}

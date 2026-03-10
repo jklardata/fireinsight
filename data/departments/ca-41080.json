@@ -1,0 +1,91 @@
+{
+  "fdid": "41080",
+  "name": "SAN BRUNO FD",
+  "state": "CA",
+  "city": "",
+  "zip": "94066",
+  "county": "81",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 192,
+  "incident_types": {
+    "hazmat": 102,
+    "structure_fire": 34,
+    "other_fire": 5,
+    "vehicle_fire": 18,
+    "wildland_fire": 28,
+    "other": 5
+  },
+  "monthly_volume": {
+    "2020-01": 16,
+    "2020-02": 36,
+    "2020-03": 15,
+    "2020-04": 8,
+    "2020-05": 8,
+    "2020-06": 11,
+    "2020-07": 30,
+    "2020-08": 15,
+    "2020-09": 11,
+    "2020-10": 11,
+    "2020-11": 15,
+    "2020-12": 16
+  },
+  "census": {
+    "county_name": "San Mateo County, California",
+    "population": 745100,
+    "median_income": 156000,
+    "median_home_value": 1494500,
+    "poverty_rate": 6.5,
+    "disability_rate": 9.0,
+    "age_65_plus_pct": 17.3,
+    "vacancy_rate": 7.4,
+    "renter_pct": 40.9,
+    "pre1980_pct": 26.7
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 168,
+    "avg_stations": 1.0,
+    "dept_incidents": 192,
+    "dept_stations": "",
+    "incidents_vs_peers": 14
+  }
+}

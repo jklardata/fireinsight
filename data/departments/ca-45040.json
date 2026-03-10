@@ -1,0 +1,30 @@
+{
+  "fdid": "45040",
+  "name": "FALL RIVER VALLEY FPD",
+  "state": "CA",
+  "city": "Fall River Mills",
+  "zip": "96028",
+  "county": "",
+  "num_stations": "1",
+  "num_ff_career": "1",
+  "num_ff_volunteer": "25",
+  "year": 2024,
+  "total_incidents": 26,
+  "incident_types": {
+    "hazmat": 4,
+    "wildland_fire": 13,
+    "structure_fire": 8,
+    "other": 1
+  },
+  "monthly_volume": {
+    "2020-03": 1,
+    "2020-04": 2,
+    "2020-05": 1,
+    "2020-06": 4,
+    "2020-07": 4,
+    "2020-08": 2,
+    "2020-09": 2,
+    "2020-10": 7,
+    "2020-12": 3
+  }
+}

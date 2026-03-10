@@ -1,0 +1,34 @@
+{
+  "fdid": "23090",
+  "name": "LITTLE LAKE FPD",
+  "state": "CA",
+  "city": "Willits",
+  "zip": "95490",
+  "county": "",
+  "num_stations": "2",
+  "num_ff_career": "3",
+  "num_ff_volunteer": "40",
+  "year": 2024,
+  "total_incidents": 135,
+  "incident_types": {
+    "hazmat": 62,
+    "other": 18,
+    "structure_fire": 24,
+    "wildland_fire": 25,
+    "vehicle_fire": 6
+  },
+  "monthly_volume": {
+    "2020-01": 13,
+    "2020-02": 9,
+    "2020-03": 10,
+    "2020-04": 12,
+    "2020-05": 9,
+    "2020-06": 3,
+    "2020-07": 14,
+    "2020-08": 13,
+    "2020-09": 11,
+    "2020-10": 12,
+    "2020-11": 13,
+    "2020-12": 16
+  }
+}

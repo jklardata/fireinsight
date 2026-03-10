@@ -1,0 +1,15 @@
+{
+  "fdid": "46015",
+  "name": "Sierra City FPD",
+  "state": "CA",
+  "city": "Sierra City",
+  "zip": "96125",
+  "county": "",
+  "num_stations": "4",
+  "num_ff_career": "0",
+  "num_ff_volunteer": "23",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {}
+}

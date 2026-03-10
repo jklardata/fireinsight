@@ -1,0 +1,88 @@
+{
+  "fdid": "21065",
+  "name": "ROSS VALLEY FD",
+  "state": "CA",
+  "city": "",
+  "zip": "94960",
+  "county": "41",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 113,
+  "incident_types": {
+    "structure_fire": 22,
+    "hazmat": 76,
+    "wildland_fire": 8,
+    "other": 6,
+    "vehicle_fire": 1
+  },
+  "monthly_volume": {
+    "2020-01": 14,
+    "2020-04": 8,
+    "2020-05": 7,
+    "2020-06": 19,
+    "2020-07": 8,
+    "2020-08": 11,
+    "2020-09": 12,
+    "2020-10": 8,
+    "2020-11": 15,
+    "2020-12": 11
+  },
+  "census": {
+    "county_name": "Marin County, California",
+    "population": 258765,
+    "median_income": 142785,
+    "median_home_value": 1390000,
+    "poverty_rate": 7.8,
+    "disability_rate": 9.7,
+    "age_65_plus_pct": 23.3,
+    "vacancy_rate": 7.7,
+    "renter_pct": 36.1,
+    "pre1980_pct": 23.9
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 104,
+    "avg_stations": 1.0,
+    "dept_incidents": 113,
+    "dept_stations": "",
+    "incidents_vs_peers": 9
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "fdid": "18017",
+  "name": "HERLONG VFD",
+  "state": "CA",
+  "city": "",
+  "zip": "",
+  "county": "",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 7,
+  "incident_types": {
+    "other": 2,
+    "vehicle_fire": 1,
+    "structure_fire": 3,
+    "hazmat": 1
+  },
+  "monthly_volume": {
+    "2020-02": 1,
+    "2020-03": 1,
+    "2020-07": 1,
+    "2020-09": 1,
+    "2020-10": 1,
+    "2020-11": 1,
+    "2020-12": 1
+  }
+}

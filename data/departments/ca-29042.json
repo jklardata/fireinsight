@@ -1,0 +1,87 @@
+{
+  "fdid": "29042",
+  "name": "HIGGINS FPD",
+  "state": "CA",
+  "city": "",
+  "zip": "95602",
+  "county": "057",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 147,
+  "incident_types": {
+    "hazmat": 92,
+    "other": 21,
+    "vehicle_fire": 7,
+    "structure_fire": 5,
+    "wildland_fire": 22
+  },
+  "monthly_volume": {
+    "2020-01": 12,
+    "2020-02": 26,
+    "2020-03": 14,
+    "2020-04": 8,
+    "2020-05": 23,
+    "2020-06": 35,
+    "2020-07": 17,
+    "2020-08": 4,
+    "2020-12": 8
+  },
+  "census": {
+    "county_name": "Nevada County, California",
+    "population": 102452,
+    "median_income": 84905,
+    "median_home_value": 602800,
+    "poverty_rate": 10.6,
+    "disability_rate": 13.8,
+    "age_65_plus_pct": 28.9,
+    "vacancy_rate": 22.4,
+    "renter_pct": 25.6,
+    "pre1980_pct": 57.5
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 131,
+    "avg_stations": 1.0,
+    "dept_incidents": 147,
+    "dept_stations": "",
+    "incidents_vs_peers": 12
+  }
+}

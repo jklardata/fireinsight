@@ -17,5 +17,61 @@
   "monthly_volume": {
     "2020-07": 1,
     "2020-09": 3
+  },
+  "census": {
+    "county_name": "Humboldt County, Nevada",
+    "population": 17299,
+    "median_income": 79946,
+    "median_home_value": 256800,
+    "poverty_rate": 12.2,
+    "disability_rate": 14.0,
+    "age_65_plus_pct": 16.1,
+    "vacancy_rate": 9.3,
+    "renter_pct": 26.4,
+    "pre1980_pct": 67.1
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 2,
+    "avg_incidents": 4,
+    "avg_stations": null,
+    "dept_incidents": 4,
+    "dept_stations": "",
+    "incidents_vs_peers": 0
   }
 }

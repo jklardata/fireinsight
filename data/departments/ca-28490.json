@@ -1,0 +1,64 @@
+{
+  "fdid": "28490",
+  "name": "NAPA STATE HOSPITAL FD",
+  "state": "CA",
+  "city": "",
+  "zip": "94558",
+  "county": "55",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {},
+  "census": {
+    "county_name": "Napa County, California",
+    "population": 136070,
+    "median_income": 108970,
+    "median_home_value": 838800,
+    "poverty_rate": 8.4,
+    "disability_rate": 12.8,
+    "age_65_plus_pct": 20.6,
+    "vacancy_rate": 10.7,
+    "renter_pct": 35.6,
+    "pre1980_pct": 42.5
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {}
+}

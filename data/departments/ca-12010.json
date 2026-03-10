@@ -1,0 +1,82 @@
+{
+  "fdid": "12010",
+  "name": "BRICELAND VFD",
+  "state": "CA",
+  "city": "Redway",
+  "zip": "95560",
+  "county": "023",
+  "num_stations": "2",
+  "num_ff_career": "0",
+  "num_ff_volunteer": "25",
+  "year": 2024,
+  "total_incidents": 8,
+  "incident_types": {
+    "hazmat": 4,
+    "wildland_fire": 2,
+    "vehicle_fire": 1,
+    "structure_fire": 1
+  },
+  "monthly_volume": {
+    "2020-03": 2,
+    "2020-07": 1,
+    "2020-08": 2,
+    "2020-09": 1,
+    "2020-12": 2
+  },
+  "census": {
+    "county_name": "Humboldt County, California",
+    "population": 135418,
+    "median_income": 61135,
+    "median_home_value": 418800,
+    "poverty_rate": 18.9,
+    "disability_rate": 18.5,
+    "age_65_plus_pct": 19.3,
+    "vacancy_rate": 12.4,
+    "renter_pct": 43.7,
+    "pre1980_pct": 39.5
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 8,
+    "avg_stations": null,
+    "dept_incidents": 8,
+    "dept_stations": "2",
+    "incidents_vs_peers": 7
+  }
+}

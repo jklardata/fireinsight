@@ -31,5 +31,61 @@
     "2020-10": 29,
     "2020-11": 13,
     "2020-12": 10
+  },
+  "census": {
+    "county_name": "Churchill County, Nevada",
+    "population": 25614,
+    "median_income": 73268,
+    "median_home_value": 298000,
+    "poverty_rate": 9.1,
+    "disability_rate": 21.3,
+    "age_65_plus_pct": 19.5,
+    "vacancy_rate": 10.9,
+    "renter_pct": 31.9,
+    "pre1980_pct": 64.3
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 5,
+    "avg_incidents": 267,
+    "avg_stations": 7.3,
+    "dept_incidents": 321,
+    "dept_stations": "",
+    "incidents_vs_peers": 20
   }
 }

@@ -1,0 +1,91 @@
+{
+  "fdid": "15010",
+  "name": "KERN COUNTY FD",
+  "state": "CA",
+  "city": "",
+  "zip": "93308",
+  "county": "29",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 6744,
+  "incident_types": {
+    "other_fire": 98,
+    "wildland_fire": 3064,
+    "other": 545,
+    "structure_fire": 870,
+    "hazmat": 1388,
+    "vehicle_fire": 779
+  },
+  "monthly_volume": {
+    "2020-01": 463,
+    "2020-02": 460,
+    "2020-03": 448,
+    "2020-04": 497,
+    "2020-05": 710,
+    "2020-06": 666,
+    "2020-07": 836,
+    "2020-08": 578,
+    "2020-09": 535,
+    "2020-10": 542,
+    "2020-11": 524,
+    "2020-12": 485
+  },
+  "census": {
+    "county_name": "Kern County, California",
+    "population": 910433,
+    "median_income": 67660,
+    "median_home_value": 310600,
+    "poverty_rate": 19.0,
+    "disability_rate": 11.9,
+    "age_65_plus_pct": 11.6,
+    "vacancy_rate": 7.6,
+    "renter_pct": 40.2,
+    "pre1980_pct": 56.1
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 10,
+    "avg_incidents": 5385,
+    "avg_stations": null,
+    "dept_incidents": 6744,
+    "dept_stations": "",
+    "incidents_vs_peers": 25
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "fdid": "37224",
+  "name": "SYCUAN FD",
+  "state": "CA",
+  "city": "El Cajon",
+  "zip": "92019",
+  "county": "",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 21,
+  "incident_types": {
+    "hazmat": 5,
+    "structure_fire": 3,
+    "wildland_fire": 8,
+    "other": 3,
+    "vehicle_fire": 2
+  },
+  "monthly_volume": {
+    "2020-01": 2,
+    "2020-03": 4,
+    "2020-04": 3,
+    "2020-05": 1,
+    "2020-06": 1,
+    "2020-07": 2,
+    "2020-08": 2,
+    "2020-09": 2,
+    "2020-10": 2,
+    "2020-11": 1,
+    "2020-12": 1
+  }
+}

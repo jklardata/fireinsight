@@ -1,0 +1,33 @@
+{
+  "fdid": "40020",
+  "name": "CAMBRIA CSD FD",
+  "state": "CA",
+  "city": "",
+  "zip": "93428",
+  "county": "",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 44,
+  "incident_types": {
+    "structure_fire": 4,
+    "hazmat": 32,
+    "wildland_fire": 4,
+    "other": 3,
+    "vehicle_fire": 1
+  },
+  "monthly_volume": {
+    "2020-01": 5,
+    "2020-02": 9,
+    "2020-03": 3,
+    "2020-04": 1,
+    "2020-05": 5,
+    "2020-07": 2,
+    "2020-08": 2,
+    "2020-09": 2,
+    "2020-10": 6,
+    "2020-11": 4,
+    "2020-12": 5
+  }
+}

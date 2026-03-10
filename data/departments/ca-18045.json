@@ -1,0 +1,22 @@
+{
+  "fdid": "18045",
+  "name": "CLEAR CREEK FD",
+  "state": "CA",
+  "city": "",
+  "zip": "96137",
+  "county": "",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 3,
+  "incident_types": {
+    "structure_fire": 2,
+    "other": 1
+  },
+  "monthly_volume": {
+    "2020-01": 1,
+    "2020-07": 1,
+    "2020-08": 1
+  }
+}

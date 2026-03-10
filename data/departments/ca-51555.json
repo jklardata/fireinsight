@@ -1,0 +1,19 @@
+{
+  "fdid": "51555",
+  "name": "CDFSUTTER",
+  "state": "CA",
+  "city": "",
+  "zip": "",
+  "county": "",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 1,
+  "incident_types": {
+    "other": 1
+  },
+  "monthly_volume": {
+    "2020-11": 1
+  }
+}

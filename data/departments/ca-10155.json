@@ -1,0 +1,19 @@
+{
+  "fdid": "10155",
+  "name": "HUME LAKE VOL FIRE RESCUE CO",
+  "state": "CA",
+  "city": "Hume",
+  "zip": "93628",
+  "county": "",
+  "num_stations": "1",
+  "num_ff_career": "0",
+  "num_ff_volunteer": "37",
+  "year": 2024,
+  "total_incidents": 1,
+  "incident_types": {
+    "hazmat": 1
+  },
+  "monthly_volume": {
+    "2020-05": 1
+  }
+}

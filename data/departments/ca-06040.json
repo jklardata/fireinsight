@@ -1,0 +1,82 @@
+{
+  "fdid": "06040",
+  "name": "BEAR VLY INDIAN VLY FPD",
+  "state": "CA",
+  "city": "",
+  "zip": "95979",
+  "county": "11",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 7,
+  "incident_types": {
+    "other": 3,
+    "vehicle_fire": 1,
+    "hazmat": 2,
+    "structure_fire": 1
+  },
+  "monthly_volume": {
+    "2020-03": 1,
+    "2020-04": 1,
+    "2020-05": 2,
+    "2020-07": 2,
+    "2020-08": 1
+  },
+  "census": {
+    "county_name": "Colusa County, California",
+    "population": 21895,
+    "median_income": 75149,
+    "median_home_value": 375100,
+    "poverty_rate": 10.8,
+    "disability_rate": 13.1,
+    "age_65_plus_pct": 15.3,
+    "vacancy_rate": 8.5,
+    "renter_pct": 37.8,
+    "pre1980_pct": 48.8
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 7,
+    "avg_stations": 1.5,
+    "dept_incidents": 7,
+    "dept_stations": "",
+    "incidents_vs_peers": -2
+  }
+}

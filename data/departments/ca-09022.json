@@ -1,0 +1,15 @@
+{
+  "fdid": "09022",
+  "name": "LATROBE FPD",
+  "state": "CA",
+  "city": "Latrobe",
+  "zip": "95682",
+  "county": "",
+  "num_stations": "2",
+  "num_ff_career": "6",
+  "num_ff_volunteer": "15",
+  "year": 2024,
+  "total_incidents": 0,
+  "incident_types": {},
+  "monthly_volume": {}
+}

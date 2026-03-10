@@ -1,0 +1,91 @@
+{
+  "fdid": "31555",
+  "name": "CDFPLACER",
+  "state": "CA",
+  "city": "",
+  "zip": "95603",
+  "county": "061",
+  "num_stations": "",
+  "num_ff_career": "",
+  "num_ff_volunteer": "",
+  "year": 2024,
+  "total_incidents": 194,
+  "incident_types": {
+    "other": 51,
+    "wildland_fire": 117,
+    "other_fire": 7,
+    "structure_fire": 6,
+    "vehicle_fire": 8,
+    "hazmat": 5
+  },
+  "monthly_volume": {
+    "2020-01": 2,
+    "2020-02": 1,
+    "2020-03": 2,
+    "2020-04": 1,
+    "2020-05": 23,
+    "2020-06": 34,
+    "2020-07": 30,
+    "2020-08": 21,
+    "2020-09": 21,
+    "2020-10": 28,
+    "2020-11": 29,
+    "2020-12": 2
+  },
+  "census": {
+    "county_name": "Placer County, California",
+    "population": 412435,
+    "median_income": 114678,
+    "median_home_value": 658800,
+    "poverty_rate": 6.7,
+    "disability_rate": 11.4,
+    "age_65_plus_pct": 20.2,
+    "vacancy_rate": 11.8,
+    "renter_pct": 25.7,
+    "pre1980_pct": 71.7
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 20,
+    "avg_incidents": 171,
+    "avg_stations": 1.0,
+    "dept_incidents": 194,
+    "dept_stations": "",
+    "incidents_vs_peers": 13
+  }
+}

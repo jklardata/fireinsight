@@ -26,5 +26,61 @@
     "2020-07": 2,
     "2020-08": 5,
     "2020-11": 1
+  },
+  "census": {
+    "county_name": "Nye County, Nevada",
+    "population": 53207,
+    "median_income": 55975,
+    "median_home_value": 266000,
+    "poverty_rate": 15.5,
+    "disability_rate": 24.8,
+    "age_65_plus_pct": 31.0,
+    "vacancy_rate": 12.9,
+    "renter_pct": 24.8,
+    "pre1980_pct": 86.0
+  },
+  "disasters": {
+    "total_10yr": 373,
+    "total_25yr": 493,
+    "recent": [
+      {
+        "title": "LEE FALLS FIRE",
+        "type": "Fire",
+        "date": "2024-08-09",
+        "disaster_number": 5529
+      },
+      {
+        "title": "ELK LANE FIRE",
+        "type": "Fire",
+        "date": "2024-08-06",
+        "disaster_number": 5528
+      },
+      {
+        "title": "MILE MARKER 132 FIRE",
+        "type": "Fire",
+        "date": "2024-08-02",
+        "disaster_number": 5527
+      },
+      {
+        "title": "FLOODING",
+        "type": "Severe Storm",
+        "date": "2017-05-02",
+        "disaster_number": 4312
+      },
+      {
+        "title": "SEVERE STORMS, TORNADOES, STRAIGHT-LINE WINDS, AND FLOODING",
+        "type": "Severe Storm",
+        "date": "2016-01-21",
+        "disaster_number": 4251
+      }
+    ]
+  },
+  "peers": {
+    "peer_count": 5,
+    "avg_incidents": 16,
+    "avg_stations": 3.0,
+    "dept_incidents": 18,
+    "dept_stations": "",
+    "incidents_vs_peers": 10
   }
 }
