@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ dept.name }} — Incident Data & Community Risk Profile | 5AlarmData</title>
+  <meta name="description" content="{{ dept.name }} responded to {{ dept.total_incidents }} fire and hazmat incidents in 2024. View demographics, disaster history, housing risk, and community vulnerability data." />
+  <link rel="canonical" href="https://5alarmdata.com/directory/{{ dept.state|lower }}/{{ dept.fdid }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:    #F7F4EF;
+      --bg2:   #EDE9E2;
+      --ink:   #0F1A20;
+      --ink2:  #2C3A42;
+      --muted: #6B7A85;
+      --red:   #C8392B;
+      --red-lt:#FDE8E6;
+      --border:#D8D2C8;
+      --white: #FFFFFF;
+      --gold:  #D4820A;
+      --gold-lt:#FEF3E2;
+      --green: #1E7E3E;
+      --green-lt:#E8F5ED;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; height: 56px; background: rgba(15,26,32,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,.08); }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; letter-spacing: -.3px; color: #fff; }
+    .logo-mark { width: 28px; height: 28px; background: var(--red); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 14px; height: 14px; fill: #fff; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.55); }
+    .nav-links a:hover { color: #fff; }
+    .btn-nav { background: var(--red); color: #fff; font-size: 12px; font-weight: 700; padding: 7px 18px; border-radius: 6px; }
+    .btn-nav:hover { opacity: .88; }
+
+    /* FULL-WIDTH MAP HERO */
+    .map-hero { position: relative; height: 520px; margin-top: 56px; }
+    #dept-map-v3 { height: 100%; width: 100%; }
+    .leaflet-container { font-family: 'Geist', sans-serif; background: var(--bg2); }
+
+    /* OVERLAY CARD on map */
+    .map-overlay { position: absolute; bottom: 32px; left: 48px; z-index: 500; background: rgba(15,26,32,0.92); backdrop-filter: blur(20px); border-radius: 16px; padding: 28px 32px; color: #fff; max-width: 480px; border: 1px solid rgba(255,255,255,.12); }
+    .overlay-eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.4); margin-bottom: 10px; }
+    .overlay h1 { font-family: 'Lora', serif; font-size: clamp(18px, 2.5vw, 28px); font-weight: 600; line-height: 1.1; margin-bottom: 12px; }
+    .overlay-meta { font-size: 12px; color: rgba(255,255,255,.5); display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+    .overlay-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+    .overlay-stat { }
+    .overlay-stat-val { font-size: 24px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
+    .overlay-stat-val.red { color: #F87171; }
+    .overlay-stat-val.gold { color: #FBB040; }
+    .overlay-stat-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: rgba(255,255,255,.4); margin-top: 3px; }
+    .map-legend-bar { position: absolute; bottom: 12px; right: 12px; z-index: 500; background: rgba(15,26,32,0.75); backdrop-filter: blur(8px); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 12px; }
+    .ml-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: rgba(255,255,255,.6); }
+    .ml-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 2px solid #fff; }
+    .ml-sq { width: 8px; height: 8px; background: var(--ink); border-radius: 2px; }
+    .ml-poly { width: 12px; height: 8px; border: 2px solid var(--red); background: rgba(200,57,43,.15); border-radius: 1px; }
+    .map-status-v3 { font-size: 10px; color: rgba(255,255,255,.4); font-style: italic; position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 500; white-space: nowrap; }
+    .btn-map-report { background: var(--red); color: #fff; border-radius: 8px; padding: 10px 20px; font-size: 13px; font-weight: 700; display: inline-block; margin-top: 16px; }
+    .btn-map-report:hover { opacity: .88; }
+
+    /* CONTENT BELOW */
+    .content { max-width: 820px; margin: 0 auto; padding: 60px 40px 80px; }
+
+    /* SECTION */
+    .section { margin-bottom: 52px; scroll-margin-top: 80px; }
+    .sec-head { margin-bottom: 24px; }
+    .sec-number { font-size: 11px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+    .sec-title { font-family: 'Lora', serif; font-size: 24px; font-weight: 600; color: var(--ink); }
+    .sec-divider { width: 40px; height: 3px; background: var(--red); border-radius: 2px; margin-top: 10px; }
+
+    /* CARD */
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .card-pad { padding: 24px 28px; }
+
+    /* METRIC GRID */
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 20px; }
+    .mc { background: var(--white); padding: 22px 24px; }
+    .mc-val { font-size: 26px; font-weight: 900; letter-spacing: -1px; margin-bottom: 4px; }
+    .mc-val.red { color: var(--red); }
+    .mc-val.gold { color: var(--gold); }
+    .mc-lbl { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .mc-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* TYPE LIST */
+    .type-list { display: flex; flex-direction: column; gap: 14px; }
+    .type-row { display: flex; align-items: center; gap: 10px; }
+    .type-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+    .type-label { width: 160px; font-size: 13px; color: var(--ink2); flex-shrink: 0; font-weight: 500; }
+    .type-bar-bg { flex: 1; height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
+    .type-bar-fill { height: 100%; border-radius: 3px; }
+    .type-count { width: 44px; text-align: right; font-size: 13px; font-weight: 700; }
+
+    /* VULN */
+    .vuln-list { display: flex; flex-direction: column; }
+    .vuln-row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .vuln-row:last-child { border-bottom: none; }
+    .vuln-label { width: 180px; font-size: 13px; color: var(--ink2); flex-shrink: 0; font-weight: 500; }
+    .vuln-bar-bg { flex: 1; height: 7px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
+    .vuln-bar-fill { height: 100%; border-radius: 3px; }
+    .vuln-bar-fill.low { background: var(--green); }
+    .vuln-bar-fill.mid { background: var(--gold); }
+    .vuln-bar-fill.high { background: var(--red); }
+    .vuln-val { width: 50px; text-align: right; font-size: 13px; font-weight: 700; }
+    .vuln-badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .badge-low { background: var(--green-lt); color: var(--green); }
+    .badge-mid { background: var(--gold-lt); color: var(--gold); }
+    .badge-high { background: var(--red-lt); color: var(--red); }
+
+    /* HAZARD */
+    .hazard-bucket { border-radius: 12px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border); }
+    .hb-head { display: flex; align-items: center; gap: 10px; padding: 12px 18px; }
+    .hb-head.bkt-high { background: #FFF0EF; border-bottom: 1px solid #F5C2BE; }
+    .hb-head.bkt-mid  { background: #FFFBF0; border-bottom: 1px solid #F0D9A8; }
+    .hb-head.bkt-low  { background: #F4FBF7; border-bottom: 1px solid #B8DFC8; }
+    .hb-head.bkt-vlow { background: var(--bg2); border-bottom: 1px solid var(--border); }
+    .bkt-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .bkt-high .bkt-dot { background: var(--red); }
+    .bkt-mid  .bkt-dot { background: var(--gold); }
+    .bkt-low  .bkt-dot { background: var(--green); }
+    .bkt-vlow .bkt-dot { background: var(--muted); }
+    .bkt-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
+    .bkt-high .bkt-label { color: var(--red); }
+    .bkt-mid  .bkt-label { color: var(--gold); }
+    .bkt-low  .bkt-label { color: var(--green); }
+    .bkt-vlow .bkt-label { color: var(--muted); }
+    .bkt-count { font-size: 11px; color: var(--muted); margin-left: auto; }
+    .hb-body { background: var(--white); padding: 0 18px; }
+    .hazard-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--bg2); }
+    .hazard-row:last-child { border-bottom: none; }
+    .hazard-row-name { flex: 1; font-size: 13px; font-weight: 500; color: var(--ink2); }
+    .hazard-row-score { font-size: 15px; font-weight: 900; width: 42px; text-align: right; }
+    .bkt-high .hazard-row-score { color: var(--red); }
+    .bkt-mid  .hazard-row-score { color: var(--gold); }
+    .bkt-low  .hazard-row-score { color: var(--green); }
+    .bkt-vlow .hazard-row-score { color: var(--muted); }
+    .hazard-row-eal { font-size: 11px; color: var(--muted); width: 72px; text-align: right; }
+
+    /* DISASTER */
+    .disaster-row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .disaster-row:last-child { border-bottom: none; }
+    .disaster-type { font-size: 10px; font-weight: 700; text-transform: uppercase; background: var(--red-lt); color: var(--red); padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+    .disaster-title { font-size: 14px; font-weight: 600; flex: 1; }
+    .disaster-date { font-size: 12px; color: var(--muted); }
+
+    /* PEER */
+    .peer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .peer-card { background: var(--white); padding: 22px 24px; }
+    .peer-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 8px; }
+    .peer-val { font-size: 26px; font-weight: 900; letter-spacing: -1px; margin-bottom: 6px; }
+    .peer-vs { font-size: 12px; color: var(--muted); }
+    .peer-vs strong { font-weight: 700; }
+    .peer-vs.up strong { color: var(--green); }
+    .peer-vs.down strong { color: var(--red); }
+
+    /* PEAK MONTH CALLOUT */
+    .peak-callout { background: var(--gold-lt); border: 1px solid #F0D9A8; border-radius: 14px; padding: 24px; display: flex; align-items: center; gap: 24px; margin-bottom: 20px; }
+    .peak-num { font-size: 48px; font-weight: 900; letter-spacing: -2px; color: var(--gold); line-height: 1; }
+    .peak-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--gold); }
+    .peak-month { font-size: 18px; font-weight: 700; color: var(--ink2); margin-top: 4px; }
+    .peak-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* CTA */
+    .cta-section { background: var(--ink); border-radius: 20px; padding: 48px; color: #fff; position: relative; overflow: hidden; }
+    .cta-section::before { content: 'REPORT'; position: absolute; right: -30px; top: 50%; transform: translateY(-50%); font-size: 120px; font-weight: 900; color: rgba(255,255,255,.04); line-height: 1; }
+    .cta-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #F87171; margin-bottom: 12px; }
+    .cta-section h2 { font-family: 'Lora', serif; font-size: 28px; font-weight: 600; line-height: 1.2; margin-bottom: 12px; position: relative; }
+    .cta-section p { font-size: 15px; color: rgba(255,255,255,.6); line-height: 1.65; margin-bottom: 22px; position: relative; }
+    .btn-light { background: #fff; color: var(--ink); border-radius: 8px; padding: 12px 24px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-light:hover { background: var(--bg2); }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; position: relative; }
+    .pill { font-size: 12px; color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.15); border-radius: 25px; padding: 4px 12px; }
+
+    /* SOURCE + FOOTER */
+    .source-note { font-size: 12px; color: var(--muted); margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); line-height: 1.7; }
+    footer { border-top: 1px solid var(--border); padding: 24px 40px; display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .map-hero { height: 380px; }
+      .map-overlay { left: 16px; right: 16px; bottom: 16px; max-width: none; padding: 20px; }
+      .content { padding: 40px 20px 60px; }
+      footer { padding: 20px; flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+    </div>
+    5AlarmData
+  </a>
+  <ul class="nav-links">
+    <li><a href="/directory">Directory</a></li>
+    <li><a href="/resources">Resources</a></li>
+    <li><a href="/">App</a></li>
+  </ul>
+  <a href="/" class="btn-nav">Generate Report →</a>
+</nav>
+
+<!-- FULL-WIDTH MAP HERO -->
+<div class="map-hero" id="map-section">
+  <div id="dept-map-v3"></div>
+
+  <div class="map-overlay overlay">
+    <div class="overlay-eyebrow">{{ dept.state }} · FDID {{ dept.fdid }} · NFIRS 2024</div>
+    <h1>{{ dept.name }}</h1>
+    <div class="overlay-meta">
+      {% if dept.city %}<span>{{ dept.city }}, {{ dept.state }}</span>{% endif %}
+      {% if dept.zip %}<span>ZIP {{ dept.zip }}</span>{% endif %}
+      {% if census and census.county_name %}<span>{{ census.county_name }}</span>{% endif %}
+    </div>
+    <div class="overlay-stats">
+      <div class="overlay-stat">
+        <div class="overlay-stat-val red">{{ "{:,}".format(dept.total_incidents) }}</div>
+        <div class="overlay-stat-lbl">Incidents 2024</div>
+      </div>
+      {% if dept.num_stations %}
+      <div class="overlay-stat">
+        <div class="overlay-stat-val">{{ dept.num_stations }}</div>
+        <div class="overlay-stat-lbl">Stations</div>
+      </div>
+      {% endif %}
+      {% if total_ff %}
+      <div class="overlay-stat">
+        <div class="overlay-stat-val">{{ total_ff }}</div>
+        <div class="overlay-stat-lbl">Firefighters</div>
+      </div>
+      {% endif %}
+      {% if disasters %}
+      <div class="overlay-stat">
+        <div class="overlay-stat-val gold">{{ disasters.total_10yr }}</div>
+        <div class="overlay-stat-lbl">FEMA (10yr)</div>
+      </div>
+      {% endif %}
+    </div>
+    <a href="/" class="btn-map-report">Generate AI Report →</a>
+  </div>
+
+  <div class="map-legend-bar">
+    <div class="ml-item"><div class="ml-dot"></div> HQ</div>
+    <div class="ml-item"><div class="ml-sq"></div> Station</div>
+    <div class="ml-item"><div class="ml-poly"></div> Jurisdiction</div>
+  </div>
+  <span class="map-status-v3" id="map-status-v3">Loading boundary data…</span>
+</div>
+
+<!-- SCROLLING CONTENT -->
+<div class="content">
+  <div style="font-size:12px;color:var(--muted);margin-bottom:48px;display:flex;gap:6px;align-items:center;">
+    <a href="/directory" style="color:var(--red);font-weight:500;">All States</a> /
+    <a href="/directory/{{ dept.state|lower }}" style="color:var(--red);font-weight:500;">{{ state_name }}</a> /
+    <span>{{ dept.name }}</span>
+  </div>
+
+  <!-- INCIDENT ACTIVITY -->
+  <div class="section" id="incidents">
+    <div class="sec-head">
+      <div class="sec-number">01</div>
+      <div class="sec-title">Incident Activity — 2024</div>
+      <div class="sec-divider"></div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="mc">
+        <div class="mc-val red">{{ "{:,}".format(dept.total_incidents) }}</div>
+        <div class="mc-lbl">Total Incidents</div>
+      </div>
+      {% if fire_count %}
+      <div class="mc">
+        <div class="mc-val">{{ fire_count }}</div>
+        <div class="mc-lbl">Fire Calls</div>
+        <div class="mc-sub">{{ (fire_count / dept.total_incidents * 100) | round | int }}% of total</div>
+      </div>
+      <div class="mc">
+        <div class="mc-val">{{ non_fire_count }}</div>
+        <div class="mc-lbl">Non-Fire Calls</div>
+        <div class="mc-sub">{{ (non_fire_count / dept.total_incidents * 100) | round | int }}% of total</div>
+      </div>
+      {% endif %}
+      {% if incidents_per_ff is not none %}
+      <div class="mc">
+        <div class="mc-val">{{ incidents_per_ff }}</div>
+        <div class="mc-lbl">Incidents / FF</div>
+        <div class="mc-sub">{{ total_ff }} total staff</div>
+      </div>
+      {% endif %}
+      {% if incident_rate_per_1k is not none %}
+      <div class="mc">
+        <div class="mc-val">{{ incident_rate_per_1k }}</div>
+        <div class="mc-lbl">Per 1K Residents</div>
+      </div>
+      {% endif %}
+      {% if incidents_per_station is not none %}
+      <div class="mc">
+        <div class="mc-val">{{ incidents_per_station }}</div>
+        <div class="mc-lbl">Per Station</div>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if monthly_labels %}
+    <div class="card" style="padding: 24px; margin-bottom: 20px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:16px;">Monthly Volume — 2024</div>
+      <canvas id="monthlyChart_v3" height="70"></canvas>
+    </div>
+    {% endif %}
+
+    {% if peak_month_name %}
+    <div class="peak-callout">
+      <div class="peak-num">{{ peak_month_count }}</div>
+      <div>
+        <div class="peak-label">Peak Month</div>
+        <div class="peak-month">{{ peak_month_name }}</div>
+        <div class="peak-sub">Highest incident volume</div>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:12px;">By Season</div>
+        <canvas id="seasonChart_v3" height="80"></canvas>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if incident_types %}
+    {% set type_colors = {
+      'structure_fire': '#C8392B',
+      'vehicle_fire':   '#D4620A',
+      'wildland_fire':  '#B8900A',
+      'hazmat':         '#7B3FA8',
+      'rescue_ems':     '#1565C0',
+      'false_alarm':    '#6B7A85',
+      'other_fire':     '#C8396B',
+      'other':          '#8A9BA8'
+    } %}
+    <div class="card">
+      <div class="card-pad" style="display:grid;grid-template-columns:200px 1fr;gap:32px;align-items:center;">
+        <div style="position:relative;">
+          <canvas id="donutChart_v3" width="200" height="200"></canvas>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+            <div style="font-size:26px;font-weight:900;letter-spacing:-1px;">{{ dept.total_incidents }}</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--muted);">Total</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:14px;">Incident Type Breakdown</div>
+          <div class="type-list">
+            {% for t in incident_types %}
+            <div class="type-row">
+              <div class="type-dot" style="background:{{ type_colors.get(t.key, '#8A9BA8') }};"></div>
+              <div class="type-label">{{ t.label }}</div>
+              <div class="type-bar-bg"><div class="type-bar-fill" style="width:{{ t.pct }}%;background:{{ type_colors.get(t.key, '#8A9BA8') }};"></div></div>
+              <div class="type-count">{{ t.count }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if census %}
+  <!-- DEMOGRAPHICS -->
+  <div class="section" id="demographics">
+    <div class="sec-head">
+      <div class="sec-number">02</div>
+      <div class="sec-title">Community Demographics</div>
+      <div class="sec-divider"></div>
+    </div>
+    <div class="metric-grid">
+      {% if census.population %}
+      <div class="mc"><div class="mc-val">{{ "{:,}".format(census.population) }}</div><div class="mc-lbl">Population</div></div>
+      {% endif %}
+      {% if census.median_income %}
+      <div class="mc"><div class="mc-val" style="font-size:20px;">${{ "{:,}".format(census.median_income) }}</div><div class="mc-lbl">Median Income</div></div>
+      {% endif %}
+      {% if census.median_home_value %}
+      <div class="mc"><div class="mc-val" style="font-size:20px;">${{ "{:,}".format(census.median_home_value) }}</div><div class="mc-lbl">Median Home</div></div>
+      {% endif %}
+      {% if census.age_65_plus_pct %}
+      <div class="mc"><div class="mc-val">{{ census.age_65_plus_pct }}%</div><div class="mc-lbl">Age 65+</div><div class="mc-sub">Key EMS driver</div></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- VULNERABILITY -->
+  <div class="section" id="vulnerability">
+    <div class="sec-head">
+      <div class="sec-number">03</div>
+      <div class="sec-title">Social Vulnerability</div>
+      <div class="sec-divider"></div>
+    </div>
+    <div class="card">
+      <div class="card-pad">
+        <div class="vuln-list">
+          {% if census.poverty_rate is not none %}
+          {% set p = census.poverty_rate %}
+          <div class="vuln-row">
+            <div class="vuln-label">Poverty Rate</div>
+            <div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if p > 15 else 'mid' if p > 8 else 'low' }}" style="width:{{ [p * 3.5, 100]|min }}%"></div></div>
+            <div class="vuln-val">{{ p }}%</div>
+            <span class="vuln-badge {{ 'badge-high' if p > 15 else 'badge-mid' if p > 8 else 'badge-low' }}">{{ 'High' if p > 15 else 'Moderate' if p > 8 else 'Low' }}</span>
+          </div>
+          {% endif %}
+          {% if census.disability_rate is not none %}
+          {% set d = census.disability_rate %}
+          <div class="vuln-row">
+            <div class="vuln-label">Disability Rate</div>
+            <div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if d > 16 else 'mid' if d > 10 else 'low' }}" style="width:{{ [d * 3.5, 100]|min }}%"></div></div>
+            <div class="vuln-val">{{ d }}%</div>
+            <span class="vuln-badge {{ 'badge-high' if d > 16 else 'badge-mid' if d > 10 else 'badge-low' }}">{{ 'High' if d > 16 else 'Moderate' if d > 10 else 'Low' }}</span>
+          </div>
+          {% endif %}
+          {% if census.age_65_plus_pct is not none %}
+          {% set a = census.age_65_plus_pct %}
+          <div class="vuln-row">
+            <div class="vuln-label">Population 65+</div>
+            <div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if a > 20 else 'mid' if a > 14 else 'low' }}" style="width:{{ [a * 3.5, 100]|min }}%"></div></div>
+            <div class="vuln-val">{{ a }}%</div>
+            <span class="vuln-badge {{ 'badge-high' if a > 20 else 'badge-mid' if a > 14 else 'badge-low' }}">{{ 'High' if a > 20 else 'Moderate' if a > 14 else 'Low' }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOUSING RISK -->
+  <div class="section" id="housing">
+    <div class="sec-head">
+      <div class="sec-number">04</div>
+      <div class="sec-title">Housing Risk Factors</div>
+      <div class="sec-divider"></div>
+    </div>
+    <div class="card">
+      <div class="card-pad">
+        <div class="vuln-list">
+          {% if census.vacancy_rate is not none %}
+          {% set v = census.vacancy_rate %}
+          <div class="vuln-row">
+            <div class="vuln-label">Vacancy Rate</div>
+            <div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if v > 15 else 'mid' if v > 8 else 'low' }}" style="width:{{ [v * 4, 100]|min }}%"></div></div>
+            <div class="vuln-val">{{ v }}%</div>
+            <span class="vuln-badge {{ 'badge-high' if v > 15 else 'badge-mid' if v > 8 else 'badge-low' }}">{{ 'High' if v > 15 else 'Moderate' if v > 8 else 'Low' }}</span>
+          </div>
+          {% endif %}
+          {% if census.pre1980_pct is not none %}
+          {% set pr = census.pre1980_pct %}
+          <div class="vuln-row">
+            <div class="vuln-label">Pre-1980 Housing</div>
+            <div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if pr > 50 else 'mid' if pr > 30 else 'low' }}" style="width:{{ [pr, 100]|min }}%"></div></div>
+            <div class="vuln-val">{{ pr }}%</div>
+            <span class="vuln-badge {{ 'badge-high' if pr > 50 else 'badge-mid' if pr > 30 else 'badge-low' }}">{{ 'High' if pr > 50 else 'Moderate' if pr > 30 else 'Low' }}</span>
+          </div>
+          {% endif %}
+          {% if census.renter_pct is not none %}
+          {% set rp = census.renter_pct %}
+          <div class="vuln-row">
+            <div class="vuln-label">Renter-Occupied</div>
+            <div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if rp > 50 else 'mid' if rp > 35 else 'low' }}" style="width:{{ [rp, 100]|min }}%"></div></div>
+            <div class="vuln-val">{{ rp }}%</div>
+            <span class="vuln-badge {{ 'badge-high' if rp > 50 else 'badge-mid' if rp > 35 else 'badge-low' }}">{{ 'High' if rp > 50 else 'Moderate' if rp > 35 else 'Low' }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if nri %}
+  <!-- HAZARD RISK -->
+  <div class="section" id="hazard-risk">
+    <div class="sec-head">
+      <div class="sec-number">05</div>
+      <div class="sec-title">Natural Hazard Risk — FEMA NRI</div>
+      <div class="sec-divider"></div>
+    </div>
+    <div class="metric-grid" style="margin-bottom:16px;">
+      {% if nri.risk_score is not none %}<div class="mc"><div class="mc-val" style="color:{{ 'var(--red)' if nri.risk_rating in ('Very High','Relatively High') else 'var(--gold)' if nri.risk_rating == 'Relatively Moderate' else 'var(--green)' }}">{{ nri.risk_score }}</div><div class="mc-lbl">Risk Score</div><div class="mc-sub">{{ nri.risk_rating }}</div></div>{% endif %}
+      {% if nri.eal_total is not none %}<div class="mc"><div class="mc-val" style="font-size:18px;">${{ "{:,.0f}".format(nri.eal_total / 1000000) }}M</div><div class="mc-lbl">Expected Annual Loss</div></div>{% endif %}
+      {% if nri.sovi_score is not none %}<div class="mc"><div class="mc-val">{{ nri.sovi_score }}</div><div class="mc-lbl">Soc. Vulnerability</div><div class="mc-sub">{{ nri.sovi_rating }}</div></div>{% endif %}
+      {% if nri.resl_score is not none %}<div class="mc"><div class="mc-val">{{ nri.resl_score }}</div><div class="mc-lbl">Resilience</div><div class="mc-sub">{{ nri.resl_rating }}</div></div>{% endif %}
+    </div>
+    {% if nri.hazards %}
+    {% set buckets = [('high','Very High Risk',['Very High','Relatively High']),('mid','Moderate Risk',['Relatively Moderate']),('low','Low Risk',['Relatively Low']),('vlow','Very Low / N/A',['Very Low'])] %}
+    {% for tier, tier_label, ratings in buckets %}
+      {% set items = nri.hazards | selectattr('rating','in',ratings) | list %}
+      {% if items %}
+      <div class="hazard-bucket">
+        <div class="hb-head bkt-{{ tier }}"><div class="bkt-dot"></div><div class="bkt-label">{{ tier_label }}</div><div class="bkt-count">{{ items|length }} hazard{{ 's' if items|length != 1 }}</div></div>
+        <div class="hb-body bkt-{{ tier }}">
+          {% for h in items %}
+          <div class="hazard-row"><div class="hazard-row-name">{{ h.label }}</div><div class="hazard-row-score">{{ h.score if h.score is not none else '—' }}</div>{% if h.eal %}<div class="hazard-row-eal">EAL ${{ "{:,.0f}".format(h.eal/1000) }}K</div>{% else %}<div class="hazard-row-eal"></div>{% endif %}</div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+    <div style="font-size:11px;color:var(--muted);margin-top:8px;">Scores 0–100 represent national percentile risk. Source: FEMA NRI {{ nri.version }}.</div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if disasters and disasters.recent %}
+  <!-- DISASTER HISTORY -->
+  <div class="section" id="disasters">
+    <div class="sec-head">
+      <div class="sec-number">06</div>
+      <div class="sec-title">FEMA Disaster Declaration History</div>
+      <div class="sec-divider"></div>
+    </div>
+    <div class="metric-grid" style="margin-bottom:16px;">
+      <div class="mc"><div class="mc-val gold">{{ disasters.total_10yr }}</div><div class="mc-lbl">Last 10 Years</div></div>
+      <div class="mc"><div class="mc-val">{{ disasters.total_25yr }}</div><div class="mc-lbl">Last 25 Years</div></div>
+    </div>
+    <div class="card">
+      <div class="card-pad">
+        {% for d in disasters.recent %}
+        <div class="disaster-row">
+          <span class="disaster-type">{{ d.type }}</span>
+          <span class="disaster-title">{{ d.title }}</span>
+          <span class="disaster-date">{{ d.date }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if peers and peers.peer_count %}
+  <!-- PEER COMPARISON -->
+  <div class="section" id="peers">
+    <div class="sec-head">
+      <div class="sec-number">07</div>
+      <div class="sec-title">Peer Comparison</div>
+      <div class="sec-divider"></div>
+    </div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">Compared to {{ peers.peer_count }} similar departments in {{ dept.state }} by annual incident volume (±50%)</div>
+    <div class="peer-grid">
+      <div class="peer-card">
+        <div class="peer-lbl">Annual Incidents</div>
+        <div class="peer-val">{{ "{:,}".format(peers.dept_incidents) }}</div>
+        {% if peers.incidents_vs_peers is not none %}
+        <div class="peer-vs {{ 'up' if peers.incidents_vs_peers > 0 else 'down' if peers.incidents_vs_peers < 0 else '' }}">
+          <strong>{{ '+' if peers.incidents_vs_peers > 0 else '' }}{{ peers.incidents_vs_peers }}%</strong> vs. peer avg of {{ "{:,}".format(peers.avg_incidents) }}
+        </div>
+        {% endif %}
+      </div>
+      {% if peers.avg_stations %}
+      <div class="peer-card">
+        <div class="peer-lbl">Stations</div>
+        <div class="peer-val">{{ dept.num_stations or '—' }}</div>
+        <div class="peer-vs">Peer avg: <strong>{{ peers.avg_stations }}</strong> stations</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-eyebrow">AI-Powered Reports</div>
+    <h2>Get the Full Report for {{ dept.name }}</h2>
+    <p>Upload your incident data and get a board report, grant narrative, or compliance check delivered to your inbox in minutes.</p>
+    <a href="/" class="btn-light">Generate My Report — Free →</a>
+    <div class="pills">
+      <span class="pill">Board Reports</span>
+      <span class="pill">AFG & SAFER Grants</span>
+      <span class="pill">NERIS Compliance</span>
+      <span class="pill">ISO Evidence</span>
+      <span class="pill">Staffing Justification</span>
+    </div>
+  </div>
+
+  <div class="source-note">
+    Incident data: NFIRS 2024 (FEMA/USFA). Boundaries: NERIS Public (FSRI). Demographics: ACS 2023. Disasters: FEMA OpenFEMA. Hazard risk: FEMA NRI v1.2. FDID: {{ dept.fdid }}. Last updated: March 2026.
+  </div>
+</div>
+
+<footer>
+  <span>© 2026 5AlarmData. Data: NFIRS 2024 (FEMA/USFA) · Census ACS 2023.</span>
+  <a href="/directory/{{ dept.state|lower }}" style="color:var(--red);font-weight:600;">← {{ state_name }} Departments</a>
+</footer>
+
+<script>
+(function () {
+  const city     = {{ (dept.city  or '') | tojson }};
+  const state    = {{ (dept.state or '') | tojson }};
+  const zip      = {{ (dept.zip   or '') | tojson }};
+  const deptName = {{ dept.name | tojson }};
+  const NERIS = 'https://services5.arcgis.com/lPbcyJOcoLyZmvo6/arcgis/rest/services/NERIS%20Public%20Fire%20Departments/FeatureServer';
+  const statusEl = document.getElementById('map-status-v3');
+  const map = L.map('dept-map-v3', { zoomControl: true, scrollWheelZoom: false });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd', maxZoom: 19,
+  }).addTo(map);
+  const hqIcon = L.divIcon({ html: '<div style="width:14px;height:14px;border-radius:50%;background:#C8392B;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4)"></div>', iconSize: [14,14], iconAnchor: [7,7], className: '' });
+  const stationIcon = L.divIcon({ html: '<div style="width:11px;height:11px;background:#fff;border:2px solid #333;border-radius:3px;box-shadow:0 1px 5px rgba(0,0,0,.35)"></div>', iconSize: [11,11], iconAnchor: [5,5], className: '' });
+  function nameKeywords(name) { return name.replace(/\b(fire|department|dept|district|volunteer|vfd|county|city|township|municipal|authority|protection|service|co\.?|no\.?\s*\d+)\b/gi,' ').trim().split(/\s+/).filter(w=>w.length>2).slice(0,4); }
+  function esc(s) { return s.replace(/'/g,"''"); }
+  function geocodeFallback() {
+    const q=[zip,city,state,'USA'].filter(Boolean).join(', ');
+    fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(q)).then(r=>r.json()).then(results=>{
+      if(!results.length){map.setView([38,-97],4);statusEl.textContent='Location not found';return;}
+      const lat=parseFloat(results[0].lat),lon=parseFloat(results[0].lon);
+      map.setView([lat,lon],12);
+      L.marker([lat,lon],{icon:hqIcon}).addTo(map).bindPopup('<strong>'+deptName+'</strong>');
+      L.circle([lat,lon],{radius:8047,color:'#C8392B',weight:1.5,dashArray:'5 5',fillColor:'#C8392B',fillOpacity:0.07}).addTo(map);
+      statusEl.textContent='Approximate 5-mile radius';
+    }).catch(()=>{map.setView([38,-97],4);statusEl.textContent='Map unavailable';});
+  }
+  function loadStations(nerisId) {
+    const p=new URLSearchParams({where:`department_neris_id='${esc(nerisId)}'`,outFields:'station_name,address_line_1,city,unit_count',f:'geojson'});
+    fetch(`${NERIS}/1/query?${p}`).then(r=>r.json()).then(gj=>{
+      if(!gj.features||!gj.features.length)return;
+      L.geoJSON(gj,{pointToLayer:(feat,latlng)=>L.marker(latlng,{icon:stationIcon}),onEachFeature:(feat,layer)=>{
+        const a=feat.properties;const lines=[`<strong>${a.station_name||'Fire Station'}</strong>`];
+        if(a.address_line_1)lines.push(a.address_line_1+(a.city?', '+a.city:''));
+        if(a.unit_count)lines.push(a.unit_count+' unit'+(a.unit_count!==1?'s':''));
+        layer.bindPopup(lines.join('<br>'));
+      }}).addTo(map);
+    }).catch(()=>{});
+  }
+  const keywords=nameKeywords(deptName);
+  if(!keywords.length){geocodeFallback();}else{
+    const nameWhere=keywords.map(w=>`name LIKE '%${esc(w)}%'`).join(' AND ');
+    const deptParams=new URLSearchParams({where:`state='${esc(state)}' AND (${nameWhere})`,outFields:'neris_id,name,city,state',returnGeometry:false,resultRecordCount:10,f:'json'});
+    statusEl.textContent='Querying NERIS…';
+    fetch(`${NERIS}/0/query?${deptParams}`).then(r=>r.json()).then(data=>{
+      const feats=(data.features||[]);
+      if(!feats.length){geocodeFallback();return;}
+      const cityLower=(city||'').toLowerCase();
+      feats.sort((a,b)=>{
+        const aName=(a.attributes.name||'').toLowerCase();const bName=(b.attributes.name||'').toLowerCase();
+        const aScore=keywords.filter(w=>aName.includes(w.toLowerCase())).length+(aName.includes(cityLower)?2:0);
+        const bScore=keywords.filter(w=>bName.includes(w.toLowerCase())).length+(bName.includes(cityLower)?2:0);
+        return bScore-aScore;
+      });
+      const best=feats[0].attributes;const nerisId=best.neris_id;
+      fetch(`${NERIS}/2/query?${new URLSearchParams({where:`neris_id='${esc(nerisId)}'`,outFields:'neris_id,name',f:'geojson'})}`).then(r=>r.json()).then(gj=>{
+        if(!gj.features||!gj.features.length){geocodeFallback();return;}
+        const bl=L.geoJSON(gj,{style:{color:'#F87171',weight:2.5,opacity:.9,fillColor:'#C8392B',fillOpacity:.12}}).bindPopup('<strong>'+(best.name||deptName)+'</strong><br>Jurisdiction boundary').addTo(map);
+        map.fitBounds(bl.getBounds(),{padding:[48,48]});
+        const center=bl.getBounds().getCenter();
+        L.marker(center,{icon:hqIcon}).addTo(map).bindPopup('<strong>'+deptName+'</strong><br>'+[city,state].filter(Boolean).join(', '));
+        loadStations(nerisId);
+        statusEl.textContent='Boundary and station data from NERIS Public · Updated quarterly';
+      }).catch(()=>geocodeFallback());
+    }).catch(()=>geocodeFallback());
+  }
+})();
+</script>
+
+{% if peak_month_name %}
+<script>
+new Chart(document.getElementById('seasonChart_v3'),{type:'bar',data:{labels:['Q1 (Jan–Mar)','Q2 (Apr–Jun)','Q3 (Jul–Sep)','Q4 (Oct–Dec)'],datasets:[{data:[{{ quarters.Q1 }},{{ quarters.Q2 }},{{ quarters.Q3 }},{{ quarters.Q4 }}],backgroundColor:(()=>{const vals=[{{ quarters.Q1 }},{{ quarters.Q2 }},{{ quarters.Q3 }},{{ quarters.Q4 }}];const max=Math.max(...vals);return vals.map(v=>v===max?'#C8392B':'rgba(200,57,43,.35)');})(),borderRadius:5,borderWidth:0}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.raw} incidents`}}},scales:{x:{ticks:{color:'#6B7A85',font:{size:11,family:'Geist'}},grid:{display:false}},y:{ticks:{color:'#6B7A85',font:{size:11,family:'Geist'}},grid:{color:'rgba(0,0,0,.04)'},beginAtZero:true}}}});
+</script>
+{% endif %}
+
+{% if incident_types %}
+<script>
+new Chart(document.getElementById('donutChart_v3'),{type:'doughnut',data:{labels:{{ incident_types | map(attribute='label') | list | tojson }},datasets:[{data:{{ incident_types | map(attribute='count') | list | tojson }},backgroundColor:(()=>{const colors={'structure_fire':'#C8392B','vehicle_fire':'#D4620A','wildland_fire':'#B8900A','hazmat':'#7B3FA8','rescue_ems':'#1565C0','false_alarm':'#6B7A85','other_fire':'#C8396B','other':'#8A9BA8'};const keys={{ incident_types | map(attribute='key') | list | tojson }};return keys.map(k=>colors[k]||'#8A9BA8');})(),borderWidth:2,borderColor:'#F7F4EF',hoverOffset:6}]},options:{cutout:'68%',responsive:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.raw} (${Math.round(ctx.raw/ctx.dataset.data.reduce((a,b)=>a+b,0)*100)}%)`}}}}});
+</script>
+{% endif %}
+
+{% if monthly_labels %}
+<script>
+new Chart(document.getElementById('monthlyChart_v3'),{type:'bar',data:{labels:{{ monthly_labels | tojson }},datasets:[{label:'Incidents',data:{{ monthly_values | tojson }},backgroundColor:'rgba(200,57,43,.75)',borderColor:'#C8392B',borderWidth:1,borderRadius:5}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#6B7A85',font:{size:11,family:'Geist'}},grid:{color:'rgba(0,0,0,.04)'}},y:{ticks:{color:'#6B7A85',font:{size:11,family:'Geist'}},grid:{color:'rgba(0,0,0,.04)'},beginAtZero:true}}}});
+</script>
+{% endif %}
+
+</body>
+</html>

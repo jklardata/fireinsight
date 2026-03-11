@@ -1010,7 +1010,11 @@ async def directory_dept(request: Request, state_code: str, fdid: str):
     peak_month_count = monthly.get(peak_month_key) if peak_month_key else None
     peak_month_name = month_names.get(peak_month_key[5:7] if peak_month_key and len(peak_month_key) >= 7 else "", "") if peak_month_key else None
 
-    return templates.TemplateResponse("directory_dept.html", {
+    layout = request.query_params.get("v", "")
+    template_map = {"1":"directory_dept_v1.html","2":"directory_dept_v2.html","3":"directory_dept_v3.html","4":"directory_dept_v4.html","5":"directory_dept_v5.html"}
+    template_name = template_map.get(layout, "directory_dept.html")
+
+    return templates.TemplateResponse(template_name, {
         "request": request,
         "dept": dept,
         "state_name": STATE_NAMES.get(state_code, state_code),
