@@ -106,27 +106,34 @@
     .metric-lbl { font-size: 12px; color: var(--muted); font-weight: 500; }
     .metric-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-    /* HAZARD SPOTLIGHT */
-    .hazard-spotlight { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-    .hazard-spot-card { border-radius: 16px; padding: 24px 20px; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
-    .hazard-spot-card.spot-high { background: #FFF0EF; border: 1.5px solid #F5C2BE; }
-    .hazard-spot-card.spot-mid  { background: #FFFBF0; border: 1.5px solid #F0D9A8; }
-    .hazard-spot-card.spot-low  { background: #F4FBF7; border: 1.5px solid #B8DFC8; }
-    .spot-rank { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
-    .spot-emoji { font-size: 32px; line-height: 1; }
-    .spot-name { font-size: 15px; font-weight: 700; color: var(--ink); }
-    .spot-score { font-size: 40px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
-    .spot-score.spot-high { color: var(--red); }
-    .spot-score.spot-mid  { color: var(--gold); }
-    .spot-score.spot-low  { color: var(--green); }
-    .spot-rating { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
-    .spot-rating.spot-high { color: var(--red); }
-    .spot-rating.spot-mid  { color: var(--gold); }
-    .spot-rating.spot-low  { color: var(--green); }
-    .spot-eal { font-size: 12px; color: var(--muted); margin-top: 4px; border-top: 1px solid rgba(0,0,0,.06); padding-top: 8px; }
-    .spot-eal strong { color: var(--ink2); }
-    .spot-watermark { position: absolute; right: -8px; bottom: -10px; font-size: 72px; opacity: .06; line-height: 1; pointer-events: none; }
-    @media (max-width: 700px) { .hazard-spotlight { grid-template-columns: 1fr; } }
+    /* HAZARD BUCKETS */
+    .hazard-bucket { border-radius: 16px; overflow: hidden; margin-bottom: 10px; border: 1.5px solid var(--border); }
+    .hazard-bucket-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; }
+    .hazard-bucket-header.bkt-high { background: #FFF0EF; border-bottom: 1.5px solid #F5C2BE; }
+    .hazard-bucket-header.bkt-mid  { background: #FFFBF0; border-bottom: 1.5px solid #F0D9A8; }
+    .hazard-bucket-header.bkt-low  { background: #F4FBF7; border-bottom: 1.5px solid #B8DFC8; }
+    .hazard-bucket-header.bkt-vlow { background: var(--bg2); border-bottom: 1px solid var(--border); }
+    .bkt-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .bkt-high .bkt-dot { background: var(--red); }
+    .bkt-mid  .bkt-dot { background: var(--gold); }
+    .bkt-low  .bkt-dot { background: var(--green); }
+    .bkt-vlow .bkt-dot { background: var(--muted); }
+    .bkt-label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
+    .bkt-high .bkt-label { color: var(--red); }
+    .bkt-mid  .bkt-label { color: var(--gold); }
+    .bkt-low  .bkt-label { color: var(--green); }
+    .bkt-vlow .bkt-label { color: var(--muted); }
+    .bkt-count { font-size: 12px; color: var(--muted); margin-left: auto; }
+    .hazard-bucket-body { background: var(--white); padding: 0 20px; }
+    .hazard-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--bg2); }
+    .hazard-row:last-child { border-bottom: none; }
+    .hazard-row-name { flex: 1; font-size: 14px; font-weight: 500; color: var(--ink2); }
+    .hazard-row-score { font-size: 16px; font-weight: 900; letter-spacing: -.5px; width: 44px; text-align: right; }
+    .bkt-high .hazard-row-score { color: var(--red); }
+    .bkt-mid  .hazard-row-score { color: var(--gold); }
+    .bkt-low  .hazard-row-score { color: var(--green); }
+    .bkt-vlow .hazard-row-score { color: var(--muted); }
+    .hazard-row-eal { font-size: 12px; color: var(--muted); width: 80px; text-align: right; }
 
     /* VULNERABILITY BARS */
     .vuln-list { display: flex; flex-direction: column; }
@@ -521,38 +528,38 @@
     </div>
 
     {% if nri.hazards %}
-    {% set hazard_emojis = {
-      'AVLN': '🏔️', 'CFLD': '🌊', 'CWAV': '🥶', 'DRGT': '☀️',
-      'ERQK': '🏚️', 'HAIL': '⛈️', 'HWAV': '🌡️', 'HRCN': '🌀',
-      'ISTM': '🧊', 'IFLD': '💧', 'LNDS': '⛰️', 'LTNG': '⚡',
-      'SWND': '💨', 'TRND': '🌪️', 'TSUN': '🌊', 'VLCN': '🌋',
-      'WFIR': '🔥', 'WNTW': '❄️'
-    } %}
-
-    <!-- Top 3 spotlight cards -->
-    <div class="hazard-spotlight">
-      {% for h in nri.hazards[:3] %}
-      {% set r = h.rating %}
-      {% set tier = 'high' if r in ('Very High','Relatively High') else 'mid' if r == 'Relatively Moderate' else 'low' %}
-      <div class="hazard-spot-card spot-{{ tier }}">
-        <div class="spot-rank">#{{ loop.index }} Top Risk</div>
-        <div class="spot-emoji">{{ hazard_emojis.get(h.key, '⚠️') }}</div>
-        <div class="spot-name">{{ h.label }}</div>
-        <div class="spot-score spot-{{ tier }}">{{ h.score if h.score is not none else '—' }}</div>
-        <div class="spot-rating spot-{{ tier }}">{{ r }}</div>
-        {% if h.eal %}
-        <div class="spot-eal">EAL <strong>${{ "{:,.0f}".format(h.eal / 1000000) }}M</strong>/yr</div>
-        {% endif %}
-        <div class="spot-watermark">{{ hazard_emojis.get(h.key, '⚠️') }}</div>
+    {% set buckets = [
+      ('high', 'Very High Risk',     ['Very High', 'Relatively High']),
+      ('mid',  'Moderate Risk',      ['Relatively Moderate']),
+      ('low',  'Low Risk',           ['Relatively Low']),
+      ('vlow', 'Very Low / N/A',     ['Very Low']),
+    ] %}
+    {% for tier, tier_label, ratings in buckets %}
+      {% set items = nri.hazards | selectattr('rating', 'in', ratings) | list %}
+      {% if items %}
+      <div class="hazard-bucket">
+        <div class="hazard-bucket-header bkt-{{ tier }}">
+          <div class="bkt-dot"></div>
+          <div class="bkt-label">{{ tier_label }}</div>
+          <div class="bkt-count">{{ items | length }} hazard{{ 's' if items | length != 1 }}</div>
+        </div>
+        <div class="hazard-bucket-body bkt-{{ tier }}">
+          {% for h in items %}
+          <div class="hazard-row">
+            <div class="hazard-row-name">{{ h.label }}</div>
+            <div class="hazard-row-score">{{ h.score if h.score is not none else '—' }}</div>
+            {% if h.eal %}
+            <div class="hazard-row-eal">EAL ${{ "{:,.0f}".format(h.eal / 1000) }}K</div>
+            {% else %}
+            <div class="hazard-row-eal"></div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
       </div>
-      {% endfor %}
-    </div>
-
-    <!-- Radar chart — top 8 hazards -->
-    <div class="chart-card" style="max-width: 520px; margin: 0 auto 8px;">
-      <canvas id="hazardRadar" height="300"></canvas>
-    </div>
-    <div style="font-size:12px;color:var(--muted);margin-top:4px;text-align:center;">Scores 0–100 represent national percentile risk. Source: FEMA NRI {{ nri.version }}.</div>
+      {% endif %}
+    {% endfor %}
+    <div style="font-size:12px;color:var(--muted);margin-top:8px;">Scores 0–100 represent national percentile risk. Source: FEMA NRI {{ nri.version }}.</div>
     {% endif %}
   </div>
   {% endif %}
@@ -804,58 +811,6 @@
     .catch(() => geocodeFallback());
 })();
 </script>
-
-{% if nri and nri.hazards %}
-<script>
-(function() {
-  const hazards = {{ nri.hazards[:8] | tojson }};
-  const labels  = hazards.map(h => h.label);
-  const scores  = hazards.map(h => h.score || 0);
-  const colors  = hazards.map(h => {
-    const r = h.rating;
-    if (r === 'Very High' || r === 'Relatively High') return '#C8392B';
-    if (r === 'Relatively Moderate') return '#D4820A';
-    return '#1E7E3E';
-  });
-  new Chart(document.getElementById('hazardRadar'), {
-    type: 'radar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Risk Score',
-        data: scores,
-        backgroundColor: 'rgba(200,57,43,.12)',
-        borderColor: '#C8392B',
-        borderWidth: 2,
-        pointBackgroundColor: colors,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        r: {
-          min: 0, max: 100,
-          ticks: { stepSize: 25, font: { size: 10, family: 'Geist' }, color: '#6B7A85', backdropColor: 'transparent' },
-          grid: { color: 'rgba(0,0,0,.07)' },
-          angleLines: { color: 'rgba(0,0,0,.07)' },
-          pointLabels: { font: { size: 11, family: 'Geist', weight: '600' }, color: '#2C3A42' },
-        }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` Score: ${ctx.raw}  ·  ${hazards[ctx.dataIndex].rating}`
-          }
-        }
-      }
-    }
-  });
-})();
-</script>
-{% endif %}
 
 {% if monthly_labels %}
 <script>
