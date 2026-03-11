@@ -983,14 +983,32 @@ async def directory_dept(request: Request, state_code: str, fdid: str):
     total_ff = career + volunteer
     incidents_per_ff = round(dept.get("total_incidents", 0) / total_ff, 1) if total_ff else None
 
+    # Incidents per station
+    num_stations = int(dept.get("num_stations") or 0)
+    incidents_per_station = round(dept.get("total_incidents", 0) / num_stations, 1) if num_stations else None
+
     # Incident rate per 1,000 residents (combines incident + census)
     census = dept.get("census") or {}
     population = census.get("population") or 0
     incident_rate_per_1k = round(dept.get("total_incidents", 0) / population * 1000, 1) if population else None
 
+    # Seasonal totals (Q1–Q4) from monthly volume
+    quarters = {"Q1": 0, "Q2": 0, "Q3": 0, "Q4": 0}
+    month_to_q = {"01":"Q1","02":"Q1","03":"Q1","04":"Q2","05":"Q2","06":"Q2",
+                  "07":"Q3","08":"Q3","09":"Q3","10":"Q4","11":"Q4","12":"Q4"}
+    for key, val in monthly.items():
+        mm = key[5:7] if len(key) >= 7 else key[-2:]
+        q = month_to_q.get(mm)
+        if q:
+            quarters[q] += val
+
     # Peak month
-    peak_month = max(monthly, key=monthly.get) if monthly else None
-    peak_month_count = monthly.get(peak_month) if peak_month else None
+    month_names = {"01":"January","02":"February","03":"March","04":"April","05":"May",
+                   "06":"June","07":"July","08":"August","09":"September",
+                   "10":"October","11":"November","12":"December"}
+    peak_month_key = max(monthly, key=monthly.get) if monthly else None
+    peak_month_count = monthly.get(peak_month_key) if peak_month_key else None
+    peak_month_name = month_names.get(peak_month_key[5:7] if peak_month_key and len(peak_month_key) >= 7 else "", "") if peak_month_key else None
 
     return templates.TemplateResponse("directory_dept.html", {
         "request": request,
@@ -1003,8 +1021,10 @@ async def directory_dept(request: Request, state_code: str, fdid: str):
         "non_fire_count": non_fire_count,
         "total_ff": total_ff,
         "incidents_per_ff": incidents_per_ff,
+        "incidents_per_station": incidents_per_station,
         "incident_rate_per_1k": incident_rate_per_1k,
-        "peak_month": peak_month,
+        "quarters": quarters,
+        "peak_month_name": peak_month_name,
         "peak_month_count": peak_month_count,
         "census": dept.get("census"),
         "disasters": dept.get("disasters"),

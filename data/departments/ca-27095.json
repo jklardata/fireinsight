@@ -77,6 +77,8 @@
     "peer_count": 20,
     "avg_incidents": 22,
     "avg_stations": 1.0,
+    "avg_incidents_per_ff": 1.0,
+    "avg_incidents_per_station": 21.0,
     "dept_incidents": 21,
     "dept_stations": "",
     "incidents_vs_peers": -5

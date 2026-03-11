@@ -84,6 +84,8 @@
     "peer_count": 20,
     "avg_incidents": 253,
     "avg_stations": 14.0,
+    "avg_incidents_per_ff": null,
+    "avg_incidents_per_station": 25.8,
     "dept_incidents": 299,
     "dept_stations": "",
     "incidents_vs_peers": 18
