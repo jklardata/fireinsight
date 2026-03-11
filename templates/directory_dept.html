@@ -106,6 +106,28 @@
     .metric-lbl { font-size: 12px; color: var(--muted); font-weight: 500; }
     .metric-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
+    /* HAZARD TILES */
+    .hazard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .hazard-tile { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px 14px; display: flex; flex-direction: column; gap: 6px; transition: transform .15s; }
+    .hazard-tile:hover { transform: translateY(-2px); }
+    .hazard-tile.tile-high { border-color: #F5C2BE; background: #FFF8F7; }
+    .hazard-tile.tile-mid  { border-color: #F0D9A8; background: #FFFBF2; }
+    .hazard-tile.tile-low  { border-color: #B8DFC8; background: #F4FBF7; }
+    .hazard-tile.tile-vlow { border-color: var(--border); background: var(--white); }
+    .hazard-emoji { font-size: 22px; line-height: 1; }
+    .hazard-name { font-size: 12px; font-weight: 600; color: var(--ink2); line-height: 1.2; }
+    .hazard-score { font-size: 22px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
+    .hazard-score.score-high { color: var(--red); }
+    .hazard-score.score-mid  { color: var(--gold); }
+    .hazard-score.score-low  { color: var(--green); }
+    .hazard-score.score-vlow { color: var(--muted); }
+    .hazard-rating { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+    .hazard-rating.score-high { color: var(--red); }
+    .hazard-rating.score-mid  { color: var(--gold); }
+    .hazard-rating.score-low  { color: var(--green); }
+    .hazard-rating.score-vlow { color: var(--muted); }
+    .hazard-eal { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
     /* VULNERABILITY BARS */
     .vuln-list { display: flex; flex-direction: column; }
     .vuln-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
@@ -498,27 +520,31 @@
       {% endif %}
     </div>
 
-    <!-- Per-hazard breakdown -->
+    <!-- Per-hazard tile grid -->
     {% if nri.hazards %}
-    <div class="card">
-      <div class="card-body">
-        <div class="vuln-list">
-          {% for h in nri.hazards %}
-          {% set r = h.rating %}
-          <div class="vuln-row">
-            <div class="vuln-label">{{ h.label }}</div>
-            <div class="vuln-bar-bg">
-              <div class="vuln-bar-fill {{ 'high' if r in ('Very High','Relatively High') else 'mid' if r == 'Relatively Moderate' else 'low' }}"
-                   style="width: {{ h.score or 0 }}%"></div>
-            </div>
-            <div class="vuln-val">{{ h.score if h.score is not none else '—' }}</div>
-            <span class="vuln-badge {{ 'badge-high' if r in ('Very High','Relatively High') else 'badge-mid' if r == 'Relatively Moderate' else 'badge-low' }}">{{ r }}</span>
-          </div>
-          {% endfor %}
-        </div>
+    {% set hazard_emojis = {
+      'AVLN': '🏔️', 'CFLD': '🌊', 'CWAV': '🥶', 'DRGT': '☀️',
+      'ERQK': '🏚️', 'HAIL': '⛈️', 'HWAV': '🌡️', 'HRCN': '🌀',
+      'ISTM': '🧊', 'IFLD': '💧', 'LNDS': '⛰️', 'LTNG': '⚡',
+      'SWND': '💨', 'TRND': '🌪️', 'TSUN': '🌊', 'VLCN': '🌋',
+      'WFIR': '🔥', 'WNTW': '❄️'
+    } %}
+    <div class="hazard-grid">
+      {% for h in nri.hazards %}
+      {% set r = h.rating %}
+      {% set tier = 'high' if r in ('Very High','Relatively High') else 'mid' if r == 'Relatively Moderate' else 'low' if r == 'Relatively Low' else 'vlow' %}
+      <div class="hazard-tile tile-{{ tier }}">
+        <div class="hazard-emoji">{{ hazard_emojis.get(h.key, '⚠️') }}</div>
+        <div class="hazard-name">{{ h.label }}</div>
+        <div class="hazard-score score-{{ tier }}">{{ h.score if h.score is not none else '—' }}</div>
+        <div class="hazard-rating score-{{ tier }}">{{ r }}</div>
+        {% if h.eal %}
+        <div class="hazard-eal">EAL ${{ "{:,.0f}".format(h.eal / 1000) }}K</div>
+        {% endif %}
       </div>
+      {% endfor %}
     </div>
-    <div style="font-size:12px;color:var(--muted);margin-top:8px;">Scores 0–100 represent national percentile risk. Source: FEMA NRI {{ nri.version }}.</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:12px;">Scores 0–100 represent national percentile risk. Source: FEMA NRI {{ nri.version }}.</div>
     {% endif %}
   </div>
   {% endif %}
