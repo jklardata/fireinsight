@@ -106,27 +106,27 @@
     .metric-lbl { font-size: 12px; color: var(--muted); font-weight: 500; }
     .metric-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-    /* HAZARD TILES */
-    .hazard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-    .hazard-tile { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px 14px; display: flex; flex-direction: column; gap: 6px; transition: transform .15s; }
-    .hazard-tile:hover { transform: translateY(-2px); }
-    .hazard-tile.tile-high { border-color: #F5C2BE; background: #FFF8F7; }
-    .hazard-tile.tile-mid  { border-color: #F0D9A8; background: #FFFBF2; }
-    .hazard-tile.tile-low  { border-color: #B8DFC8; background: #F4FBF7; }
-    .hazard-tile.tile-vlow { border-color: var(--border); background: var(--white); }
-    .hazard-emoji { font-size: 22px; line-height: 1; }
-    .hazard-name { font-size: 12px; font-weight: 600; color: var(--ink2); line-height: 1.2; }
-    .hazard-score { font-size: 22px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
-    .hazard-score.score-high { color: var(--red); }
-    .hazard-score.score-mid  { color: var(--gold); }
-    .hazard-score.score-low  { color: var(--green); }
-    .hazard-score.score-vlow { color: var(--muted); }
-    .hazard-rating { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
-    .hazard-rating.score-high { color: var(--red); }
-    .hazard-rating.score-mid  { color: var(--gold); }
-    .hazard-rating.score-low  { color: var(--green); }
-    .hazard-rating.score-vlow { color: var(--muted); }
-    .hazard-eal { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    /* HAZARD SPOTLIGHT */
+    .hazard-spotlight { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .hazard-spot-card { border-radius: 16px; padding: 24px 20px; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
+    .hazard-spot-card.spot-high { background: #FFF0EF; border: 1.5px solid #F5C2BE; }
+    .hazard-spot-card.spot-mid  { background: #FFFBF0; border: 1.5px solid #F0D9A8; }
+    .hazard-spot-card.spot-low  { background: #F4FBF7; border: 1.5px solid #B8DFC8; }
+    .spot-rank { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .spot-emoji { font-size: 32px; line-height: 1; }
+    .spot-name { font-size: 15px; font-weight: 700; color: var(--ink); }
+    .spot-score { font-size: 40px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
+    .spot-score.spot-high { color: var(--red); }
+    .spot-score.spot-mid  { color: var(--gold); }
+    .spot-score.spot-low  { color: var(--green); }
+    .spot-rating { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+    .spot-rating.spot-high { color: var(--red); }
+    .spot-rating.spot-mid  { color: var(--gold); }
+    .spot-rating.spot-low  { color: var(--green); }
+    .spot-eal { font-size: 12px; color: var(--muted); margin-top: 4px; border-top: 1px solid rgba(0,0,0,.06); padding-top: 8px; }
+    .spot-eal strong { color: var(--ink2); }
+    .spot-watermark { position: absolute; right: -8px; bottom: -10px; font-size: 72px; opacity: .06; line-height: 1; pointer-events: none; }
+    @media (max-width: 700px) { .hazard-spotlight { grid-template-columns: 1fr; } }
 
     /* VULNERABILITY BARS */
     .vuln-list { display: flex; flex-direction: column; }
@@ -520,7 +520,6 @@
       {% endif %}
     </div>
 
-    <!-- Per-hazard tile grid -->
     {% if nri.hazards %}
     {% set hazard_emojis = {
       'AVLN': '🏔️', 'CFLD': '🌊', 'CWAV': '🥶', 'DRGT': '☀️',
@@ -529,22 +528,31 @@
       'SWND': '💨', 'TRND': '🌪️', 'TSUN': '🌊', 'VLCN': '🌋',
       'WFIR': '🔥', 'WNTW': '❄️'
     } %}
-    <div class="hazard-grid">
-      {% for h in nri.hazards %}
+
+    <!-- Top 3 spotlight cards -->
+    <div class="hazard-spotlight">
+      {% for h in nri.hazards[:3] %}
       {% set r = h.rating %}
-      {% set tier = 'high' if r in ('Very High','Relatively High') else 'mid' if r == 'Relatively Moderate' else 'low' if r == 'Relatively Low' else 'vlow' %}
-      <div class="hazard-tile tile-{{ tier }}">
-        <div class="hazard-emoji">{{ hazard_emojis.get(h.key, '⚠️') }}</div>
-        <div class="hazard-name">{{ h.label }}</div>
-        <div class="hazard-score score-{{ tier }}">{{ h.score if h.score is not none else '—' }}</div>
-        <div class="hazard-rating score-{{ tier }}">{{ r }}</div>
+      {% set tier = 'high' if r in ('Very High','Relatively High') else 'mid' if r == 'Relatively Moderate' else 'low' %}
+      <div class="hazard-spot-card spot-{{ tier }}">
+        <div class="spot-rank">#{{ loop.index }} Top Risk</div>
+        <div class="spot-emoji">{{ hazard_emojis.get(h.key, '⚠️') }}</div>
+        <div class="spot-name">{{ h.label }}</div>
+        <div class="spot-score spot-{{ tier }}">{{ h.score if h.score is not none else '—' }}</div>
+        <div class="spot-rating spot-{{ tier }}">{{ r }}</div>
         {% if h.eal %}
-        <div class="hazard-eal">EAL ${{ "{:,.0f}".format(h.eal / 1000) }}K</div>
+        <div class="spot-eal">EAL <strong>${{ "{:,.0f}".format(h.eal / 1000000) }}M</strong>/yr</div>
         {% endif %}
+        <div class="spot-watermark">{{ hazard_emojis.get(h.key, '⚠️') }}</div>
       </div>
       {% endfor %}
     </div>
-    <div style="font-size:12px;color:var(--muted);margin-top:12px;">Scores 0–100 represent national percentile risk. Source: FEMA NRI {{ nri.version }}.</div>
+
+    <!-- Radar chart — top 8 hazards -->
+    <div class="chart-card" style="max-width: 520px; margin: 0 auto 8px;">
+      <canvas id="hazardRadar" height="300"></canvas>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px;text-align:center;">Scores 0–100 represent national percentile risk. Source: FEMA NRI {{ nri.version }}.</div>
     {% endif %}
   </div>
   {% endif %}
@@ -796,6 +804,58 @@
     .catch(() => geocodeFallback());
 })();
 </script>
+
+{% if nri and nri.hazards %}
+<script>
+(function() {
+  const hazards = {{ nri.hazards[:8] | tojson }};
+  const labels  = hazards.map(h => h.label);
+  const scores  = hazards.map(h => h.score || 0);
+  const colors  = hazards.map(h => {
+    const r = h.rating;
+    if (r === 'Very High' || r === 'Relatively High') return '#C8392B';
+    if (r === 'Relatively Moderate') return '#D4820A';
+    return '#1E7E3E';
+  });
+  new Chart(document.getElementById('hazardRadar'), {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Risk Score',
+        data: scores,
+        backgroundColor: 'rgba(200,57,43,.12)',
+        borderColor: '#C8392B',
+        borderWidth: 2,
+        pointBackgroundColor: colors,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        r: {
+          min: 0, max: 100,
+          ticks: { stepSize: 25, font: { size: 10, family: 'Geist' }, color: '#6B7A85', backdropColor: 'transparent' },
+          grid: { color: 'rgba(0,0,0,.07)' },
+          angleLines: { color: 'rgba(0,0,0,.07)' },
+          pointLabels: { font: { size: 11, family: 'Geist', weight: '600' }, color: '#2C3A42' },
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` Score: ${ctx.raw}  ·  ${hazards[ctx.dataIndex].rating}`
+          }
+        }
+      }
+    }
+  });
+})();
+</script>
+{% endif %}
 
 {% if monthly_labels %}
 <script>
