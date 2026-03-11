@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Your Report — 5AlarmData</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #F7F4EF;
+      --bg2:    #EDE9E2;
+      --ink:    #0F1A20;
+      --ink2:   #2C3A42;
+      --muted:  #6B7A85;
+      --red:    #C8392B;
+      --red-dk: #A82E22;
+      --red-lt: #FDE8E6;
+      --border: #D8D2C8;
+      --white:  #FFFFFF;
+      --green:  #16A34A;
+    }
+
+    body {
+      font-family: 'Geist', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 64px;
+      background: rgba(247,244,239,0.96); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .logo-link {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 800; color: var(--ink); letter-spacing: -.3px;
+    }
+    .logo-mark {
+      width: 34px; height: 34px; background: var(--red); border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { width: 17px; height: 17px; fill: #fff; }
+    .header-contact {
+      font-size: 14px; color: var(--muted);
+    }
+    .header-contact a { color: var(--ink2); font-weight: 600; }
+    .header-contact a:hover { color: var(--red); }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: var(--white);
+    }
+    .progress-steps {
+      max-width: 560px; margin: 0 auto;
+      display: flex; align-items: center;
+    }
+    .progress-step { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .progress-step:last-child { flex: 0; }
+    .step-dot {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800;
+      border: 2px solid var(--border); background: var(--bg2); color: var(--muted);
+      transition: all .25s;
+    }
+    .step-dot.active { border-color: var(--red); background: var(--red); color: #fff; }
+    .step-dot.done { border-color: var(--green); background: var(--green); color: #fff; }
+    .step-dot.done::after { content: '✓'; font-size: 14px; }
+    .step-dot.done span { display: none; }
+    .step-label { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; transition: color .25s; }
+    .step-label.active { color: var(--ink); }
+    .step-connector { flex: 1; height: 1px; background: var(--border); margin: 0 10px; transition: background .25s; }
+    .step-connector.done { background: rgba(22,163,74,.4); }
+
+    /* ── MAIN ── */
+    .main {
+      max-width: 1000px; margin: 0 auto;
+      padding: 64px 48px 100px;
+    }
+
+    /* ── STEP PANELS ── */
+    .step-panel { display: none; animation: fadeIn .2s ease; }
+    .step-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .step-heading {
+      font-family: 'Lora', Georgia, serif;
+      font-size: clamp(28px, 4vw, 42px); font-weight: 600;
+      line-height: 1.12; color: var(--ink);
+      margin-bottom: 12px; letter-spacing: -.3px;
+    }
+    .step-sub {
+      font-size: 17px; line-height: 1.65; color: var(--muted); margin-bottom: 48px;
+      max-width: 560px;
+    }
+
+    /* ── CHOICE CARDS ── */
+    .choice-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 40px;
+    }
+    .choice-card {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 24px 20px; background: var(--white);
+      border: 1.5px solid var(--border); border-radius: 16px;
+      cursor: pointer; transition: border-color .15s, background .15s, box-shadow .15s;
+      text-align: left;
+    }
+    .choice-card:hover { border-color: var(--red); box-shadow: 0 4px 16px rgba(200,57,43,.08); }
+    .choice-card.selected { border-color: var(--red); background: var(--red-lt); box-shadow: 0 4px 20px rgba(200,57,43,.12); }
+    .choice-radio { display: none; }
+    .choice-icon {
+      width: 48px; height: 48px; flex-shrink: 0;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; transition: background .15s;
+    }
+    .choice-card.selected .choice-icon { background: rgba(200,57,43,.1); border-color: rgba(200,57,43,.2); }
+    .choice-text h4 { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+    .choice-text p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+    /* ── FORM FIELDS ── */
+    .field { margin-bottom: 24px; }
+    .field label {
+      display: block; font-size: 14px; font-weight: 700;
+      color: var(--ink2); margin-bottom: 8px;
+    }
+    .field input, .field select {
+      width: 100%; padding: 14px 18px; font-size: 16px; font-family: inherit;
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 12px; color: var(--ink); outline: none; transition: border-color .15s;
+    }
+    .field input::placeholder { color: var(--muted); }
+    .field input:focus, .field select:focus { border-color: var(--red); }
+    .field select option { background: var(--white); color: var(--ink); }
+    .field-note { font-size: 13px; color: var(--muted); margin-top: 7px; }
+
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: 16px;
+      padding: 56px 40px; text-align: center; cursor: pointer;
+      transition: border-color .2s, background .2s;
+      background: var(--white); margin-bottom: 16px;
+    }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--red); background: var(--red-lt); }
+    .upload-zone.has-file { border-color: var(--green); background: rgba(22,163,74,.04); border-style: solid; }
+    .upload-icon { font-size: 44px; margin-bottom: 16px; }
+    .upload-zone h3 { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+    .upload-zone p { font-size: 15px; color: var(--muted); margin-bottom: 20px; }
+    .upload-browse {
+      display: inline-block; padding: 10px 24px;
+      background: var(--bg2); border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 14px; font-weight: 700; color: var(--ink2);
+      cursor: pointer; transition: background .15s;
+    }
+    .upload-browse:hover { background: var(--border); color: var(--ink); }
+    .upload-zone.has-file .upload-icon { display: none; }
+    .file-chosen { display: none; font-size: 16px; font-weight: 700; color: var(--green); margin-bottom: 6px; }
+    .upload-zone.has-file .file-chosen { display: block; }
+    .upload-zone.has-file h3, .upload-zone.has-file p, .upload-zone.has-file .upload-browse { display: none; }
+
+    .upload-skip { font-size: 14px; color: var(--muted); text-align: center; margin-top: 8px; }
+    .upload-skip a { color: var(--ink2); text-decoration: underline; cursor: pointer; }
+    .upload-skip a:hover { color: var(--red); }
+
+    /* ── NAVIGATION ── */
+    .step-nav { display: flex; align-items: center; gap: 14px; margin-top: 48px; }
+    .btn-next {
+      flex: 1; padding: 17px; font-size: 17px; font-weight: 800; font-family: inherit;
+      background: var(--red); color: #fff; border: none; border-radius: 14px;
+      cursor: pointer; transition: background .15s;
+    }
+    .btn-next:hover { background: var(--red-dk); }
+    .btn-next:disabled { opacity: .35; cursor: not-allowed; }
+    .btn-back {
+      padding: 17px 24px; font-size: 15px; font-weight: 600; font-family: inherit;
+      background: transparent; color: var(--muted); border: 1.5px solid var(--border);
+      border-radius: 14px; cursor: pointer; transition: all .15s;
+    }
+    .btn-back:hover { color: var(--ink); border-color: var(--ink2); }
+
+    /* ── SUCCESS ── */
+    #screen-success { display: none; text-align: center; padding: 60px 0; }
+    .success-icon {
+      width: 88px; height: 88px; margin: 0 auto 32px;
+      background: rgba(22,163,74,.1); border: 2px solid rgba(22,163,74,.25);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+    .success-icon svg { width: 44px; height: 44px; }
+    #screen-success h2 {
+      font-family: 'Lora', Georgia, serif;
+      font-size: clamp(30px, 4vw, 46px); font-weight: 600;
+      margin-bottom: 16px; letter-spacing: -.3px;
+    }
+    #screen-success p { font-size: 18px; color: var(--muted); line-height: 1.65; max-width: 500px; margin: 0 auto 36px; }
+    .success-note { font-size: 14px; color: var(--muted); margin-top: 24px; }
+    .success-note a { color: var(--ink2); }
+
+    /* ── SUCCESS CTA CARD ── */
+    .success-cta {
+      max-width: 480px; margin: 40px auto 0;
+      background: var(--ink); border-radius: 20px;
+      padding: 36px 32px; text-align: left;
+      position: relative; overflow: hidden; color: #fff;
+    }
+    .success-cta::before {
+      content: 'FREE';
+      position: absolute; right: -20px; top: 50%; transform: translateY(-50%);
+      font-size: 120px; font-weight: 900;
+      color: rgba(255,255,255,0.04); line-height: 1;
+      letter-spacing: -4px; pointer-events: none;
+    }
+    .success-cta-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #F87171; margin-bottom: 12px; position: relative; z-index: 1; }
+    .success-cta h3 { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px; letter-spacing: -.3px; position: relative; z-index: 1; }
+    .success-cta > p { font-size: 15px; color: rgba(255,255,255,.65); line-height: 1.65; margin-bottom: 24px; position: relative; z-index: 1; }
+    .success-cta-checks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; position: relative; z-index: 1; }
+    .success-cta-checks div { display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(255,255,255,.8); }
+    .success-cta-checks span.chk { color: #F87171; font-size: 16px; }
+    .success-cta a.btn-signup {
+      display: block; width: 100%; padding: 15px; text-align: center;
+      background: #fff; color: var(--ink); font-size: 16px; font-weight: 800;
+      border-radius: 12px; text-decoration: none; letter-spacing: -.2px;
+      transition: background .15s; position: relative; z-index: 1;
+    }
+    .success-cta a.btn-signup:hover { background: #EDE9E2; }
+    .success-cta-fine { font-size: 12px; color: rgba(255,255,255,.35); text-align: center; margin-top: 10px; position: relative; z-index: 1; }
+
+    @media (max-width: 900px) {
+      .choice-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .header { padding: 0 20px; }
+      .progress-wrap { padding: 16px 20px; }
+      .step-label { display: none; }
+      .main { padding: 40px 20px 80px; }
+      .choice-grid { grid-template-columns: 1fr; }
+      .step-nav { flex-direction: column; }
+      .btn-next { width: 100%; }
+      .btn-back { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <a href="/" class="logo-link">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
+    </div>
+    5AlarmData
+  </a>
+  <div class="header-contact">
+    Questions? <a href="mailto:info@5alarmdata.com">info@5alarmdata.com</a>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-steps">
+    <div class="progress-step">
+      <div class="step-dot active" id="dot-1"><span>1</span></div>
+      <div class="step-label active" id="label-1">What do you need?</div>
+    </div>
+    <div class="step-connector" id="conn-1"></div>
+    <div class="progress-step">
+      <div class="step-dot" id="dot-2"><span>2</span></div>
+      <div class="step-label" id="label-2">Your department</div>
+    </div>
+    <div class="step-connector" id="conn-2"></div>
+    <div class="progress-step">
+      <div class="step-dot" id="dot-3"><span>3</span></div>
+      <div class="step-label" id="label-3">Upload data</div>
+    </div>
+    <div class="step-connector" id="conn-3"></div>
+    <div class="progress-step">
+      <div class="step-dot" id="dot-4"><span>4</span></div>
+      <div class="step-label" id="label-4">Where to send it</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- STEP 1 -->
+  <div class="step-panel active" id="step-1">
+    <h1 class="step-heading">What do you need today?</h1>
+    <p class="step-sub">Pick the one that's most useful right now. You can always come back for the others.</p>
+    <div class="choice-grid">
+      <label class="choice-card" onclick="selectChoice(this, 'board_report')">
+        <input type="radio" class="choice-radio" name="report_type" value="board_report" />
+        <div class="choice-icon">📋</div>
+        <div class="choice-text">
+          <h4>Monthly Board Report</h4>
+          <p>A complete narrative for your board meeting — ready to hand out or present.</p>
+        </div>
+      </label>
+      <label class="choice-card" onclick="selectChoice(this, 'grant')">
+        <input type="radio" class="choice-radio" name="report_type" value="grant" />
+        <div class="choice-icon">💰</div>
+        <div class="choice-text">
+          <h4>Grant Application</h4>
+          <p>AFG or SAFER narrative written from your real call data.</p>
+        </div>
+      </label>
+      <label class="choice-card" onclick="selectChoice(this, 'iso')">
+        <input type="radio" class="choice-radio" name="report_type" value="iso" />
+        <div class="choice-icon">🏠</div>
+        <div class="choice-text">
+          <h4>ISO Rating Evidence Pack</h4>
+          <p>Your ISO performance number and a narrative ready for your PPC review.</p>
+        </div>
+      </label>
+      <label class="choice-card" onclick="selectChoice(this, 'compliance')">
+        <input type="radio" class="choice-radio" name="report_type" value="compliance" />
+        <div class="choice-icon">✅</div>
+        <div class="choice-text">
+          <h4>NERIS Compliance Check</h4>
+          <p>Find out exactly which NERIS fields you're missing — in plain English.</p>
+        </div>
+      </label>
+      <label class="choice-card" onclick="selectChoice(this, 'staffing')">
+        <input type="radio" class="choice-radio" name="report_type" value="staffing" />
+        <div class="choice-icon">👥</div>
+        <div class="choice-text">
+          <h4>Staffing Justification</h4>
+          <p>Hard numbers on how simultaneous calls affect response times — for the budget meeting.</p>
+        </div>
+      </label>
+      <label class="choice-card" onclick="selectChoice(this, 'trends')">
+        <input type="radio" class="choice-radio" name="report_type" value="trends" />
+        <div class="choice-icon">📈</div>
+        <div class="choice-text">
+          <h4>Incident Trend Summary</h4>
+          <p>What's driving your call volume and where response times are getting worse.</p>
+        </div>
+      </label>
+    </div>
+    <div class="step-nav">
+      <button class="btn-next" id="next-1" onclick="goTo(2)" disabled>Next: Your Department →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step-panel" id="step-2">
+    <h1 class="step-heading">Tell us about your department.</h1>
+    <p class="step-sub">This goes right into your report — no need to fill it in yourself later.</p>
+    <div class="field">
+      <label for="dept_name">Department Name</label>
+      <input type="text" id="dept_name" placeholder="Springfield Fire Department" />
+    </div>
+    <div class="field">
+      <label for="dept_state">State</label>
+      <select id="dept_state">
+        <option value="">Select your state...</option>
+        <option>Alabama</option><option>Alaska</option><option>Arizona</option>
+        <option>Arkansas</option><option>California</option><option>Colorado</option>
+        <option>Connecticut</option><option>Delaware</option><option>Florida</option>
+        <option>Georgia</option><option>Hawaii</option><option>Idaho</option>
+        <option>Illinois</option><option>Indiana</option><option>Iowa</option>
+        <option>Kansas</option><option>Kentucky</option><option>Louisiana</option>
+        <option>Maine</option><option>Maryland</option><option>Massachusetts</option>
+        <option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
+        <option>Missouri</option><option>Montana</option><option>Nebraska</option>
+        <option>Nevada</option><option>New Hampshire</option><option>New Jersey</option>
+        <option>New Mexico</option><option>New York</option><option>North Carolina</option>
+        <option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
+        <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option>
+        <option>South Carolina</option><option>South Dakota</option><option>Tennessee</option>
+        <option>Texas</option><option>Utah</option><option>Vermont</option>
+        <option>Virginia</option><option>Washington</option><option>West Virginia</option>
+        <option>Wisconsin</option><option>Wyoming</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="chief_name">Your Name <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+      <input type="text" id="chief_name" placeholder="Chief Robert Henson" />
+      <div class="field-note">We'll put your name on the report if you'd like.</div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goTo(1)">← Back</button>
+      <button class="btn-next" onclick="goTo(3)">Next: Upload Your Data →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step-panel" id="step-3">
+    <h1 class="step-heading">Upload your incident data.</h1>
+    <p class="step-sub">Export from whatever system you use — NERIS, NFIRS, ESO, FIREHOUSE, or ImageTrend. Drop it here. No special format needed.</p>
+    <div class="upload-zone" id="upload-zone"
+         onclick="document.getElementById('file-input').click()"
+         ondragover="handleDragOver(event)"
+         ondrop="handleDrop(event)"
+         ondragleave="handleDragLeave(event)">
+      <div class="upload-icon">📂</div>
+      <div class="file-chosen" id="file-chosen-name">✓ File selected</div>
+      <h3>Drag your file here</h3>
+      <p>or click to browse your computer</p>
+      <span class="upload-browse">Browse Files</span>
+      <input type="file" id="file-input" style="display:none" accept=".csv,.xlsx,.xls,.json,.xml"
+             onchange="handleFileSelect(this)" />
+    </div>
+    <p class="upload-skip">
+      Don't have your file handy? <a onclick="skipUpload()">Use sample data instead</a> — we'll build your report from a real department's anonymized data so you can see exactly what it looks like.
+    </p>
+    <div class="step-nav" style="margin-top:32px">
+      <button class="btn-back" onclick="goTo(2)">← Back</button>
+      <button class="btn-next" id="next-3" onclick="goTo(4)">Next: Where to Send It →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step-panel" id="step-4">
+    <h1 class="step-heading">Where should we send your report?</h1>
+    <p class="step-sub">Enter your email and we'll send a finished, ready-to-present report directly to your inbox. Usually arrives in under 5 minutes.</p>
+    <div class="field">
+      <label for="email">Your Email Address</label>
+      <input type="email" id="email" placeholder="chief@yourfiredept.gov" />
+      <div class="field-note">We'll send your report here. We never share your email.</div>
+    </div>
+    <div class="field" id="grant-field" style="display:none">
+      <label for="grant_request">What are you requesting in the grant?</label>
+      <input type="text" id="grant_request" placeholder="New breathing apparatus and protective gear for 12 firefighters" />
+      <div class="field-note">A short description — we'll build the full narrative around it.</div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goTo(3)">← Back</button>
+      <button class="btn-next" id="next-4" onclick="submitReport()">Send My Report →</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="screen-success">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <h2>Your report is on its way.</h2>
+    <p>Check your inbox in the next few minutes. If you don't see it, check your spam folder.</p>
+
+    <div class="success-cta">
+      <div class="success-cta-eyebrow">Free Access — Beta</div>
+      <h3>Want to run reports anytime?</h3>
+      <p>Create a free account to access the full dashboard — generate reports on demand, track your data quality, convert NFIRS files, and more. No credit card. No commitment.</p>
+      <div class="success-cta-checks">
+        <div><span class="chk">✓</span> Board reports, grant narratives, ISO evidence — on demand</div>
+        <div><span class="chk">✓</span> NFIRS → NERIS file conversion built in</div>
+        <div><span class="chk">✓</span> Data quality scorer — find gaps before your next submission</div>
+      </div>
+      <a href="/sign-in" class="btn-signup">Create Your Free Account →</a>
+      <div class="success-cta-fine">Takes 30 seconds. Free during beta.</div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <a href="/" style="display:inline-block;padding:11px 26px;background:var(--white);border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:600;color:var(--muted)">← Back to Home</a>
+    </div>
+    <p class="success-note">Questions? Email us at <a href="mailto:info@5alarmdata.com">info@5alarmdata.com</a></p>
+  </div>
+
+</div>
+
+<script>
+  let reportType    = null;
+  let uploadedFile  = null;
+  let usingSample   = false;
+
+  function selectChoice(el, value) {
+    document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    reportType = value;
+    document.getElementById('next-1').disabled = false;
+    const grantField = document.getElementById('grant-field');
+    if (grantField) grantField.style.display = value === 'grant' ? 'block' : 'none';
+  }
+
+  function goTo(step) {
+    if (step === 3) {
+      const dept = document.getElementById('dept_name').value.trim();
+      if (!dept) {
+        const el = document.getElementById('dept_name');
+        el.style.borderColor = 'var(--red)'; el.focus();
+        setTimeout(() => el.style.borderColor = '', 2000);
+        return;
+      }
+    }
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('step-' + step).classList.add('active');
+    for (let i = 1; i <= 4; i++) {
+      const dot   = document.getElementById('dot-' + i);
+      const label = document.getElementById('label-' + i);
+      dot.className   = 'step-dot'   + (i < step ? ' done' : i === step ? ' active' : '');
+      dot.innerHTML   = i < step ? '' : '<span>' + i + '</span>';
+      label.className = 'step-label' + (i === step ? ' active' : '');
+      if (i < 4) document.getElementById('conn-' + i).className = 'step-connector' + (i < step ? ' done' : '');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
+  function handleDragLeave() { document.getElementById('upload-zone').classList.remove('drag-over'); }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.remove('drag-over');
+    const f = e.dataTransfer.files[0]; if (f) setFile(f);
+  }
+  function handleFileSelect(input) { if (input.files[0]) setFile(input.files[0]); }
+  function setFile(f) {
+    uploadedFile = f; usingSample = false;
+    const zone = document.getElementById('upload-zone');
+    zone.classList.add('has-file');
+    document.getElementById('file-chosen-name').textContent = '✓ ' + f.name;
+  }
+  function skipUpload() {
+    usingSample = true; uploadedFile = null;
+    const zone = document.getElementById('upload-zone');
+    zone.classList.add('has-file');
+    document.getElementById('file-chosen-name').textContent = '✓ Using sample data';
+  }
+
+  async function submitReport() {
+    const emailEl = document.getElementById('email');
+    if (!emailEl.value || !emailEl.value.includes('@')) {
+      emailEl.style.borderColor = 'var(--red)'; emailEl.focus();
+      setTimeout(() => emailEl.style.borderColor = '', 2000);
+      return;
+    }
+    const btn = document.getElementById('next-4');
+    btn.textContent = 'Generating your report...';
+    btn.disabled = true;
+
+    const fd = new FormData();
+    fd.append('report_type',   reportType || 'report');
+    fd.append('email',         emailEl.value);
+    fd.append('name',          document.getElementById('chief_name').value.trim());
+    fd.append('dept_name',     document.getElementById('dept_name').value.trim());
+    fd.append('dept_state',    document.getElementById('dept_state').value);
+    fd.append('chief_name',    document.getElementById('chief_name').value.trim());
+    fd.append('grant_request', document.getElementById('grant_request').value.trim());
+    if (uploadedFile) fd.append('file', uploadedFile);
+
+    try { await fetch('/generate-email', { method: 'POST', body: fd }); } catch {}
+
+    document.querySelector('.main > .step-panel.active, .main > #step-4').style.display = 'none';
+    document.getElementById('screen-success').style.display = 'block';
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById('dot-' + i).className = 'step-dot done';
+      document.getElementById('dot-' + i).innerHTML = '';
+      if (i < 4) document.getElementById('conn-' + i).className = 'step-connector done';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
