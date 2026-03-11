@@ -93,7 +93,7 @@
 
     /* INCIDENT TYPES */
     .type-list { display: flex; flex-direction: column; gap: 16px; }
-    .type-row { display: flex; align-items: center; gap: 14px; }
+    .type-row { display: flex; align-items: center; gap: 10px; }
     .type-label { width: 160px; font-size: 13px; color: var(--ink2); flex-shrink: 0; font-weight: 500; }
     .type-bar-bg { flex: 1; height: 7px; background: var(--bg2); border-radius: 4px; overflow: hidden; }
     .type-bar-fill { height: 100%; border-radius: 4px; }
@@ -333,6 +333,47 @@
       <div class="section-title">Incident Activity — 2024</div>
     </div>
 
+    <!-- Key operational metrics -->
+    <div class="metric-grid" style="margin-bottom: 16px;">
+      <div class="metric-card">
+        <div class="metric-val red">{{ "{:,}".format(dept.total_incidents) }}</div>
+        <div class="metric-lbl">Total Incidents</div>
+      </div>
+      {% if fire_count %}
+      <div class="metric-card">
+        <div class="metric-val">{{ fire_count }}</div>
+        <div class="metric-lbl">Fire Calls</div>
+        <div class="metric-sub">{{ round(fire_count / dept.total_incidents * 100) }}% of total</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">{{ non_fire_count }}</div>
+        <div class="metric-lbl">Non-Fire Calls</div>
+        <div class="metric-sub">{{ round(non_fire_count / dept.total_incidents * 100) }}% of total</div>
+      </div>
+      {% endif %}
+      {% if incidents_per_ff is not none %}
+      <div class="metric-card">
+        <div class="metric-val">{{ incidents_per_ff }}</div>
+        <div class="metric-lbl">Incidents / Firefighter</div>
+        <div class="metric-sub">{{ (dept.num_ff_career | int) + (dept.num_ff_volunteer | int) }} total staff</div>
+      </div>
+      {% endif %}
+      {% if incident_rate_per_1k is not none %}
+      <div class="metric-card">
+        <div class="metric-val">{{ incident_rate_per_1k }}</div>
+        <div class="metric-lbl">Incidents / 1K Residents</div>
+        <div class="metric-sub">County population {{ "{:,}".format(census.population) }}</div>
+      </div>
+      {% endif %}
+      {% if peak_month %}
+      <div class="metric-card">
+        <div class="metric-val gold">{{ peak_month_count }}</div>
+        <div class="metric-lbl">Peak Month</div>
+        <div class="metric-sub">{{ peak_month }}</div>
+      </div>
+      {% endif %}
+    </div>
+
     {% if monthly_labels %}
     <div class="chart-card">
       <canvas id="monthlyChart" height="70"></canvas>
@@ -340,24 +381,33 @@
     {% endif %}
 
     {% if incident_types %}
+    {% set type_colors = {
+      'structure_fire': '#C8392B',
+      'vehicle_fire':   '#D4620A',
+      'wildland_fire':  '#B8900A',
+      'hazmat':         '#7B3FA8',
+      'rescue_ems':     '#1565C0',
+      'false_alarm':    '#6B7A85',
+      'other_fire':     '#C8396B',
+      'other':          '#8A9BA8'
+    } %}
+    <!-- Donut + legend side by side -->
     <div class="card">
-      <div class="card-body">
+      <div class="card-body" style="display:grid;grid-template-columns:200px 1fr;gap:32px;align-items:center;">
+        <div style="position:relative;">
+          <canvas id="donutChart" width="200" height="200"></canvas>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+            <div style="font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--ink);">{{ dept.total_incidents }}</div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);">Total</div>
+          </div>
+        </div>
         <div class="type-list">
-          {% set type_colors = {
-            'structure_fire': '#C8392B',
-            'vehicle_fire':   '#D4620A',
-            'wildland_fire':  '#B8900A',
-            'hazmat':         '#7B3FA8',
-            'rescue_ems':     '#1565C0',
-            'false_alarm':    '#6B7A85',
-            'other_fire':     '#C8396B',
-            'other':          '#8A9BA8'
-          } %}
           {% for t in incident_types %}
           <div class="type-row">
+            <div style="width:10px;height:10px;border-radius:3px;background:{{ type_colors.get(t.key, '#8A9BA8') }};flex-shrink:0;"></div>
             <div class="type-label">{{ t.label }}</div>
             <div class="type-bar-bg">
-              <div class="type-bar-fill" style="width: {{ t.pct }}%; background: {{ type_colors.get(t.key, '#C8392B') }};"></div>
+              <div class="type-bar-fill" style="width:{{ t.pct }}%;background:{{ type_colors.get(t.key, '#8A9BA8') }};"></div>
             </div>
             <div class="type-count">{{ t.count }}</div>
           </div>
@@ -811,6 +861,40 @@
     .catch(() => geocodeFallback());
 })();
 </script>
+
+{% if incident_types %}
+<script>
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: {{ incident_types | map(attribute='label') | list | tojson }},
+    datasets: [{
+      data: {{ incident_types | map(attribute='count') | list | tojson }},
+      backgroundColor: {{ incident_types | map(attribute='key') | map('replace', 'structure_fire', '#C8392B') | list | tojson }}.map((k, i) => {
+        const colors = { 'structure_fire':'#C8392B','vehicle_fire':'#D4620A','wildland_fire':'#B8900A','hazmat':'#7B3FA8','rescue_ems':'#1565C0','false_alarm':'#6B7A85','other_fire':'#C8396B','other':'#8A9BA8' };
+        const keys = {{ incident_types | map(attribute='key') | list | tojson }};
+        return colors[keys[i]] || '#8A9BA8';
+      }),
+      borderWidth: 2,
+      borderColor: '#F7F4EF',
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    cutout: '68%',
+    responsive: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.raw} (${Math.round(ctx.raw / ctx.dataset.data.reduce((a,b)=>a+b,0)*100)}%)`
+        }
+      }
+    }
+  }
+});
+</script>
+{% endif %}
 
 {% if monthly_labels %}
 <script>

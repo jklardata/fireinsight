@@ -972,6 +972,26 @@ async def directory_dept(request: Request, state_code: str, fdid: str):
         for k, v in inc_types.items()
     ], key=lambda x: x["count"], reverse=True)
 
+    # Fire vs. non-fire split
+    fire_keys = {"structure_fire", "vehicle_fire", "wildland_fire", "other_fire"}
+    fire_count = sum(v for k, v in inc_types.items() if k in fire_keys)
+    non_fire_count = total - fire_count
+
+    # Incidents per firefighter
+    career = int(dept.get("num_ff_career") or 0)
+    volunteer = int(dept.get("num_ff_volunteer") or 0)
+    total_ff = career + volunteer
+    incidents_per_ff = round(dept.get("total_incidents", 0) / total_ff, 1) if total_ff else None
+
+    # Incident rate per 1,000 residents (combines incident + census)
+    census = dept.get("census") or {}
+    population = census.get("population") or 0
+    incident_rate_per_1k = round(dept.get("total_incidents", 0) / population * 1000, 1) if population else None
+
+    # Peak month
+    peak_month = max(monthly, key=monthly.get) if monthly else None
+    peak_month_count = monthly.get(peak_month) if peak_month else None
+
     return templates.TemplateResponse("directory_dept.html", {
         "request": request,
         "dept": dept,
@@ -979,6 +999,12 @@ async def directory_dept(request: Request, state_code: str, fdid: str):
         "monthly_labels": monthly_labels,
         "monthly_values": monthly_values,
         "incident_types": incident_types,
+        "fire_count": fire_count,
+        "non_fire_count": non_fire_count,
+        "incidents_per_ff": incidents_per_ff,
+        "incident_rate_per_1k": incident_rate_per_1k,
+        "peak_month": peak_month,
+        "peak_month_count": peak_month_count,
         "census": dept.get("census"),
         "disasters": dept.get("disasters"),
         "peers": dept.get("peers"),
