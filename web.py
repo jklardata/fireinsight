@@ -1001,6 +1001,7 @@ async def directory_dept(request: Request, state_code: str, fdid: str):
         "incident_types": incident_types,
         "fire_count": fire_count,
         "non_fire_count": non_fire_count,
+        "total_ff": total_ff,
         "incidents_per_ff": incidents_per_ff,
         "incident_rate_per_1k": incident_rate_per_1k,
         "peak_month": peak_month,

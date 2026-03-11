@@ -343,19 +343,19 @@
       <div class="metric-card">
         <div class="metric-val">{{ fire_count }}</div>
         <div class="metric-lbl">Fire Calls</div>
-        <div class="metric-sub">{{ round(fire_count / dept.total_incidents * 100) }}% of total</div>
+        <div class="metric-sub">{{ (fire_count / dept.total_incidents * 100) | round | int }}% of total</div>
       </div>
       <div class="metric-card">
         <div class="metric-val">{{ non_fire_count }}</div>
         <div class="metric-lbl">Non-Fire Calls</div>
-        <div class="metric-sub">{{ round(non_fire_count / dept.total_incidents * 100) }}% of total</div>
+        <div class="metric-sub">{{ (non_fire_count / dept.total_incidents * 100) | round | int }}% of total</div>
       </div>
       {% endif %}
       {% if incidents_per_ff is not none %}
       <div class="metric-card">
         <div class="metric-val">{{ incidents_per_ff }}</div>
         <div class="metric-lbl">Incidents / Firefighter</div>
-        <div class="metric-sub">{{ (dept.num_ff_career | int) + (dept.num_ff_volunteer | int) }} total staff</div>
+        <div class="metric-sub">{{ total_ff }} total staff</div>
       </div>
       {% endif %}
       {% if incident_rate_per_1k is not none %}
