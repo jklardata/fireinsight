@@ -2,21 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FireInsight — AI Analytics for Fire Departments</title>
-  <meta name="description" content="FireInsight: AI-powered fire department analytics. Generate grant narratives, chief's reports, NERIS compliance checks, ISO evidence packs, and incident maps from your data." />
-  <link rel="canonical" href="https://fireinsight.app/app" />
+  <title>5AlarmData — Fire Department Report Generator</title>
+  <meta name="description" content="5AlarmData: Generate board reports, grant narratives, NERIS compliance checks, ISO evidence packs, and staffing justifications from your incident data." />
+  <link rel="canonical" href="https://www.5alarmdata.com/app" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="FireInsight" />
-  <meta property="og:title" content="FireInsight — AI Analytics for Fire Departments" />
-  <meta property="og:description" content="AI-powered fire department analytics. Generate grant narratives, chief's reports, compliance checks, and incident maps." />
-  <meta property="og:url" content="https://fireinsight.app/app" />
+  <meta property="og:site_name" content="5AlarmData" />
+  <meta property="og:title" content="5AlarmData — Fire Department Report Generator" />
+  <meta property="og:description" content="Generate board reports, grant narratives, compliance checks, and more from your incident data. Delivered to your email." />
+  <meta property="og:url" content="https://www.5alarmdata.com/app" />
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="FireInsight — AI Analytics for Fire Departments" />
-  <meta name="twitter:description" content="AI-powered analytics for fire departments. Generate reports and insights from your incident data." />
+  <meta name="twitter:title" content="5AlarmData — Fire Department Report Generator" />
+  <meta name="twitter:description" content="Generate fire department reports from your incident data. Delivered to your email." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,600;1,600&display=swap" rel="stylesheet" />
+  <script>
+    // Client-side Clerk auth guard — redirects to /sign-in if not authenticated
+    (async () => {
+      const CLERK_KEY = '{{ clerk_key }}';
+      if (!CLERK_KEY) return; // skip if key not configured
+      try {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js';
+          s.crossOrigin = 'anonymous';
+          s.onload = resolve; s.onerror = reject;
+          document.head.appendChild(s);
+        });
+        await window.Clerk.load({ publishableKey: CLERK_KEY });
+        const clerk = window.Clerk;
+        if (!clerk.user) {
+          window.location.href = '/sign-in?next=/app';
+        }
+      } catch (e) { /* fail open — server middleware is the real gate */ }
+    })();
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -28,22 +50,22 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --navy:     #0F1A20;
-      --navy-2:   #162028;
-      --navy-3:   #1E2E38;
-      --navy-4:   #243440;
-      --navy-5:   #2C3E4A;
-      --red:      #D63737;
-      --red-dk:   #B82E2E;
-      --red-glow: rgba(214,55,55,.25);
-      --red-lt:   rgba(214,55,55,.1);
-      --white:    #FFFFFF;
-      --gray-1:   #E8E9EB;
-      --gray-2:   #C2C2C2;
-      --gray-3:   #8A9BA8;
-      --gray-4:   #4A5C68;
-      --border:   rgba(255,255,255,.08);
-      --border-2: rgba(255,255,255,.13);
+      --navy:     #F7F4EF;
+      --navy-2:   #FFFFFF;
+      --navy-3:   #EDE9E2;
+      --navy-4:   #E4DFD7;
+      --navy-5:   #DDD8CF;
+      --red:      #C8392B;
+      --red-dk:   #A82E22;
+      --red-glow: rgba(200,57,43,.15);
+      --red-lt:   rgba(200,57,43,.08);
+      --white:    #0F1A20;
+      --gray-1:   #0F1A20;
+      --gray-2:   #2C3A42;
+      --gray-3:   #6B7A85;
+      --gray-4:   #9AA8B0;
+      --border:   #D8D2C8;
+      --border-2: #C8C2B6;
       --radius:   10px;
     }
 
@@ -60,7 +82,7 @@
       display: flex; align-items: center; gap: 14px;
       padding: 0 32px;
       height: 64px;
-      background: rgba(15,26,32,0.96);
+      background: rgba(247,244,239,0.96);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
       position: sticky; top: 0; z-index: 10;
@@ -93,9 +115,9 @@
 
     .badge {
       font-size: 10px; font-weight: 700; letter-spacing: .4px;
-      background: rgba(214,55,55,.12);
-      border: 1px solid rgba(214,55,55,.25);
-      color: #F87171;
+      background: rgba(200,57,43,.1);
+      border: 1px solid rgba(200,57,43,.2);
+      color: var(--red);
       padding: 3px 10px; border-radius: 25px;
     }
 
@@ -149,9 +171,9 @@
     }
     .nav-item:hover { background: var(--navy-3); color: var(--gray-1); }
     .nav-item.active {
-      background: rgba(214,55,55,.1);
-      border-color: rgba(214,55,55,.2);
-      color: #F87171;
+      background: rgba(200,57,43,.08);
+      border-color: rgba(200,57,43,.2);
+      color: var(--red);
       font-weight: 600;
     }
 
@@ -162,8 +184,8 @@
       display: flex; align-items: center; justify-content: center;
     }
     .nav-icon svg { width: 13px; height: 13px; }
-    .nav-item.active .nav-icon { background: rgba(214,55,55,.18); }
-    .nav-item.active .nav-icon svg { stroke: #F87171; fill: none; }
+    .nav-item.active .nav-icon { background: rgba(200,57,43,.15); }
+    .nav-item.active .nav-icon svg { stroke: var(--red); fill: none; }
 
     /* ── CONTROL BAR ── */
     .ctrl-bar {
@@ -207,9 +229,9 @@
       cursor: pointer; font-size: 12px; font-weight: 500; color: var(--gray-2);
     }
     .ctrl-toggle-wrap:has(input:checked) {
-      border-color: rgba(214,55,55,.35);
-      background: rgba(214,55,55,.07);
-      color: #F87171;
+      border-color: rgba(200,57,43,.35);
+      background: rgba(200,57,43,.07);
+      color: var(--red);
     }
     .ctrl-toggle-wrap input[type="checkbox"] { accent-color: var(--red); width: 13px; height: 13px; }
     .ctrl-divider { width: 1px; height: 36px; background: var(--border-2); align-self: flex-end; }
@@ -269,8 +291,8 @@
       transition: border-color .15s;
     }
     .toggle-row:has(input:checked) {
-      border-color: rgba(214,55,55,.4);
-      background: rgba(214,55,55,.08);
+      border-color: rgba(200,57,43,.35);
+      background: rgba(200,57,43,.07);
     }
     .toggle-row input[type="checkbox"] { accent-color: var(--red); width: 15px; height: 15px; flex-shrink: 0; }
     .toggle-row span { font-size: 12px; font-weight: 500; color: var(--gray-2); }
@@ -344,7 +366,7 @@
       cursor: pointer; color: var(--gray-2);
       transition: border-color .15s, color .15s;
     }
-    .btn-download:hover { border-color: var(--red); color: #F87171; }
+    .btn-download:hover { border-color: var(--red); color: var(--red); }
     .btn-download svg { width: 13px; height: 13px; }
 
     .result-body {
@@ -365,9 +387,9 @@
 
     /* Error */
     .error-banner {
-      background: rgba(214,55,55,.1);
-      border: 1px solid rgba(214,55,55,.25);
-      color: #FCA5A5;
+      background: rgba(200,57,43,.08);
+      border: 1px solid rgba(200,57,43,.2);
+      color: var(--red);
       border-radius: var(--radius);
       padding: 12px 16px;
       font-size: 13px; font-weight: 500;
@@ -430,7 +452,7 @@
     .grade-badge.grade-B { background: rgba(37,99,235,.15); color: #60A5FA; }
     .grade-badge.grade-C { background: rgba(217,119,6,.15); color: #FCD34D; }
     .grade-badge.grade-D { background: rgba(234,88,12,.15); color: #FB923C; }
-    .grade-badge.grade-F { background: var(--red-lt); color: #F87171; }
+    .grade-badge.grade-F { background: var(--red-lt); color: var(--red); }
     .grade-label { font-size: 11px; color: var(--gray-4); }
 
     .field-row {
@@ -443,14 +465,14 @@
       font-size: 8px; font-weight: 700; text-transform: uppercase;
       letter-spacing: .4px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
     }
-    .tier-critical    { background: rgba(214,55,55,.15); color: #F87171; }
+    .tier-critical    { background: rgba(200,57,43,.12); color: var(--red); }
     .tier-important   { background: rgba(217,119,6,.15); color: #FCD34D; }
     .tier-supplemental { background: var(--navy-4); color: var(--gray-3); }
     .field-name { flex: 1; font-weight: 500; color: var(--gray-2); }
     .field-pct  { font-weight: 700; font-size: 12px; min-width: 34px; text-align: right; }
     .field-pct.pct-high { color: #4ADE80; }
     .field-pct.pct-mid  { color: #FCD34D; }
-    .field-pct.pct-low  { color: #F87171; }
+    .field-pct.pct-low  { color: var(--red); }
     .field-bar-wrap { width: 56px; background: var(--navy-4); border-radius: 4px; height: 4px; flex-shrink: 0; }
     .field-bar { height: 4px; border-radius: 4px; }
     .bar-high { background: #4ADE80; }
@@ -483,7 +505,7 @@
     }
     .score-pill.high { background: rgba(22,163,74,.15); color: #4ADE80; }
     .score-pill.mid  { background: rgba(217,119,6,.15); color: #FCD34D; }
-    .score-pill.low  { background: var(--red-lt); color: #F87171; }
+    .score-pill.low  { background: var(--red-lt); color: var(--red); }
 
     /* ── DASHBOARD ── */
     .dashboard { display: flex; flex-direction: column; gap: 20px; }
@@ -623,7 +645,7 @@
     .ev-stat-sub   { font-size: 11px; color: var(--gray-4); }
     .ev-stat-icon  { position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; background: rgba(245,158,11,.12); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
     .ev-stat-icon svg { width: 15px; height: 15px; fill: #F59E0B; }
-    .ev-trend-up   { color: #F87171; font-weight: 800; }
+    .ev-trend-up   { color: var(--red); font-weight: 800; }
     .ev-trend-down { color: #4ADE80; font-weight: 800; }
 
     .ev-alert {
@@ -655,7 +677,7 @@
     .risk-level-card.medium   { background: rgba(234,179,8,.1);  border-color: rgba(234,179,8,.3);  }
     .risk-level-card.low      { background: rgba(34,197,94,.1);  border-color: rgba(34,197,94,.3);  }
     .risk-level-count { font-size: 34px; font-weight: 900; line-height: 1; }
-    .risk-level-card.critical .risk-level-count { color: #F87171; }
+    .risk-level-card.critical .risk-level-count { color: var(--red); }
     .risk-level-card.high     .risk-level-count { color: #FB923C; }
     .risk-level-card.medium   .risk-level-count { color: #FDE047; }
     .risk-level-card.low      .risk-level-count { color: #4ADE80; }
@@ -667,7 +689,7 @@
     .risk-zone-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--gray-2); }
     .risk-zone-table tr:last-child td { border-bottom: none; }
     .risk-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
-    .risk-badge.Critical { background: rgba(239,68,68,.2);  color: #F87171; }
+    .risk-badge.Critical { background: rgba(200,57,43,.12); color: var(--red); }
     .risk-badge.High     { background: rgba(249,115,22,.2); color: #FB923C; }
     .risk-badge.Medium   { background: rgba(234,179,8,.2);  color: #FDE047; }
     .risk-badge.Low      { background: rgba(34,197,94,.2);  color: #4ADE80; }
@@ -736,7 +758,7 @@
       white-space: nowrap;
     }
     .bench-delta.better { background: rgba(22,163,74,.15); color: #4ADE80; }
-    .bench-delta.worse  { background: var(--red-lt); color: #F87171; }
+    .bench-delta.worse  { background: var(--red-lt); color: var(--red); }
     .bench-delta.neutral{ background: var(--navy-4); color: var(--gray-3); }
 
     /* Percentile track */
@@ -776,7 +798,7 @@
     .bench-pct-number.pct-great  { color: #4ADE80; }
     .bench-pct-number.pct-good   { color: #60A5FA; }
     .bench-pct-number.pct-mid    { color: #FCD34D; }
-    .bench-pct-number.pct-low    { color: #F87171; }
+    .bench-pct-number.pct-low    { color: var(--red); }
     .bench-pct-label { font-size: 9px; font-weight: 700; color: var(--gray-4); letter-spacing: .4px; text-transform: uppercase; }
 
     /* Scope tabs under each card */
@@ -793,9 +815,9 @@
       background: transparent; transition: all .12s;
     }
     .bench-scope-chip.active {
-      background: rgba(214,55,55,.1);
-      border-color: rgba(214,55,55,.35);
-      color: #F87171;
+      background: rgba(200,57,43,.08);
+      border-color: rgba(200,57,43,.3);
+      color: var(--red);
     }
     .bench-scope-chip:hover { color: var(--gray-1); }
     .bench-scope-pct {
@@ -909,6 +931,7 @@
       #neris-status-btn { display: none; }
     }
   </style>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
@@ -923,14 +946,21 @@
     <div class="logo">
       <svg viewBox="0 0 24 24"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
     </div>
-    <h1>Fire<span>Insight</span></h1>
+    <h1>5Alarm<span>Data</span></h1>
   </a>
   <div class="header-right">
     <span class="badge">BETA</span>
-    <button id="neris-status-btn" onclick="toggleNerisPanel()" style="font-size:11px;font-weight:700;font-family:inherit;padding:5px 12px;border-radius:25px;border:1px solid var(--border-2);background:transparent;color:var(--gray-3);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s">
-      <span id="neris-dot" style="width:7px;height:7px;border-radius:50%;background:var(--gray-4);flex-shrink:0"></span>
-      <span id="neris-status-label">Connect NERIS</span>
-    </button>
+    {% if user_data %}
+    <a href="/clear-data" style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:25px;border:1px solid rgba(74,222,128,.4);background:rgba(74,222,128,.08);color:#4ADE80;text-decoration:none;display:flex;align-items:center;gap:6px">
+      <span style="width:7px;height:7px;border-radius:50%;background:#4ADE80;flex-shrink:0"></span>
+      {{ user_data.dept_name }} Data
+    </a>
+    {% else %}
+    <a href="/app" style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:25px;border:1px solid var(--border-2);background:transparent;color:var(--gray-4);text-decoration:none;display:flex;align-items:center;gap:6px">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(--gray-4);flex-shrink:0"></span>
+      Sample Data
+    </a>
+    {% endif %}
     <a href="/" class="header-home">← Home</a>
   </div>
 </header>
@@ -941,11 +971,12 @@
   <aside class="sidebar">
 
     <!-- Dashboard -->
-    <a class="nav-item {% if dashboard %}active{% endif %}" href="/app">
+    <a class="nav-item {% if active_tab == 'home' %}active{% endif %}" href="/app">
       <span class="nav-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       </span>
-      Dashboard
+      Home
+      {% if user_data %}<span style="width:7px;height:7px;background:#4ADE80;border-radius:50%;display:inline-block;margin-left:6px;flex-shrink:0"></span>{% endif %}
     </a>
 
     <div class="nav-group-label">Compliance & Audit</div>
@@ -992,10 +1023,6 @@
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       EV / Battery Fires
     </div>
-    <div class="nav-item {% if active_tab == 'risk' %}active{% endif %}" data-value="risk" onclick="selectTab(this, true)">
-      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      Community Risk
-    </div>
     <div class="nav-item {% if active_tab == 'benchmark' %}active{% endif %}" data-value="benchmark" onclick="selectTab(this, true)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13.5l7.5 7.5 10.5-10.5M3 6l7.5 7.5 10.5-10.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       Peer Benchmark
@@ -1012,20 +1039,20 @@
       Incident Map
     </div>
 
-    <div class="nav-group-label">Advanced</div>
 
-    <div class="nav-item {% if active_tab == 'report_builder' %}active{% endif %}" data-value="report_builder" onclick="selectTab(this, true)">
-      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9" stroke-linecap="round"/></svg></span>
-      Report Builder
-    </div>
-    <div class="nav-item {% if active_tab == 'state_export' %}active{% endif %}" data-value="state_export" onclick="selectTab(this, true)">
-      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      State Export
-    </div>
     <div class="nav-item {% if active_tab == 'archive' %}active{% endif %}" data-value="archive" onclick="selectTab(this)">
       <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       NFIRS Archive
     </div>
+
+    <div style="margin-top:auto;padding-top:8px;border-top:1px solid var(--border)"></div>
+
+    <a class="nav-item" href="/about">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      About
+    </a>
 
     <!-- NERIS Connect panel -->
     <div id="neris-connect-panel" style="display:none;margin-top:8px;padding:14px 10px;border-top:1px solid var(--border)">
@@ -1089,19 +1116,284 @@
   <!-- MAIN PANEL -->
   <main class="main" id="main-panel">
 
+  <!-- ── HOME / ONBOARDING PAGE ── -->
+  {% if active_tab == 'home' %}
+  <div id="home-page" style="margin:-20px -24px 0;overflow:hidden">
+
+    <!-- ── HERO SECTION ── -->
+    <div style="position:relative;padding:36px 36px 32px;background:linear-gradient(135deg,#fff8f0 0%,var(--navy) 60%,var(--navy-3) 100%);overflow:hidden;border-bottom:1px solid var(--border)">
+      <!-- Background flame pattern -->
+      <svg style="position:absolute;top:0;right:0;width:420px;height:100%;opacity:.06;pointer-events:none" viewBox="0 0 420 300" preserveAspectRatio="xMaxYMid slice">
+        <path d="M340 10C310 60 290 80 290 110a50 50 0 00100 0C390 80 370 55 340 10z" fill="#C8392B"/>
+        <path d="M380 60C360 95 348 112 348 132a32 32 0 0064 0C412 112 396 88 380 60z" fill="#C8392B"/>
+        <path d="M300 80C278 118 265 135 265 160a35 35 0 0070 0C335 135 320 110 300 80z" fill="#C8392B"/>
+        <path d="M250 20C228 58 215 75 215 100a35 35 0 0070 0C285 75 270 50 250 20z" fill="#C8392B"/>
+      </svg>
+
+      {% if user_data %}
+      <!-- Uploaded state hero -->
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.35);border-radius:25px;padding:6px 14px;margin-bottom:20px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#4ADE80;flex-shrink:0"></span>
+        <span style="font-size:12px;font-weight:700;color:#4ADE80">{{ user_data.dept_name }} — {{ user_data.count }} incidents loaded</span>
+      </div>
+      <div style="font-size:32px;font-weight:900;color:var(--white);line-height:1.15;margin-bottom:10px">Your department's data<br>is ready to explore.</div>
+      <div style="font-size:15px;color:var(--gray-3);line-height:1.6;max-width:520px;margin-bottom:28px">All free features are now running on your real incident data. Paid features continue to use sample data until upgraded.</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div onclick="selectTab(document.querySelector('.nav-item[data-value=&quot;compliance&quot;]'),true);document.getElementById('home-page').style.display='none'"
+             style="background:var(--red);color:#fff;font-size:13px;font-weight:700;padding:12px 24px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Run Compliance Check
+        </div>
+        <div onclick="selectTab(document.querySelector('.nav-item[data-value=&quot;trends&quot;]'),true);document.getElementById('home-page').style.display='none'"
+             style="background:var(--navy-3);color:var(--gray-2);font-size:13px;font-weight:600;padding:12px 24px;border-radius:10px;border:1px solid var(--border-2);cursor:pointer">
+          View Trend Analysis
+        </div>
+        <a href="/clear-data" style="color:var(--gray-4);font-size:12px;text-decoration:none;display:inline-flex;align-items:center;padding:12px 16px;border-radius:10px;border:1px solid transparent" onmouseover="this.style.color='#F87171'" onmouseout="this.style.color='var(--gray-4)'">Remove data ×</a>
+      </div>
+
+      {% else %}
+      <!-- No data hero -->
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(200,57,43,.1);border:1px solid rgba(200,57,43,.3);border-radius:25px;padding:6px 14px;margin-bottom:20px">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--gray-4);flex-shrink:0"></span>
+        <span style="font-size:12px;font-weight:700;color:var(--gray-3)">Running on sample data</span>
+      </div>
+      <div style="font-size:32px;font-weight:900;color:var(--white);line-height:1.15;margin-bottom:10px">See your department's<br>real numbers.</div>
+      <div style="font-size:15px;color:var(--gray-3);line-height:1.6;max-width:520px;margin-bottom:28px">Upload your NERIS incident data and every free feature updates automatically. Takes 30 seconds.</div>
+      <!-- Data source tabs -->
+      <div style="display:flex;gap:0;margin-bottom:16px;background:var(--navy-3);border:1px solid var(--border-2);border-radius:10px;padding:3px;width:fit-content">
+        <button id="tab-upload-btn" onclick="showDataTab('upload')"
+                style="font-size:12px;font-weight:700;padding:7px 18px;border-radius:8px;border:none;cursor:pointer;background:var(--navy-2);color:var(--gray-1);box-shadow:0 1px 4px rgba(0,0,0,.1);transition:all .15s">
+          Upload File
+        </button>
+        <button id="tab-neris-btn" onclick="showDataTab('neris')"
+                style="font-size:12px;font-weight:700;padding:7px 18px;border-radius:8px;border:none;cursor:pointer;background:transparent;color:var(--gray-3);transition:all .15s">
+          NERIS ID
+        </button>
+      </div>
+
+      <!-- Upload tab -->
+      <div id="data-tab-upload" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <form method="POST" action="/upload-data" enctype="multipart/form-data" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <label style="cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:var(--red);border-radius:10px;padding:12px 22px;font-size:13px;font-weight:700;color:#fff">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+            <span id="upload-label">Upload NERIS Data</span>
+            <input type="file" name="incident_file" accept=".csv,.json,.CSV,.JSON" style="display:none"
+                   onchange="document.getElementById('upload-label').textContent=this.files[0]?.name||'Upload NERIS Data';this.closest('form').querySelector('button').style.display='inline-flex'" required />
+          </label>
+          <button type="submit" style="display:none;align-items:center;gap:6px;background:#a82d22;color:#fff;font-size:13px;font-weight:700;padding:12px 20px;border-radius:10px;border:none;cursor:pointer">
+            Activate →
+          </button>
+        </form>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <a href="/static/sample_neris_incidents.csv" download style="font-size:12px;color:var(--gray-4);text-decoration:none;padding:4px 0">or download sample CSV (5,000 rows)</a>
+          <span style="font-size:11px;color:var(--gray-4);opacity:.7">Accepts CSV or JSON format</span>
+        </div>
+      </div>
+
+      <!-- NERIS ID tab -->
+      <div id="data-tab-neris" style="display:none">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:0;background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;overflow:hidden">
+            <span style="padding:0 14px;font-size:12px;color:var(--gray-4);white-space:nowrap;border-right:1px solid var(--border-2);height:44px;display:flex;align-items:center">NERIS ID</span>
+            <input type="text" id="neris-id-input" placeholder="e.g. FD05005639"
+                   style="border:none;outline:none;padding:0 14px;height:44px;font-size:13px;font-family:inherit;background:transparent;color:var(--gray-1);width:200px" />
+          </div>
+          <div style="display:flex;align-items:center;gap:0;background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;overflow:hidden">
+            <span style="padding:0 14px;font-size:12px;color:var(--gray-4);white-space:nowrap;border-right:1px solid var(--border-2);height:44px;display:flex;align-items:center">From</span>
+            <input type="date" id="neris-start-input" style="border:none;outline:none;padding:0 12px;height:44px;font-size:12px;font-family:inherit;background:transparent;color:var(--gray-1)" />
+          </div>
+          <div style="display:flex;align-items:center;gap:0;background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;overflow:hidden">
+            <span style="padding:0 14px;font-size:12px;color:var(--gray-4);white-space:nowrap;border-right:1px solid var(--border-2);height:44px;display:flex;align-items:center">To</span>
+            <input type="date" id="neris-end-input" style="border:none;outline:none;padding:0 12px;height:44px;font-size:12px;font-family:inherit;background:transparent;color:var(--gray-1)" />
+          </div>
+          <button id="neris-connect-btn" onclick="connectNerisId()"
+                  style="background:var(--red);color:#fff;font-size:13px;font-weight:700;padding:0 22px;height:44px;border-radius:10px;border:none;cursor:pointer">
+            Connect →
+          </button>
+        </div>
+        <div id="neris-status" style="margin-top:10px;font-size:12px;color:var(--gray-4);display:none"></div>
+        <div style="margin-top:12px;font-size:12px;color:var(--gray-3);line-height:1.7">
+          Pulls live incident data directly from the NERIS API. Leave dates blank for all available records.
+        </div>
+        <div style="margin-top:10px;padding:12px 14px;background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:8px;font-size:12px;color:var(--gray-3);line-height:1.65">
+          <strong style="color:var(--gray-1)">Need help connecting?</strong> Direct NERIS API access requires your department to enable the integration in your NERIS account settings. We can walk you through it.
+          <a href="mailto:justin@5alarmdata.com?subject=NERIS API Setup" style="display:inline-block;margin-top:8px;color:#60A5FA;text-decoration:none;font-weight:700">Contact us to get set up →</a>
+        </div>
+        {% if not neris_api_ready %}
+        <div style="margin-top:8px;font-size:11px;color:#F59E0B;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:8px 12px">
+          ⚠ NERIS API credentials not configured on server. Set <code>NERIS_CLIENT_ID</code> and <code>NERIS_CLIENT_SECRET</code> in Vercel environment variables, then redeploy.
+        </div>
+        {% endif %}
+        {% if connect_error %}
+        <div style="margin-top:8px;font-size:11px;color:#F87171;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:8px;padding:8px 12px">
+          Error: {{ connect_error }}
+        </div>
+        {% endif %}
+      </div>
+
+      <script>
+        function showDataTab(tab) {
+          document.getElementById('data-tab-upload').style.display = tab === 'upload' ? 'flex' : 'none';
+          document.getElementById('data-tab-neris').style.display  = tab === 'neris'  ? 'block' : 'none';
+          document.getElementById('tab-upload-btn').style.cssText += tab === 'upload'
+            ? ';background:var(--navy-2);color:var(--gray-1);box-shadow:0 1px 4px rgba(0,0,0,.1)'
+            : ';background:transparent;color:var(--gray-3);box-shadow:none';
+          document.getElementById('tab-neris-btn').style.cssText += tab === 'neris'
+            ? ';background:var(--navy-2);color:var(--gray-1);box-shadow:0 1px 4px rgba(0,0,0,.1)'
+            : ';background:transparent;color:var(--gray-3);box-shadow:none';
+        }
+        {% if home_tab == 'neris' %}
+        showDataTab('neris');
+        {% endif %}
+
+        async function connectNerisId() {
+          var nerisId = document.getElementById('neris-id-input').value.trim();
+          if (!nerisId) { alert('Please enter a NERIS ID'); return; }
+          var btn = document.getElementById('neris-connect-btn');
+          var status = document.getElementById('neris-status');
+          btn.textContent = 'Fetching…'; btn.disabled = true;
+          status.style.display = 'block';
+          status.style.color = 'var(--gray-4)';
+          status.textContent = 'Connecting to NERIS API…';
+
+          var controller = new AbortController();
+          var timer = setTimeout(function() {
+            controller.abort();
+          }, 20000);
+
+          try {
+            var fd = new FormData();
+            fd.append('neris_id', nerisId);
+            fd.append('start', document.getElementById('neris-start-input').value || '');
+            fd.append('end',   document.getElementById('neris-end-input').value   || '');
+
+            var resp = await fetch('/connect-neris', {
+              method: 'POST', body: fd, signal: controller.signal,
+            });
+            clearTimeout(timer);
+
+            // Server redirects on success or error — follow the final URL
+            if (resp.ok || resp.redirected) {
+              var url = resp.url;
+              if (url.includes('connect_error=')) {
+                var err = decodeURIComponent(url.split('connect_error=')[1] || 'Unknown error');
+                status.style.color = '#F87171';
+                status.textContent = 'Error: ' + err;
+                btn.textContent = 'Connect →'; btn.disabled = false;
+              } else {
+                status.style.color = '#4ADE80';
+                status.textContent = 'Connected! Loading dashboard…';
+                window.location.href = url;
+              }
+            } else {
+              var txt = await resp.text();
+              status.style.color = '#F87171';
+              status.textContent = 'Server error (' + resp.status + '): ' + txt.slice(0, 120);
+              btn.textContent = 'Connect →'; btn.disabled = false;
+            }
+          } catch(e) {
+            clearTimeout(timer);
+            status.style.color = '#F87171';
+            status.textContent = e.name === 'AbortError'
+              ? 'Timed out after 20s. Check your NERIS ID and that server credentials are set.'
+              : 'Network error: ' + e.message;
+            btn.textContent = 'Connect →'; btn.disabled = false;
+          }
+        }
+      </script>
+      {% endif %}
+    </div>
+
+    {% if not user_data %}
+    <!-- ── HOW TO EXPORT SECTION ── -->
+    <div style="padding:24px 36px 28px;background:var(--navy-4);border-bottom:1px solid var(--border)">
+      <div style="font-size:12px;font-weight:700;color:var(--gray-2);margin-bottom:16px">How to get your NERIS data</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+        {% set steps = [
+          ('1', '#60A5FA', 'Go to neris.fsri.org', 'Sign in to your department account. Not registered? Sign up free at safetyscience.my.site.com/neris/'),
+          ('2', '#818CF8', 'Incidents → Export', 'In the left sidebar, navigate to the Incidents section and click Export.'),
+          ('3', '#A78BFA', 'Select CSV format', 'Choose your date range (last 12 months is ideal) and select CSV as the format.'),
+          ('4', '#C8392B', 'Upload above', 'Download the file and drag it into the upload button above. Done.'),
+        ] %}
+        {% for num, color, title, desc in steps %}
+        <div style="background:var(--navy-2);border:1px solid var(--border);border-radius:14px;padding:20px">
+          <div style="width:32px;height:32px;border-radius:8px;background:{{ color }}1a;border:1px solid {{ color }}44;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+            <span style="font-size:14px;font-weight:900;color:{{ color }}">{{ num }}</span>
+          </div>
+          <div style="font-size:13px;font-weight:700;color:var(--gray-1);margin-bottom:6px">{{ title }}</div>
+          <div style="font-size:11px;color:var(--gray-3);line-height:1.6">{{ desc }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      <div style="margin-top:14px;font-size:11px;color:var(--gray-4)">Your data is processed in memory only and never stored on our servers beyond your session.</div>
+    </div>
+    {% endif %}
+
+    <!-- ── FEATURES GRID ── -->
+    <div style="padding:24px 36px 32px;background:var(--navy-3)">
+      <div style="font-size:13px;font-weight:700;color:var(--gray-2);margin-bottom:16px;letter-spacing:.01em">Available features</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+
+        {% set features = [
+          ('compliance', 'NERIS Compliance', 'Which mandatory fields are missing, in plain English.', 'Free', '74,222,128', 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'),
+          ('trends', 'Trend Analysis', 'Call volume, response times, and busiest periods.', 'Free', '74,222,128', 'M22 12h-4l-3 9L9 3l-3 9H2'),
+          ('quality', 'Data Quality', 'How complete and accurate your incident records are.', 'Free', '74,222,128', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'),
+          ('benchmark', 'Peer Benchmark', 'Your response times vs similar departments.', 'Free', '74,222,128', 'M3 13.5l4-4 4 4 4-6 4 2'),
+          ('submit', 'NERIS Pre-Validate', 'Catch errors before submitting to the portal.', 'Free', '74,222,128', 'M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5'),
+          ('report', 'Board Report', 'Full narrative report ready for your board.', 'Free', '74,222,128', 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12'),
+          ('grant', 'Grant Narrative', 'AFG/SAFER narrative written with your real data.', 'Free', '74,222,128', 'M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33'),
+          ('staffing', 'Staffing Justification', 'Data-backed case for your budget request.', 'Free', '74,222,128', 'M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z'),
+          ('iso', 'ISO Evidence Pack', 'Documentation for your PPC review.', 'Free', '74,222,128', 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12'),
+          ('ev', 'EV / Battery Fires', 'EV incident trends and response protocols.', 'Free', '74,222,128', 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75'),
+        ] %}
+
+        {% for tab, name, desc, tier, rgb, icon in features %}
+        <div onclick="{% if tab in ['report','grant'] %}selectTab(document.querySelector('.nav-item[data-value=&quot;report&quot;]'),true);document.getElementById('report_type').value='{{ tab }}'{% elif tab == 'benchmark' %}selectTab(document.querySelector('.nav-item[data-value=&quot;benchmark&quot;]'),false){% else %}selectTab(document.querySelector('.nav-item[data-value=&quot;{{ tab }}&quot;]'),true){% endif %};document.getElementById('home-page').style.display='none'"
+             style="background:var(--navy-2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden"
+             onmouseover="this.style.borderColor='rgba({{ rgb }},.4)';this.style.background='var(--navy-4)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--navy-2)'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:rgba({{ rgb }},.1);border:1px solid rgba({{ rgb }},.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgb({{ rgb }})" stroke-width="1.8" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" d="{{ icon }}"/></svg>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+              <span style="font-size:10px;font-weight:700;color:rgb({{ rgb }});background:rgba({{ rgb }},.1);padding:2px 8px;border-radius:25px">{{ tier }}</span>
+              {% if tier == 'Free' and user_data %}<span style="font-size:9px;font-weight:700;color:#4ADE80">Your data</span>{% endif %}
+            </div>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:var(--gray-1);margin-bottom:5px">{{ name }}</div>
+          <div style="font-size:12px;color:var(--gray-3);line-height:1.5">{{ desc }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── PERSISTENT DATA BANNER (shown on all tabs when data is uploaded) ── -->
+  {% if user_data and active_tab != 'home' %}
+  <div style="background:rgba(74,222,128,.06);border-bottom:1px solid rgba(74,222,128,.2);padding:9px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:-20px -24px 16px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="width:7px;height:7px;border-radius:50%;background:#4ADE80;flex-shrink:0"></span>
+      <span style="font-size:12px;font-weight:600;color:#4ADE80">{{ user_data.dept_name }}</span>
+      <span style="font-size:12px;color:var(--gray-4)">{{ user_data.count }} incidents &middot; Free features using your real data</span>
+    </div>
+    <a href="/clear-data" style="font-size:11px;color:var(--gray-4);text-decoration:none;opacity:.7" onmouseover="this.style.opacity='1';this.style.color='#F87171'" onmouseout="this.style.opacity='.7';this.style.color='var(--gray-4)'">Remove ×</a>
+  </div>
+  {% endif %}
+
   <!-- ── CONTROL BARS (one per feature, shown/hidden by selectTab) ── -->
 
   <!-- Report controls (trends / chief / grant) -->
   <form method="POST" action="/generate" id="main-form" class="ctrl-bar" style="{% if not form %}display:none{% endif %}">
     <input type="hidden" name="report_type" id="report_type" value="{{ form.report_type if form else 'trends' }}" />
-    <div class="ctrl-field">
+    {% if not user_data %}<div class="ctrl-field">
       <label class="ctrl-label">Data Source</label>
       <label class="ctrl-toggle-wrap">
         <input type="checkbox" name="use_mock" id="use_mock" {% if not form or form.use_mock %}checked{% endif %} />
         Sample Data
       </label>
-    </div>
-    <div class="ctrl-field" id="neris-field" style="{% if not form or form.use_mock %}display:none{% endif %}">
+    </div>{% endif %}
+    <div class="ctrl-field" id="neris-field" style="{% if not user_data %}{% if not form or form.use_mock %}display:none{% endif %}{% else %}display:none{% endif %}">
       <label class="ctrl-label">NERIS ID</label>
       <input type="text" name="neris_id" value="{{ form.neris_id if form else 'MOCK-001' }}" placeholder="VA-1234" style="width:110px" />
     </div>
@@ -1132,25 +1424,23 @@
       Generate
     </button>
   </form>
-  <!-- Grant request textarea row (below ctrl bar when grant is active) -->
-  <div id="grant-request-row" style="{% if not form or form.report_type != 'grant' %}display:none{% endif %};margin-top:-18px;margin-bottom:28px">
-    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-top:none;border-radius:0 0 12px 12px;padding:12px 20px;display:flex;gap:12px;align-items:flex-end">
-      <div class="ctrl-field" style="flex:1">
-        <label class="ctrl-label">What are you requesting?</label>
-        <textarea name="grant_request" form="main-form" placeholder="e.g. 2 thermal imaging cameras for structural firefighting" style="width:100%;padding:8px 10px;font-size:12px;font-family:inherit;background:var(--navy-3);border:1px solid var(--border-2);border-radius:7px;color:var(--white);outline:none;resize:vertical;min-height:56px">{{ form.grant_request if form else '' }}</textarea>
-      </div>
+  <!-- Grant request textarea row -->
+  <div id="grant-request-row" style="{% if not form or form.report_type != 'grant' %}display:none{% endif %};margin-bottom:16px">
+    <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:12px 16px">
+      <label class="ctrl-label" style="margin-bottom:6px;display:block">What are you requesting?</label>
+      <textarea name="grant_request" form="main-form" placeholder="e.g. 2 thermal imaging cameras for structural firefighting" style="width:100%;padding:8px 10px;font-size:12px;font-family:inherit;background:var(--navy-3);border:1px solid var(--border-2);border-radius:7px;color:var(--white);outline:none;resize:vertical;min-height:56px">{{ form.grant_request if form else '' }}</textarea>
     </div>
   </div>
 
   <!-- Trend Analysis controls (fast — no LLM) -->
   <form method="POST" action="/trends-data" id="trends-controls" class="ctrl-bar" style="{% if active_tab == 'trends' or trends_data %}{% else %}display:none{% endif %}">
-    <div class="ctrl-field">
+    {% if not user_data %}<div class="ctrl-field">
       <label class="ctrl-label">Data Source</label>
       <label class="ctrl-toggle-wrap">
         <input type="checkbox" name="use_mock" id="trends-use-mock" checked />
         Sample Data
       </label>
-    </div>
+    </div>{% endif %}
     <div class="ctrl-field" id="trends-neris-field" style="display:none">
       <label class="ctrl-label">NERIS ID</label>
       <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
@@ -1175,13 +1465,13 @@
 
   <!-- Quality controls -->
   <form method="POST" action="/quality" id="quality-controls" class="ctrl-bar" style="display:none">
-    <div class="ctrl-field">
+    {% if not user_data %}<div class="ctrl-field">
       <label class="ctrl-label">Data Source</label>
       <label class="ctrl-toggle-wrap">
         <input type="checkbox" name="use_mock" id="quality-use-mock" checked />
         Sample Data
       </label>
-    </div>
+    </div>{% endif %}
     <div class="ctrl-field" id="quality-neris-field" style="display:none">
       <label class="ctrl-label">NERIS ID</label>
       <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
@@ -1209,13 +1499,13 @@
 
   <!-- EV controls -->
   <form method="POST" action="/ev" id="ev-controls" class="ctrl-bar" style="display:none">
-    <div class="ctrl-field">
+    {% if not user_data %}<div class="ctrl-field">
       <label class="ctrl-label">Data Source</label>
       <label class="ctrl-toggle-wrap">
         <input type="checkbox" name="use_mock" id="ev-use-mock" checked />
         Sample Data
       </label>
-    </div>
+    </div>{% endif %}
     <div class="ctrl-field" id="ev-neris-field" style="display:none">
       <label class="ctrl-label">NERIS ID</label>
       <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
@@ -1234,42 +1524,16 @@
     </button>
   </form>
 
-  <!-- Risk controls -->
-  <form method="POST" action="/risk" id="risk-controls" class="ctrl-bar" style="display:none">
-    <div class="ctrl-field">
-      <label class="ctrl-label">Data Source</label>
-      <label class="ctrl-toggle-wrap">
-        <input type="checkbox" name="use_mock" id="risk-use-mock" checked />
-        Sample Data
-      </label>
-    </div>
-    <div class="ctrl-field" id="risk-neris-field" style="display:none">
-      <label class="ctrl-label">NERIS ID</label>
-      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
-    </div>
-    <div class="ctrl-field">
-      <label class="ctrl-label">Date Range</label>
-      <div class="ctrl-date-pair">
-        <input type="date" name="start" />
-        <input type="date" name="end" />
-      </div>
-    </div>
-    <div class="ctrl-spacer"></div>
-    <button type="submit" class="btn-run" onclick="showLoading()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-      Map Risk Zones
-    </button>
-  </form>
 
   <!-- Benchmark controls -->
   <form method="POST" action="/benchmark" id="benchmark-controls" class="ctrl-bar" style="display:none">
-    <div class="ctrl-field">
+    {% if not user_data %}<div class="ctrl-field">
       <label class="ctrl-label">Data Source</label>
       <label class="ctrl-toggle-wrap">
         <input type="checkbox" name="use_mock" id="bench-use-mock" checked />
         Sample Data
       </label>
-    </div>
+    </div>{% endif %}
     <div class="ctrl-field" id="bench-neris-field" style="display:none">
       <label class="ctrl-label">NERIS ID</label>
       <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
@@ -1310,24 +1574,17 @@
   </form>
 
   <!-- Compliance controls -->
-  <form method="POST" action="/compliance" id="compliance-controls" class="ctrl-bar" style="display:none">
-    <div class="ctrl-field">
+  <form method="POST" action="/compliance" id="compliance-controls" class="ctrl-bar" style="display:none" enctype="multipart/form-data">
+    {% if not user_data %}<div class="ctrl-field">
       <label class="ctrl-label">Data Source</label>
       <label class="ctrl-toggle-wrap">
         <input type="checkbox" name="use_mock" id="compliance-use-mock" checked />
         Sample Data
       </label>
-    </div>
+    </div>{% endif %}
     <div class="ctrl-field" id="compliance-neris-field" style="display:none">
-      <label class="ctrl-label">NERIS ID</label>
-      <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
-    </div>
-    <div class="ctrl-field">
-      <label class="ctrl-label">Date Range</label>
-      <div class="ctrl-date-pair">
-        <input type="date" name="start" />
-        <input type="date" name="end" />
-      </div>
+      <label class="ctrl-label">Your CSV</label>
+      <input type="file" name="incident_file" accept=".csv,.json" style="font-size:12px;max-width:200px" />
     </div>
     <div class="ctrl-spacer"></div>
     <button type="submit" class="btn-run" onclick="showLoading()">
@@ -1336,15 +1593,33 @@
     </button>
   </form>
 
+  <!-- Export instructions — shown when user unchecks Sample Data -->
+  <div id="compliance-export-instructions" style="display:none;margin:12px 0 4px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;max-width:640px">
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#4ADE80;margin-bottom:10px">How to export your incident data from NERIS</div>
+    <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px">
+      <li style="font-size:13px;color:var(--gray-2);line-height:1.5">Go to <strong style="color:var(--white)">neris.fsri.org</strong> and log in to your department account. (Not registered yet? <a href="https://safetyscience.my.site.com/neris/" target="_blank" style="color:#4ADE80">Sign up here</a>.)</li>
+      <li style="font-size:13px;color:var(--gray-2);line-height:1.5">Navigate to <strong style="color:var(--white)">Incidents → Export</strong> in the left sidebar.</li>
+      <li style="font-size:13px;color:var(--gray-2);line-height:1.5">Select your date range (last 12 months recommended) and choose <strong style="color:var(--white)">CSV</strong> format.</li>
+      <li style="font-size:13px;color:var(--gray-2);line-height:1.5">Download the file and upload it above. We check all 6 mandatory NERIS modules and flag any missing fields.</li>
+    </ol>
+    <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="font-size:11px;color:var(--gray-4)">Your data is processed in memory and never stored on our servers.</div>
+      <a href="/static/sample_neris_incidents.csv" download style="font-size:12px;font-weight:600;color:#4ADE80;text-decoration:none;display:flex;align-items:center;gap:5px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+        Download Sample CSV
+      </a>
+    </div>
+  </div>
+
   <!-- NERIS Submit controls -->
   <form method="POST" action="/neris/pre-validate" id="submit-controls" class="ctrl-bar" style="{% if active_tab == 'submit' or pre_val %}{% else %}display:none{% endif %}">
-    <div class="ctrl-field">
+    {% if not user_data %}<div class="ctrl-field">
       <label class="ctrl-label">Data Source</label>
       <label class="ctrl-toggle-wrap">
         <input type="checkbox" name="use_mock" id="submit-use-mock" checked />
         Sample Data
       </label>
-    </div>
+    </div>{% endif %}
     <div class="ctrl-field" id="submit-neris-field" style="display:none">
       <label class="ctrl-label">NERIS ID</label>
       <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
@@ -1369,13 +1644,13 @@
 
   <!-- ISO controls -->
   <form method="POST" action="/iso" id="iso-controls" class="ctrl-bar" style="display:none">
-    <div class="ctrl-field">
+    {% if not user_data %}<div class="ctrl-field">
       <label class="ctrl-label">Data Source</label>
       <label class="ctrl-toggle-wrap">
         <input type="checkbox" name="use_mock" id="iso-use-mock" checked />
         Sample Data
       </label>
-    </div>
+    </div>{% endif %}
     <div class="ctrl-field" id="iso-neris-field" style="display:none">
       <label class="ctrl-label">NERIS ID</label>
       <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
@@ -1407,13 +1682,13 @@
 
   <!-- Staffing controls -->
   <form method="POST" action="/staffing" id="staffing-controls" class="ctrl-bar" style="display:none">
-    <div class="ctrl-field">
+    {% if not user_data %}<div class="ctrl-field">
       <label class="ctrl-label">Data Source</label>
       <label class="ctrl-toggle-wrap">
         <input type="checkbox" name="use_mock" id="staffing-use-mock" checked />
         Sample Data
       </label>
-    </div>
+    </div>{% endif %}
     <div class="ctrl-field" id="staffing-neris-field" style="display:none">
       <label class="ctrl-label">NERIS ID</label>
       <input type="text" name="neris_id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
@@ -1461,13 +1736,13 @@
 
   <!-- Map controls -->
   <div id="map-controls" class="ctrl-bar" style="display:none">
-    <div class="ctrl-field">
+    {% if not user_data %}<div class="ctrl-field">
       <label class="ctrl-label">Data Source</label>
       <label class="ctrl-toggle-wrap">
         <input type="checkbox" id="map-use-mock" checked />
         Sample Data
       </label>
-    </div>
+    </div>{% endif %}
     <div class="ctrl-field" id="map-neris-field" style="display:none">
       <label class="ctrl-label">NERIS ID</label>
       <input type="text" id="map-neris-id" value="MOCK-001" placeholder="VA-1234" style="width:110px" />
@@ -1502,61 +1777,6 @@
     </div>
   </div>
 
-  <!-- Report Builder controls -->
-  <form method="POST" action="/report-builder" id="report_builder-controls" class="ctrl-bar" style="display:none">
-    <input type="hidden" name="use_mock" value="true" />
-    <div class="ctrl-field">
-      <label class="ctrl-label">Date Range</label>
-      <div class="ctrl-date-pair">
-        <input type="date" name="start" />
-        <input type="date" name="end" />
-      </div>
-    </div>
-    <div class="ctrl-field">
-      <label class="ctrl-label">Compare Period</label>
-      <div class="ctrl-date-pair">
-        <input type="date" name="compare_start" placeholder="Compare from" />
-        <input type="date" name="compare_end" placeholder="Compare to" />
-      </div>
-    </div>
-    <div class="ctrl-field">
-      <label class="ctrl-label">Period Label</label>
-      <input type="text" name="period_label" placeholder="e.g. Q1 2025" style="width:120px" />
-    </div>
-    <div class="ctrl-spacer"></div>
-    <button type="submit" class="btn-run" onclick="showLoading()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9" stroke-linecap="round"/></svg>
-      Build Report
-    </button>
-  </form>
-
-  <!-- State Export controls -->
-  <form method="POST" action="/state-export" id="state_export-controls" class="ctrl-bar" style="display:none">
-    <input type="hidden" name="use_mock" value="true" />
-    <div class="ctrl-field">
-      <label class="ctrl-label">State</label>
-      <select name="state" style="width:80px">
-        <option value="VA">Virginia</option>
-        <option value="TX">Texas</option>
-        <option value="FL">Florida</option>
-        <option value="CA">California</option>
-        <option value="OH">Ohio</option>
-        <option value="PA">Pennsylvania</option>
-      </select>
-    </div>
-    <div class="ctrl-field">
-      <label class="ctrl-label">Date Range</label>
-      <div class="ctrl-date-pair">
-        <input type="date" name="start" />
-        <input type="date" name="end" />
-      </div>
-    </div>
-    <div class="ctrl-spacer"></div>
-    <button type="submit" class="btn-run" onclick="showLoading()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Generate Export
-    </button>
-  </form>
 
   <!-- ── CONVERT PAGE (shown when NFIRS tab active, no auto-submit) ── -->
   <div id="convert-page" style="display:none">
@@ -1612,7 +1832,7 @@
           </div>
           <div style="display:flex;align-items:flex-start;gap:12px">
             <div style="width:22px;height:22px;border-radius:50%;background:rgba(214,55,55,.2);border:1px solid rgba(214,55,55,.35);color:#F87171;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
-            <div style="font-size:12px;color:var(--gray-2);line-height:1.5"><strong style="color:var(--white)">Connect NERIS API</strong> — use FireInsight's NERIS API connection to submit incidents directly to the national registry</div>
+            <div style="font-size:12px;color:var(--gray-2);line-height:1.5"><strong style="color:var(--white)">Connect NERIS API</strong> — use 5AlarmData's NERIS API connection to submit incidents directly to the national registry</div>
           </div>
           <div style="display:flex;align-items:flex-start;gap:12px">
             <div style="width:22px;height:22px;border-radius:50%;background:rgba(214,55,55,.2);border:1px solid rgba(214,55,55,.35);color:#F87171;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
@@ -1632,7 +1852,7 @@
         </div>
         <div>
           <div style="font-size:17px;font-weight:800;color:var(--white)">Connect NERIS API</div>
-          <div style="font-size:12px;color:var(--gray-4);margin-top:2px">Link your department's live NERIS data to FireInsight</div>
+          <div style="font-size:12px;color:var(--gray-4);margin-top:2px">Link your department's live NERIS data to 5AlarmData</div>
         </div>
       </div>
     </div>
@@ -1780,146 +2000,6 @@
     {% elif ev and ev.error %}
     <div class="error-banner">{{ ev.error }}</div>
 
-    {% elif risk and risk.summary %}
-    {%- set s = risk.summary %}
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div>
-        <div style="font-size:15px;font-weight:800;color:var(--white)">Community Risk Dashboard</div>
-        <div style="font-size:11px;color:var(--gray-4);margin-top:2px">{{ risk.dept_name }} &middot; {{ s.total_zones }} geographic zones analyzed</div>
-      </div>
-      <div style="font-size:11px;color:#F97316;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.25);border-radius:25px;padding:4px 14px">&#9888; Risk Score: {{ s.avg_risk_score }}/100</div>
-    </div>
-
-    <!-- Risk level cards -->
-    <div class="risk-level-row">
-      <div class="risk-level-card critical">
-        <div class="risk-level-count">{{ s.critical_count }}</div>
-        <div class="risk-level-label">Critical</div>
-        <div class="risk-level-sub">score &ge; 75</div>
-      </div>
-      <div class="risk-level-card high">
-        <div class="risk-level-count">{{ s.high_count }}</div>
-        <div class="risk-level-label">High</div>
-        <div class="risk-level-sub">score 50–74</div>
-      </div>
-      <div class="risk-level-card medium">
-        <div class="risk-level-count">{{ s.medium_count }}</div>
-        <div class="risk-level-label">Medium</div>
-        <div class="risk-level-sub">score 25–49</div>
-      </div>
-      <div class="risk-level-card low">
-        <div class="risk-level-count">{{ s.low_count }}</div>
-        <div class="risk-level-label">Low</div>
-        <div class="risk-level-sub">score &lt; 25</div>
-      </div>
-    </div>
-
-    <!-- Risk map (full width) -->
-    <div class="result-card" style="margin-bottom:14px;overflow:hidden">
-      <div class="result-header">
-        <span>Risk Zone Map</span>
-        <div style="display:flex;gap:12px;font-size:11px">
-          <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#EF4444;display:inline-block"></span>Critical</span>
-          <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#F97316;display:inline-block"></span>High</span>
-          <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#EAB308;display:inline-block"></span>Medium</span>
-          <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#22C55E;display:inline-block"></span>Low</span>
-        </div>
-      </div>
-      <div id="risk-map"></div>
-    </div>
-
-    <!-- Top zones table + response gap -->
-    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px">
-      <div class="result-card">
-        <div class="result-header"><span>Highest-Risk Zones</span><span style="font-size:11px;color:var(--gray-4)">click row to drill in</span></div>
-        <table class="risk-zone-table" id="risk-drill-table">
-          <thead><tr><th>Level</th><th>Score</th><th>Incidents</th><th>Dominant Type</th><th>Avg Response</th><th style="width:24px"></th></tr></thead>
-          <tbody>
-            {% for z in s.top_zones %}
-            {% set zi = loop.index %}
-            {%- set RISK_ACTIONS = {
-              'Critical': 'Deploy additional pre-positioned units to this zone. Consider targeted community fire prevention outreach. Evaluate station coverage for gaps.',
-              'High':     'Review apparatus routing for this zone. Increase fire prevention inspections for high-occupancy or commercial structures.',
-              'Medium':   'Monitor this zone monthly. Consider targeted public education campaigns based on dominant incident type.',
-              'Low':      'Maintain current coverage. No immediate action required — continue routine monitoring.',
-            } %}
-            <tr onclick="toggleRiskDrill({{ zi }})" style="cursor:pointer" data-drill="{{ zi }}">
-              <td><span class="risk-badge {{ z.risk_level }}">{{ z.risk_level }}</span></td>
-              <td style="font-weight:700;color:var(--white)">{{ z.risk_score }}</td>
-              <td>{{ z.incident_count }}</td>
-              <td style="font-size:11px;color:var(--gray-3)">{{ z.dominant_type | truncate(24, true, '…') }}</td>
-              <td>{% if z.avg_response_seconds %}{{ (z.avg_response_seconds // 60) }}m {{ '%02d'|format(z.avg_response_seconds % 60) }}s{% else %}—{% endif %}</td>
-              <td style="color:var(--gray-4);font-size:12px" id="risk-chevron-{{ zi }}">›</td>
-            </tr>
-            <tr id="risk-detail-{{ zi }}" style="display:none">
-              <td colspan="6" style="padding:0;background:var(--navy-3)">
-                <div style="padding:14px 18px;border-bottom:2px solid var(--border-2)">
-                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
-                    <div style="padding:10px 12px;background:var(--navy-2);border-radius:8px;border:1px solid var(--border)">
-                      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:4px">Risk Score</div>
-                      <div style="font-size:22px;font-weight:900;color:{% if z.risk_level == 'Critical' %}#EF4444{% elif z.risk_level == 'High' %}#F97316{% elif z.risk_level == 'Medium' %}#EAB308{% else %}#22C55E{% endif %}">{{ z.risk_score }}<span style="font-size:11px;color:var(--gray-4)">/100</span></div>
-                    </div>
-                    <div style="padding:10px 12px;background:var(--navy-2);border-radius:8px;border:1px solid var(--border)">
-                      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:4px">Incidents in Zone</div>
-                      <div style="font-size:22px;font-weight:900;color:var(--white)">{{ z.incident_count }}</div>
-                    </div>
-                    <div style="padding:10px 12px;background:var(--navy-2);border-radius:8px;border:1px solid var(--border)">
-                      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:4px">Avg Response</div>
-                      <div style="font-size:22px;font-weight:900;color:{% if z.avg_response_seconds and z.avg_response_seconds > 480 %}#F87171{% else %}#4ADE80{% endif %}">
-                        {% if z.avg_response_seconds %}{{ (z.avg_response_seconds // 60) }}m {{ '%02d'|format(z.avg_response_seconds % 60) }}s{% else %}—{% endif %}
-                      </div>
-                    </div>
-                  </div>
-                  <div style="margin-bottom:8px">
-                    <div style="font-size:11px;font-weight:700;color:var(--gray-2);margin-bottom:3px">Dominant Incident Type</div>
-                    <div style="font-size:12px;color:var(--gray-3)">{{ z.dominant_type }}</div>
-                  </div>
-                  <div style="font-size:11px;color:var(--gray-3);line-height:1.5;padding:10px 12px;background:rgba({% if z.risk_level == 'Critical' %}214,55,55{% elif z.risk_level == 'High' %}249,115,22{% elif z.risk_level == 'Medium' %}234,179,8{% else %}34,197,94{% endif %},.08);border-radius:8px;border:1px solid rgba({% if z.risk_level == 'Critical' %}214,55,55{% elif z.risk_level == 'High' %}249,115,22{% elif z.risk_level == 'Medium' %}234,179,8{% else %}34,197,94{% endif %},.2)">
-                    <strong style="color:var(--gray-1)">Recommended Action:</strong> {{ RISK_ACTIONS[z.risk_level] }}
-                  </div>
-                </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="result-card">
-        <div class="result-header">
-          <span>Response Gap Zones</span>
-          <span style="font-size:11px;color:var(--gray-4)">exceeding 8-min target</span>
-        </div>
-        <div style="padding:8px 16px">
-          {% if s.gap_zones %}
-            {% for z in s.gap_zones %}
-            <div class="risk-gap-item">
-              <div class="risk-gap-dot"></div>
-              <div style="flex:1">
-                <div style="font-weight:600;font-size:12px;color:var(--gray-1)">
-                  {{ z.incident_count }} incidents &middot; {{ z.dominant_type | truncate(22, true, '…') }}
-                </div>
-                <div style="font-size:11px;color:var(--gray-4);margin-top:2px">
-                  Avg response: <span style="color:#FB923C;font-weight:700">{{ (z.avg_response_seconds // 60) }}m {{ '%02d'|format(z.avg_response_seconds % 60) }}s</span>
-                  &mdash; {{ z.avg_response_seconds - 480 | int }}s over target
-                </div>
-              </div>
-              <span class="risk-badge {{ z.risk_level }}">{{ z.risk_score }}</span>
-            </div>
-            {% endfor %}
-          {% else %}
-          <div style="padding:20px 0;text-align:center;color:var(--gray-4);font-size:12px">
-            <div style="color:#4ADE80;font-size:20px;font-weight:800;margin-bottom:4px">&#10003;</div>
-            All zones within 8-minute response target
-          </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    {% elif risk and risk.error %}
-    <div class="error-banner">{{ risk.error }}</div>
-
     {% elif benchmark and benchmark.result %}
     {%- set br = benchmark.result %}
     {%- set pc = br.peer_counts %}
@@ -2021,8 +2101,19 @@
     <div class="result-card" style="margin-top:20px">
       <div class="result-header">
         <span>AI Executive Summary — Board Presentation Ready</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:10px;color:var(--gray-4);font-style:italic">Click to edit</span>
+          <button type="button" class="btn-download" onclick="dlDocx('bench-narrative-body','peer-benchmark-summary')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            .docx
+          </button>
+          <button type="button" class="btn-download" onclick="dlPdf('bench-narrative-body')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+            PDF
+          </button>
+        </div>
       </div>
-      <div class="result-body" id="bench-narrative-body"></div>
+      <div class="result-body" id="bench-narrative-body" contenteditable="true" style="outline:none;min-height:80px"></div>
     </div>
     <script>
       document.getElementById("bench-narrative-body").innerHTML = marked.parse({{ benchmark.narrative | tojson }});
@@ -2200,8 +2291,21 @@
 
     {% if quality.narrative %}
     <div class="result-card">
-      <div class="result-header"><span>AI Analysis &amp; Fix Recommendations</span></div>
-      <div class="result-body" id="quality-narrative-body"></div>
+      <div class="result-header">
+        <span>AI Analysis &amp; Fix Recommendations</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:10px;color:var(--gray-4);font-style:italic">Click to edit</span>
+          <button type="button" class="btn-download" onclick="dlDocx('quality-narrative-body','data-quality-analysis')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            .docx
+          </button>
+          <button type="button" class="btn-download" onclick="dlPdf('quality-narrative-body')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+            PDF
+          </button>
+        </div>
+      </div>
+      <div class="result-body" id="quality-narrative-body" contenteditable="true" style="outline:none;min-height:80px"></div>
     </div>
     <script>
       document.getElementById("quality-narrative-body").innerHTML = marked.parse({{ quality.narrative | tojson }});
@@ -2345,7 +2449,7 @@
       </div>
       <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:14px;border-top:2px solid #4ADE80">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#4ADE80;margin-bottom:6px">② Submit to NERIS</div>
-        <div style="font-size:11px;color:var(--gray-2);line-height:1.55">Connect your NERIS API credentials in FireInsight to submit incidents directly to the national registry without manual uploads.</div>
+        <div style="font-size:11px;color:var(--gray-2);line-height:1.55">Connect your NERIS API credentials in 5AlarmData to submit incidents directly to the national registry without manual uploads.</div>
       </div>
       <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:10px;padding:14px;border-top:2px solid #FCD34D">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#FCD34D;margin-bottom:6px">③ Monitor weekly</div>
@@ -2457,16 +2561,19 @@
     <div class="result-card">
       <div class="result-header">
         <span>AI Evidence Narrative</span>
-        <form method="POST" action="/download" style="display:inline">
-          <input type="hidden" name="content" value="{{ iso.narrative | e }}" />
-          <input type="hidden" name="filename" value="iso-evidence-{{ iso.dept_name | replace(' ','-') }}.md" />
-          <button class="btn-download" type="submit">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-            Download
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:10px;color:var(--gray-4);font-style:italic">Click to edit</span>
+          <button type="button" class="btn-download" onclick="dlDocx('iso-narrative-body','iso-evidence-{{ iso.dept_name | replace(" ","-") }}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            .docx
           </button>
-        </form>
+          <button type="button" class="btn-download" onclick="dlPdf('iso-narrative-body')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+            PDF
+          </button>
+        </div>
       </div>
-      <div class="result-body" id="iso-narrative-body"></div>
+      <div class="result-body" id="iso-narrative-body" contenteditable="true" style="outline:none;min-height:80px"></div>
     </div>
     <script>
       document.getElementById("iso-narrative-body").innerHTML = marked.parse({{ iso.narrative | tojson }});
@@ -2570,16 +2677,19 @@
     <div class="result-card">
       <div class="result-header">
         <span>Board Presentation Narrative</span>
-        <form method="POST" action="/download" style="display:inline">
-          <input type="hidden" name="content" value="{{ staffing.narrative | e }}" />
-          <input type="hidden" name="filename" value="staffing-justification-{{ staffing.dept_name | replace(' ','-') }}.md" />
-          <button class="btn-download" type="submit">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-            Download
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:10px;color:var(--gray-4);font-style:italic">Click to edit</span>
+          <button type="button" class="btn-download" onclick="dlDocx('staffing-narrative-body','staffing-justification-{{ staffing.dept_name | replace(" ","-") }}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            .docx
           </button>
-        </form>
+          <button type="button" class="btn-download" onclick="dlPdf('staffing-narrative-body')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+            PDF
+          </button>
+        </div>
       </div>
-      <div class="result-body" id="staffing-narrative-body"></div>
+      <div class="result-body" id="staffing-narrative-body" contenteditable="true" style="outline:none;min-height:80px"></div>
     </div>
     <script>
       document.getElementById("staffing-narrative-body").innerHTML = marked.parse({{ staffing.narrative | tojson }});
@@ -2678,16 +2788,23 @@
           {% elif form.report_type == 'grant' %}{{ form.grant_type }} Grant Narrative
           {% endif %}
         </span>
-        <form method="POST" action="/download" style="display:inline">
-          <input type="hidden" name="content" value="{{ result | e }}" />
-          <input type="hidden" name="filename" value="fireinsight-{{ form.report_type }}.md" />
-          <button type="submit" class="btn-download">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <span style="font-size:10px;color:var(--gray-4);font-style:italic">Click to edit</span>
+          <button type="button" class="btn-download" onclick="dlMd('result-body','5alarmdata-{{ form.report_type }}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download .md
+            .md
           </button>
-        </form>
+          <button type="button" class="btn-download" onclick="dlDocx('result-body','5alarmdata-{{ form.report_type }}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            .docx
+          </button>
+          <button type="button" class="btn-download" onclick="dlPdf('result-body')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+            PDF
+          </button>
+        </div>
       </div>
-      <div class="result-body" id="result-body"></div>
+      <div class="result-body" id="result-body" contenteditable="true" style="outline:none;min-height:80px"></div>
     </div>
     <script>
       document.getElementById("result-body").innerHTML = marked.parse({{ result | tojson }});
@@ -2850,7 +2967,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
       </svg>
       <p>Your output will appear here</p>
-      <small>Select a report type, upload your data, and click Generate</small>
+      <small>Select a report type and click Generate</small>
     </div>
     {% endif %}
     {% endif %}
@@ -2876,7 +2993,7 @@
         <!-- AI Narrative on demand -->
         <form method="POST" action="/generate" style="display:inline">
           <input type="hidden" name="report_type" value="trends" />
-          <input type="hidden" name="use_mock" value="true" />
+          {% if not user_data %}<input type="hidden" name="use_mock" value="true" />{% endif %}
           <button type="submit" class="btn-run" style="font-size:12px;height:32px;padding:0 14px" onclick="showLoading()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M13 2L4 14h7l-1 8 9-12h-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
             AI Narrative
@@ -3252,175 +3369,6 @@
   </script>
   {% endif %}
 
-  <!-- ── Report Builder Results ── -->
-  {% if report_builder %}
-  <div id="report-builder-results">
-    {% set rb = report_builder %}
-    {% if rb.error %}
-    <div class="error-banner">{{ rb.error }}</div>
-    {% elif rb.report %}
-    {% set r = rb.report %}
-    <div style="max-width:860px;margin:0 auto">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-        <div>
-          <div style="font-size:20px;font-weight:800;color:var(--white)">{{ r.dept_name }} — Custom Report</div>
-          <div style="font-size:12px;color:var(--gray-4);margin-top:3px">Period: {{ r.period }}</div>
-        </div>
-        <form method="POST" action="/report-builder/export" style="display:inline">
-          <input type="hidden" name="content" value="{{ r | tojson | replace('"', '&quot;') }}" />
-          <input type="hidden" name="filename" value="custom-report-{{ r.dept_name | lower | replace(' ', '-') }}.json" />
-          <button type="submit" class="btn-run" style="font-size:12px;height:32px;padding:0 14px">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Export
-          </button>
-        </form>
-      </div>
-
-      <!-- Metric cards grid -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:28px">
-        {% for key, metric in r.metrics.items() %}
-        {% if metric.value is not mapping and metric.value is not iterable or metric.value is string %}
-        <div class="result-card" style="margin-bottom:0">
-          <div class="result-header">
-            <span>{{ metric.label }}</span>
-            {% if r.deltas and key in r.deltas %}
-            {% set d = r.deltas[key] %}
-            <span style="font-size:11px;font-weight:700;color:{% if d.direction == 'up' %}#4ADE80{% elif d.direction == 'down' %}#F87171{% else %}var(--gray-4){% endif %}">
-              {% if d.direction == 'up' %}▲{% elif d.direction == 'down' %}▼{% else %}—{% endif %}
-              {% if d.pct %}{{ d.pct | abs }}%{% endif %}
-            </span>
-            {% endif %}
-          </div>
-          <div style="padding:20px">
-            <div style="font-size:36px;font-weight:900;color:var(--white);line-height:1">{{ metric.value }}</div>
-            <div style="font-size:11px;color:var(--gray-4);margin-top:4px">{{ metric.unit }}</div>
-            {% if metric.note %}
-            <div style="font-size:11px;color:var(--gray-3);margin-top:6px">{{ metric.note }}</div>
-            {% endif %}
-            {% if r.has_compare and r.compare and key in r.compare %}
-            <div style="font-size:11px;color:var(--gray-4);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
-              Prior period: <strong style="color:var(--gray-3)">{{ r.compare[key].value }}</strong>
-            </div>
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
-        {% endfor %}
-      </div>
-
-      <!-- List metrics (top types, hours, days, monthly trend) -->
-      {% for key, metric in r.metrics.items() %}
-      {% if metric.value is not string and metric.unit in ('types', 'hours', 'days') %}
-      <div class="result-card" style="margin-bottom:14px">
-        <div class="result-header"><span>{{ metric.label }}</span></div>
-        <div style="padding:16px 20px">
-          {% for item in metric.value %}
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
-            <span style="font-size:13px;color:var(--gray-2)">{{ item[0] }}</span>
-            <span style="font-size:13px;font-weight:700;color:var(--white)">{{ item[1] }}</span>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-      {% endif %}
-      {% endfor %}
-
-      <!-- Monthly trend chart -->
-      {% for key, metric in r.metrics.items() %}
-      {% if metric.unit == 'monthly' %}
-      <div class="result-card" style="margin-bottom:14px">
-        <div class="result-header"><span>{{ metric.label }}</span></div>
-        <div style="padding:16px 20px;height:180px">
-          <canvas id="rb-monthly-chart"></canvas>
-        </div>
-      </div>
-      <script>
-        (function(){
-          const data = {{ metric.value | tojson }};
-          new Chart(document.getElementById('rb-monthly-chart'), {
-            type: 'bar',
-            data: { labels: Object.keys(data), datasets: [{ data: Object.values(data), backgroundColor: 'rgba(214,55,55,.6)', borderColor: 'rgba(214,55,55,1)', borderWidth: 1, borderRadius: 4 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-              scales: { x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#8A9BA8', font: { size: 10 } } }, y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#8A9BA8', font: { size: 10 } }, beginAtZero: true } } }
-          });
-        })();
-      </script>
-      {% endif %}
-      {% endfor %}
-
-      <!-- Metric picker hint -->
-      <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:16px 20px;margin-top:8px">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-4);margin-bottom:8px">Available Metrics</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px">
-          {% for key in r.all_metrics %}
-          <span style="font-size:11px;padding:4px 10px;border-radius:25px;background:{% if key in r.metrics %}rgba(214,55,55,.15);color:#F87171;border:1px solid rgba(214,55,55,.3){% else %}var(--navy-4);color:var(--gray-4);border:1px solid var(--border){% endif %}">
-            {{ r.metric_labels[key] }}
-          </span>
-          {% endfor %}
-        </div>
-        <div style="font-size:11px;color:var(--gray-4);margin-top:10px">To select specific metrics, add them via the control bar (coming: drag-and-drop UI)</div>
-      </div>
-    </div>
-    {% endif %}
-  </div>
-  {% endif %}
-
-  <!-- ── State Export Results ── -->
-  {% if state_export %}
-  <div id="state-export-results">
-    {% set se = state_export %}
-    {% if se.error %}
-    <div class="error-banner">{{ se.error }}</div>
-    {% elif se.result %}
-    {% set r = se.result %}
-    <div style="max-width:860px;margin:0 auto">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-        <div>
-          <div style="font-size:20px;font-weight:800;color:var(--white)">{{ r.state_name }} Coordinator Export</div>
-          <div style="font-size:12px;color:var(--gray-4);margin-top:3px">{{ r.dept_name }} — {{ r.total }} incidents — {{ r.date_range }}</div>
-          <div style="font-size:11px;color:var(--gray-4);margin-top:2px">Recipient: {{ r.coordinator }}</div>
-        </div>
-        <form method="POST" action="/state-export/download" style="display:inline">
-          <input type="hidden" name="content" value="{{ r.csv_content | replace('"', '&quot;') | replace('\n', '&#10;') }}" />
-          <input type="hidden" name="filename" value="{{ r.filename }}" />
-          <button type="submit" class="btn-run">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Download {{ r.state }} CSV
-          </button>
-        </form>
-      </div>
-
-      <!-- Stats row -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
-        {% for label, val in [('Total Incidents', r.total), ('FF Injuries', r.summary.injuries_ff), ('Civ Injuries', r.summary.injuries_civ), ('Fields Exported', r.field_count)] %}
-        <div style="background:var(--navy-2);border:1px solid var(--border-2);border-radius:12px;padding:16px">
-          <div style="font-size:28px;font-weight:900;color:var(--white)">{{ val }}</div>
-          <div style="font-size:11px;color:var(--gray-4);margin-top:4px">{{ label }}</div>
-        </div>
-        {% endfor %}
-      </div>
-
-      <!-- Fields list -->
-      <div class="result-card">
-        <div class="result-header"><span>Exported Fields ({{ r.field_count }})</span></div>
-        <div style="padding:16px 20px;display:flex;flex-wrap:wrap;gap:8px">
-          {% for f in r.fields %}
-          <span style="font-size:11px;padding:4px 10px;border-radius:25px;background:var(--navy-4);color:var(--gray-2);border:1px solid var(--border)">{{ f }}</span>
-          {% endfor %}
-        </div>
-      </div>
-
-      <!-- CSV preview -->
-      <div class="result-card" style="margin-top:14px">
-        <div class="result-header"><span>CSV Preview (first 5 rows)</span></div>
-        <div style="padding:14px 20px;overflow-x:auto">
-          <pre style="font-size:10px;color:var(--gray-3);line-height:1.7;white-space:pre">{{ r.csv_content.split('\n')[:6] | join('\n') }}</pre>
-        </div>
-      </div>
-    </div>
-    {% endif %}
-  </div>
-  {% endif %}
 
   <!-- ── NFIRS Archive Analysis page ── -->
   <div id="archive-page" style="display:none">
@@ -3470,7 +3418,7 @@
     <div style="max-width:860px;margin:0 auto">
       <div style="margin-bottom:24px">
         <div style="font-size:20px;font-weight:800;color:var(--white)">{{ r.dept_name }} — {{ r.year_span }}-Year Trend Analysis</div>
-        <div style="font-size:12px;color:var(--gray-4);margin-top:3px">{{ r.record_count | format_num if r.record_count else r.record_count }} NFIRS records · {{ r.years_in_data[0] }}–{{ r.years_in_data[-1] }} · NERIS baseline: {{ r.current_year }}</div>
+        <div style="font-size:12px;color:var(--gray-4);margin-top:3px">{{ "{:,}".format(r.record_count) if r.record_count else r.record_count }} NFIRS records · {{ r.years_in_data[0] }}–{{ r.years_in_data[-1] }} · NERIS baseline: {{ r.current_year }}</div>
       </div>
 
       <!-- Insights -->
@@ -3551,9 +3499,9 @@
 
 <script>
   // ── Tab switching ──────────────────────────────────────────────────────────
-  const _ctrlBars = ['main-form','trends-controls','quality-controls','ev-controls','risk-controls',
+  const _ctrlBars = ['main-form','trends-controls','quality-controls','ev-controls',
     'benchmark-controls','compliance-controls','submit-controls','iso-controls','staffing-controls',
-    'convert-controls','map-controls','report_builder-controls','state_export-controls'];
+    'convert-controls','map-controls'];
 
   // Server-rendered flags for showing results on initial load
   const _hasConvertResult = {{ 'true' if (convert and convert.summary) else 'false' }};
@@ -3567,24 +3515,20 @@
     const isMap           = val === 'map';
     const isBenchmark     = val === 'benchmark';
     const isEv            = val === 'ev';
-    const isRisk          = val === 'risk';
     const isCompliance    = val === 'compliance';
     const isIso           = val === 'iso';
     const isStaffing      = val === 'staffing';
     const isTrends        = val === 'trends';
     const isSubmit        = val === 'submit';
-    const isReportBuilder = val === 'report_builder';
-    const isStateExport   = val === 'state_export';
     const isArchive       = val === 'archive';
-    const isReport = !isConvert && !isQuality && !isMap && !isBenchmark && !isEv && !isRisk
-                  && !isCompliance && !isSubmit && !isIso && !isStaffing && !isTrends && !isReportBuilder && !isStateExport && !isArchive;
+    const isReport = !isConvert && !isQuality && !isMap && !isBenchmark && !isEv
+                  && !isCompliance && !isSubmit && !isIso && !isStaffing && !isTrends && !isArchive;
 
     // Hide all ctrl bars, show the right one
     _ctrlBars.forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
     if (isReport)        { document.getElementById('main-form').style.display = 'flex'; }
     if (isQuality)       { document.getElementById('quality-controls').style.display = 'flex'; }
     if (isEv)            { document.getElementById('ev-controls').style.display = 'flex'; }
-    if (isRisk)          { document.getElementById('risk-controls').style.display = 'flex'; }
     if (isBenchmark)     { document.getElementById('benchmark-controls').style.display = 'flex'; }
     if (isCompliance)    { document.getElementById('compliance-controls').style.display = 'flex'; }
     if (isIso)           { document.getElementById('iso-controls').style.display = 'flex'; }
@@ -3593,8 +3537,6 @@
     if (isMap)           { document.getElementById('map-controls').style.display = 'flex'; }
     if (isTrends)        { document.getElementById('trends-controls').style.display = 'flex'; }
     if (isSubmit)        { document.getElementById('submit-controls').style.display = 'flex'; }
-    if (isReportBuilder) { const e = document.getElementById('report_builder-controls'); if (e) e.style.display = 'flex'; }
-    if (isStateExport)   { const e = document.getElementById('state_export-controls'); if (e) e.style.display = 'flex'; }
     document.getElementById('neris-connect-panel').style.display = 'none';
 
     // Show/hide tab-specific content pages
@@ -3602,16 +3544,15 @@
     const archivePage      = document.getElementById('archive-page');
     const nerisMainPage    = document.getElementById('neris-connect-main');
     const resultsArea      = document.getElementById('results-area');
-    const rbResults        = document.getElementById('report-builder-results');
-    const seResults        = document.getElementById('state-export-results');
+    const homePage         = document.getElementById('home-page');
+
     const archiveResults   = document.getElementById('archive-results');
     const trendsResults    = document.getElementById('trends-results');
 
+    if (homePage)       homePage.style.display       = 'none';
     if (convertPage)    convertPage.style.display    = isConvert ? 'block' : 'none';
     if (archivePage)    archivePage.style.display    = isArchive ? 'block' : 'none';
     if (nerisMainPage)  nerisMainPage.style.display  = 'none';
-    if (rbResults)      rbResults.style.display      = isReportBuilder ? '' : 'none';
-    if (seResults)      seResults.style.display      = isStateExport ? '' : 'none';
     if (archiveResults) archiveResults.style.display = isArchive ? '' : 'none';
     if (trendsResults)  trendsResults.style.display  = isTrends ? '' : 'none';
     const submitResults = document.getElementById('submit-results');
@@ -3619,7 +3560,7 @@
 
     // Hide results when switching to convert/map/archive (no auto-submit for these)
     if (resultsArea) {
-      if (isMap || isReportBuilder || isStateExport || isArchive || isTrends || isSubmit) {
+      if (isMap || isArchive || isTrends || isSubmit) {
         resultsArea.style.display = 'none';
       } else if (isConvert) {
         resultsArea.style.display = _hasConvertResult ? '' : 'none';
@@ -3630,7 +3571,6 @@
 
     // Init EV map/chart when tab first opened
     if (isEv)   setTimeout(() => { initEvChart(); initEvMap();   }, 150);
-    if (isRisk) setTimeout(() => { initRiskMap(); }, 150);
 
     // Hide dashboard when any tab is selected
     const dash = document.getElementById('dashboard');
@@ -3652,11 +3592,10 @@
     // Auto-submit the form on user-initiated tab clicks (not initial page load)
     if (autoRun && !isConvert && !isMap && !isArchive) {
       const formIds = {
-        ev: 'ev-controls', risk: 'risk-controls', benchmark: 'benchmark-controls',
+        ev: 'ev-controls', benchmark: 'benchmark-controls',
         compliance: 'compliance-controls', iso: 'iso-controls', staffing: 'staffing-controls',
         quality: 'quality-controls', trends: 'trends-controls', submit: 'submit-controls',
         report: 'main-form', grant: 'main-form',
-        report_builder: 'report_builder-controls', state_export: 'state_export-controls',
       };
       const formId = formIds[val];
       if (formId) {
@@ -3676,8 +3615,6 @@
     selectTab(document.querySelector('.nav-item[data-value="benchmark"]'));
     {% elif active_tab == 'ev' %}
     selectTab(document.querySelector('.nav-item[data-value="ev"]'));
-    {% elif active_tab == 'risk' %}
-    selectTab(document.querySelector('.nav-item[data-value="risk"]'));
     {% elif active_tab == 'compliance' %}
     selectTab(document.querySelector('.nav-item[data-value="compliance"]'));
     {% elif active_tab == 'iso' %}
@@ -3688,10 +3625,7 @@
     selectTab(document.querySelector('.nav-item[data-value="submit"]'));
     {% elif active_tab == 'trends' or trends_data %}
     selectTab(document.querySelector('.nav-item[data-value="trends"]'));
-    {% elif active_tab == 'report_builder' %}
-    selectTab(document.querySelector('.nav-item[data-value="report_builder"]'));
-    {% elif active_tab == 'state_export' %}
-    selectTab(document.querySelector('.nav-item[data-value="state_export"]'));
+
     {% elif active_tab == 'archive' %}
     selectTab(document.querySelector('.nav-item[data-value="archive"]'));
     {% elif form %}
@@ -3707,15 +3641,16 @@
     ['map-use-mock',        'map-neris-field'],
     ['bench-use-mock',      'bench-neris-field'],
     ['ev-use-mock',         'ev-neris-field'],
-    ['risk-use-mock',       'risk-neris-field'],
-    ['compliance-use-mock', 'compliance-neris-field'],
+    ['compliance-use-mock', 'compliance-neris-field', 'compliance-export-instructions'],
     ['iso-use-mock',        'iso-neris-field'],
     ['staffing-use-mock',   'staffing-neris-field'],
-  ].forEach(([cbId, fieldId]) => {
+  ].forEach(([cbId, fieldId, infoId]) => {
     const cb = document.getElementById(cbId);
     const field = document.getElementById(fieldId);
+    const info = infoId ? document.getElementById(infoId) : null;
     if (cb && field) cb.addEventListener('change', function() {
       field.style.display = this.checked ? 'none' : 'flex';
+      if (info) info.style.display = this.checked ? 'none' : 'block';
     });
   });
 
@@ -3757,19 +3692,6 @@
     }
   }
 
-  // ── Community Risk zone drilldown ─────────────────────────────────────────
-  function toggleRiskDrill(id) {
-    const detail  = document.getElementById('risk-detail-' + id);
-    const chevron = document.getElementById('risk-chevron-' + id);
-    if (!detail) return;
-    const open = detail.style.display !== 'none';
-    document.querySelectorAll('[id^="risk-detail-"]').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('[id^="risk-chevron-"]').forEach(el => el.textContent = '›');
-    if (!open) {
-      detail.style.display = '';
-      if (chevron) chevron.textContent = '⌄';
-    }
-  }
 
   // ── NFIRS Archive upload helpers ──────────────────────────────────────────
   function handleArchiveDrop(event) {
@@ -4083,7 +4005,7 @@
   }
 
   async function loadMap() {
-    const useMock  = document.getElementById('map-use-mock').checked;
+    const useMock  = document.getElementById('map-use-mock')?.checked ?? false;
     const nerisId  = document.getElementById('map-neris-id')?.value || 'MOCK-001';
     const start    = document.getElementById('map-start').value;
     const end      = document.getElementById('map-end').value;
@@ -4168,11 +4090,6 @@
   const _evByMonth = {}; const _evMapPoints = [];
   {% endif %}
 
-  {% if risk and risk.zones %}
-  const _riskZones = {{ risk.zones | tojson }};
-  {% else %}
-  const _riskZones = [];
-  {% endif %}
 
   // EV trend chart
   let _evChart = null;
@@ -4227,39 +4144,6 @@
     setTimeout(() => _evMap.invalidateSize(), 100);
   }
 
-  // Community risk map
-  let _riskMap = null, _riskMapInit = false;
-  const RISK_COLORS = { Critical: '#EF4444', High: '#F97316', Medium: '#EAB308', Low: '#22C55E' };
-  function initRiskMap() {
-    const el = document.getElementById('risk-map');
-    if (!el || _riskMapInit || !_riskZones.length) return;
-    _riskMap = L.map('risk-map', { zoomControl: true });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '', subdomains: 'abcd', maxZoom: 19,
-    }).addTo(_riskMap);
-    _riskZones.forEach(z => {
-      const color = RISK_COLORS[z.risk_level] || '#64748B';
-      const radius = 10 + (z.risk_score / 100) * 22;
-      const rt = z.avg_response_seconds
-        ? `${Math.floor(z.avg_response_seconds/60)}m ${String(z.avg_response_seconds%60).padStart(2,'0')}s`
-        : '—';
-      L.circleMarker([z.lat, z.lon], {
-        radius, fillColor: color, color: 'rgba(255,255,255,.2)',
-        fillOpacity: 0.55, weight: 1,
-      }).bindPopup(`
-        <div style="min-width:180px">
-          <div style="font-size:13px;font-weight:700;color:${color};margin-bottom:5px">${z.risk_level} Risk — ${z.risk_score}/100</div>
-          <div style="font-size:11px;color:#C2C2C2">${z.incident_count} incidents</div>
-          <div style="font-size:11px;color:#8A9BA8;margin-top:2px">${z.dominant_type}</div>
-          <div style="font-size:11px;color:#8A9BA8;margin-top:2px">Avg response: ${rt}</div>
-        </div>`).addTo(_riskMap);
-    });
-    const lats = _riskZones.map(z => z.lat);
-    const lons = _riskZones.map(z => z.lon);
-    _riskMap.fitBounds([[Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]], { padding: [24, 24] });
-    _riskMapInit = true;
-    setTimeout(() => _riskMap.invalidateSize(), 100);
-  }
 
   // ── Dashboard ─────────────────────────────────────────────────────────────
   {% if dashboard %}
@@ -4348,6 +4232,104 @@
 
   document.addEventListener('DOMContentLoaded', initDashboard);
   {% endif %}
+</script>
+
+<!-- ── Paid Feature Paywall ─────────────────────────────────────────────── -->
+<div id="paywall-overlay" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(10,18,24,.82);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:24px">
+  <div style="background:#162028;border:1px solid rgba(255,255,255,.13);border-radius:20px;padding:40px 36px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.45);position:relative">
+    <button onclick="closePaywall()" style="position:absolute;top:14px;right:18px;background:none;border:none;color:#4A5C68;font-size:20px;cursor:pointer;line-height:1;padding:4px 8px">✕</button>
+    <div style="font-size:34px;margin-bottom:14px">🔒</div>
+    <h2 style="font-size:22px;font-weight:800;color:#E8E9EB;margin-bottom:10px;letter-spacing:-.3px">This is a paid feature</h2>
+    <p id="paywall-desc" style="font-size:14px;color:#8A9BA8;line-height:1.65;margin-bottom:22px;max-width:340px;margin-left:auto;margin-right:auto"></p>
+    <div style="background:#1E2E38;border-radius:12px;padding:14px 18px;text-align:left;margin-bottom:24px;display:flex;flex-direction:column;gap:9px">
+      <div style="font-size:13px;color:#C2C2C2;display:flex;align-items:center;gap:9px"><span style="color:#D63737;font-weight:700">✓</span> Upload your department's real incident data</div>
+      <div style="font-size:13px;color:#C2C2C2;display:flex;align-items:center;gap:9px"><span style="color:#D63737;font-weight:700">✓</span> AI-written narratives, reports, and grant drafts</div>
+      <div style="font-size:13px;color:#C2C2C2;display:flex;align-items:center;gap:9px"><span style="color:#D63737;font-weight:700">✓</span> Edit and download every report you generate</div>
+      <div style="font-size:13px;color:#C2C2C2;display:flex;align-items:center;gap:9px"><span style="color:#D63737;font-weight:700">✓</span> NERIS compliance check free with any account</div>
+    </div>
+    <a href="/sign-in?next=/app" style="display:block;width:100%;padding:15px;background:#D63737;color:#fff;border-radius:12px;font-size:16px;font-weight:800;text-decoration:none;margin-bottom:10px;box-sizing:border-box">Create Free Account →</a>
+    <a href="/sign-in?next=/app" style="display:block;width:100%;padding:13px;background:#1E2E38;color:#8A9BA8;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:16px;box-sizing:border-box">Already have an account? Sign in</a>
+    <a href="/pricing" style="font-size:13px;color:#4A5C68;text-decoration:underline">See pricing →</a>
+  </div>
+</div>
+
+<script>
+// ── Paid Feature Paywall ──────────────────────────────────────────────────────
+
+function isSignedIn() {
+  return !!(window.Clerk && window.Clerk.user);
+}
+
+function showPaywall(desc) {
+  document.getElementById('paywall-desc').textContent = desc;
+  const overlay = document.getElementById('paywall-overlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closePaywall() {
+  document.getElementById('paywall-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.getElementById('paywall-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closePaywall();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Gate: unchecking "Sample Data" on any form (except compliance, quality, iso — those are free)
+  document.querySelectorAll('input[name="use_mock"]').forEach(function(cb) {
+    if (['compliance-use-mock', 'quality-use-mock', 'iso-use-mock', 'bench-use-mock', 'ev-use-mock', 'staffing-use-mock', 'map-use-mock'].includes(cb.id)) return;
+    cb.addEventListener('change', function() {
+      if (!this.checked && !isSignedIn()) {
+        this.checked = true;
+        showPaywall('Using your own department data requires an account. Upload an export from NERIS, ESO, FIREHOUSE, or ImageTrend and get reports based on your actual numbers.');
+      }
+    });
+  });
+
+  var _printCss = 'body{font-family:Georgia,serif;max-width:820px;margin:40px auto;padding:0 28px;line-height:1.75;color:#111}h1{font-size:22px;margin:0 0 18px}h2{font-size:17px;margin:28px 0 10px;border-bottom:1px solid #ddd;padding-bottom:4px}h3{font-size:14px;margin:20px 0 8px}p{margin:10px 0}ul,ol{padding-left:22px;margin:8px 0}li{margin:4px 0}strong{font-weight:700}@media print{body{margin:0;padding:16px}}';
+
+  function dlMd(bodyId, filename) {
+    var text = document.getElementById(bodyId).innerText;
+    var form = document.createElement('form');
+    form.method = 'POST'; form.action = '/download';
+    var c = document.createElement('input'); c.type='hidden'; c.name='content'; c.value=text;
+    var f = document.createElement('input'); f.type='hidden'; f.name='filename'; f.value=filename+'.md';
+    form.appendChild(c); form.appendChild(f);
+    document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+  }
+
+  function dlDocx(bodyId, filename) {
+    var text = document.getElementById(bodyId).innerText;
+    var form = document.createElement('form');
+    form.method = 'POST'; form.action = '/download-docx';
+    var c = document.createElement('input'); c.type='hidden'; c.name='content'; c.value=text;
+    var f = document.createElement('input'); f.type='hidden'; f.name='filename'; f.value=filename;
+    form.appendChild(c); form.appendChild(f);
+    document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+  }
+
+  function dlPdf(bodyId) {
+    var body = document.getElementById(bodyId);
+    if (!body) return;
+    var iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:900px;height:600px';
+    document.body.appendChild(iframe);
+    var doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write('<!DOCTYPE html><html><head><title>5 Alarm Data Report</title><style>'+_printCss+'</style></head><body>'+body.innerHTML+'</body></html>');
+    doc.close();
+    setTimeout(function(){
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      setTimeout(function(){ document.body.removeChild(iframe); }, 2000);
+    }, 500);
+  }
+
+
+});
 </script>
 
 </body>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{ data.dept }} — {{ data.type.replace('_',' ').title() }} | 5AlarmData</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #0F1923;
+    --surface: #1A2736;
+    --border:  #2A3A4A;
+    --red:     #C8392B;
+    --ink:     #F0F4F8;
+    --muted:   #8BA0B4;
+    --white:   #ffffff;
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── Top toolbar ── */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .toolbar-logo {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--red);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .toolbar-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .toolbar-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .toolbar-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .btn-tool {
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--ink);
+    transition: background 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .btn-tool:hover { background: var(--border); }
+
+  .btn-tool-primary {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+  .btn-tool-primary:hover { background: #a82d20; border-color: #a82d20; }
+
+  /* ── Main layout ── */
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .editor-hint {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #1e3a2a;
+    border: 1px solid #2a5a3a;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    color: #6fcf97;
+  }
+
+  /* ── Report editor area ── */
+  .report-editor {
+    background: var(--white);
+    color: #1a1a1a;
+    border-radius: 10px;
+    padding: 48px 52px;
+    outline: none;
+    line-height: 1.7;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 16px;
+    min-height: 400px;
+  }
+
+  .report-editor:focus {
+    box-shadow: 0 0 0 3px rgba(200, 57, 43, 0.25);
+  }
+
+  /* Typography inside editor */
+  .report-editor h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--red);
+    margin: 0 0 20px;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .report-editor h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 28px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--red);
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .report-editor h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin: 16px 0 4px;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .report-editor p { margin: 6px 0; }
+  .report-editor li { margin-bottom: 4px; margin-left: 20px; }
+  .report-editor br { display: block; content: ''; margin: 4px 0; }
+  .report-editor strong { font-weight: 700; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1e3a2a;
+    border: 1px solid #2a5a3a;
+    color: #6fcf97;
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    z-index: 200;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── Print styles ── */
+  @media print {
+    .toolbar, .editor-hint, .toast { display: none !important; }
+    body { background: #fff; }
+    .page { padding: 0; max-width: 100%; }
+    .report-editor {
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .toolbar { padding: 10px 16px; }
+    .toolbar-subtitle { display: none; }
+    .report-editor { padding: 28px 20px; }
+    .btn-tool { padding: 6px 10px; font-size: 12px; }
+  }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="toolbar-left">
+    <a href="/" class="toolbar-logo">5AlarmData</a>
+    <div class="toolbar-divider"></div>
+    <div>
+      <div class="toolbar-title">{{ data.dept }}</div>
+      <div class="toolbar-subtitle">{{ data.type.replace('_',' ').title() }}</div>
+    </div>
+  </div>
+  <div class="toolbar-actions">
+    <button class="btn-tool" onclick="copyReport()">Copy Text</button>
+    <button class="btn-tool" onclick="downloadReport()">Download .txt</button>
+    <button class="btn-tool btn-tool-primary" onclick="window.print()">Print / Save PDF</button>
+  </div>
+</div>
+
+<!-- Page body -->
+<div class="page">
+  <div class="editor-hint">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    Click anywhere in the report to edit. Copy or download when done.
+  </div>
+
+  <div
+    class="report-editor"
+    id="report-editor"
+    contenteditable="true"
+    spellcheck="true"
+  >{{ data.content | markdown_to_html | safe }}</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Store original markdown for download
+  const _rawContent = {{ data.content | tojson }};
+  const _deptName   = {{ data.dept | tojson }};
+  const _reportType = {{ data.type | tojson }};
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  function copyReport() {
+    const el = document.getElementById('report-editor');
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      showToast('Copied to clipboard');
+    }).catch(() => {
+      // Fallback
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      sel.removeAllRanges();
+      showToast('Copied to clipboard');
+    });
+  }
+
+  function downloadReport() {
+    // Download current editor text (reflects any edits)
+    const text = document.getElementById('report-editor').innerText;
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = (_deptName + ' — ' + _reportType.replace(/_/g,' ')).replace(/[^a-z0-9 —]/gi, '') + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Downloaded');
+  }
+</script>
+
+</body>
+</html>

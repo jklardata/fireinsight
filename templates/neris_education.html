@@ -2,18 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NERIS Guide — FireInsight</title>
+  <title>NERIS Guide — 5AlarmData</title>
   <meta name="description" content="Everything fire departments need to know about NERIS — the federal mandate, compliance requirements, FAQ, and what it means for grants and ISO ratings." />
-  <link rel="canonical" href="https://fireinsight.app/neris" />
+  <link rel="canonical" href="https://www.5alarmdata.com/neris" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="FireInsight" />
-  <meta property="og:title" content="NERIS Guide — FireInsight" />
+  <meta property="og:site_name" content="5AlarmData" />
+  <meta property="og:title" content="NERIS Guide — 5AlarmData" />
   <meta property="og:description" content="Everything fire departments need to know about NERIS: the federal mandate, compliance requirements, FAQ, and what it means for grants and ISO ratings." />
-  <meta property="og:url" content="https://fireinsight.app/neris" />
+  <meta property="og:url" content="https://www.5alarmdata.com/neris" />
   <meta property="og:image" content="https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="NERIS Guide — FireInsight" />
+  <meta name="twitter:title" content="NERIS Guide — 5AlarmData" />
   <meta name="twitter:description" content="Everything fire departments need to know about NERIS: compliance requirements, FAQ, and what it means for grants and ISO ratings." />
   <meta name="twitter:image" content="https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -422,6 +423,7 @@
       .hero-stats { flex-direction: row; }
     }
   </style>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
@@ -430,7 +432,7 @@
     <div class="logo-mark">
       <svg viewBox="0 0 24 24"><path d="M12 2C8 6 6 10 8 14c-2-1-3-3-3-5C3 14 5 20 12 22c7-2 9-8 7-13-1 3-3 5-5 4 2-3 1-7-2-11z"/></svg>
     </div>
-    <span class="nav-logo-text">Fire<em>Insight</em></span>
+    <span class="nav-logo-text">5AlarmData</span>
   </a>
   <ul class="nav-links">
     <li><a href="/">Home</a></li>
@@ -438,8 +440,8 @@
     <li><a href="/neris" class="active">NERIS Guide</a></li>
   </ul>
   <div class="nav-cta">
-    <a href="/app" class="btn btn-sm btn-ghost">Open App</a>
-    <a href="/app" class="btn btn-sm btn-primary">Try Free</a>
+    <a href="/sign-in?next=/app" class="btn btn-sm btn-ghost">Log In</a>
+    <a href="/sign-up?next=/app" class="btn btn-sm btn-primary">Sign Up Free</a>
   </div>
   <button class="nav-hamburger" onclick="document.getElementById('mobile-nav').classList.toggle('open')" aria-label="Open menu">
     <span></span><span></span><span></span>
@@ -450,7 +452,8 @@
   <a href="/resources">Resources</a>
   <a href="/neris">NERIS Guide</a>
   <div class="mobile-cta">
-    <a href="/app" class="btn btn-primary" style="background:var(--ink);color:#fff">Open App</a>
+    <a href="/sign-in?next=/app" class="btn btn-primary" style="background:var(--ink);color:#fff">Log In</a>
+    <a href="/sign-up?next=/app" class="btn btn-primary" style="background:var(--red);color:#fff;margin-top:8px">Sign Up Free</a>
   </div>
 </div>
 
@@ -463,7 +466,7 @@
       <h1>The Complete<br><em>NERIS</em> Guide</h1>
       <p>What it is, what changed, what your department must do now, and how to stay ahead of grant deadlines — in plain language.</p>
       <div class="hero-actions">
-        <a href="/app" class="btn-hero-primary">Run Compliance Check →</a>
+        <a href="/sign-in?next=/app" class="btn-hero-primary">Run Compliance Check →</a>
         <a href="#neris-101" class="btn-hero-ghost">What is NERIS? ↓</a>
       </div>
     </div>
@@ -1110,7 +1113,7 @@
         <div class="faq-cta-card">
           <h4>See your compliance score</h4>
           <p>Upload your incident export and get a field-by-field NERIS audit in seconds.</p>
-          <a href="/app" class="btn-faq-white">Run Audit Free →</a>
+          <a href="/sign-in?next=/app" class="btn-faq-white">Run Compliance Check →</a>
         </div>
       </div>
 
@@ -1141,7 +1144,7 @@
         </div>
         <div class="faq-item">
           <button class="faq-btn">We're still on NFIRS — can we convert? <span class="faq-icon">+</span></button>
-          <div class="faq-answer">Yes, with limitations. A conversion tool can map NFIRS fields to NERIS fields. However, NFIRS lacks several NERIS mandatory fields — especially GPS coordinates. Converted records will have known gaps. You must update your collection process going forward. FireInsight includes an NFIRS-to-NERIS converter.</div>
+          <div class="faq-answer">Yes, with limitations. A conversion tool can map NFIRS fields to NERIS fields. However, NFIRS lacks several NERIS mandatory fields — especially GPS coordinates. Converted records will have known gaps. You must update your collection process going forward. 5AlarmData includes an NFIRS-to-NERIS converter.</div>
         </div>
         <div class="faq-item">
           <button class="faq-btn">How do we get crews to complete records? <span class="faq-icon">+</span></button>
@@ -1153,7 +1156,7 @@
         </div>
         <div class="faq-item">
           <button class="faq-btn">How do I run a compliance check? <span class="faq-icon">+</span></button>
-          <div class="faq-answer">Export your last 90 days of incident data and check completeness rates for all six mandatory modules. FireInsight's compliance checker automates this audit and shows field-by-field gap analysis in seconds — no spreadsheet needed.</div>
+          <div class="faq-answer">Export your last 90 days of incident data and check completeness rates for all six mandatory modules. 5AlarmData's compliance checker automates this audit and shows field-by-field gap analysis in seconds — no spreadsheet needed.</div>
         </div>
       </div>
     </div>
@@ -1191,17 +1194,17 @@
 <div class="cta-band">
   <div>
     <h2>See exactly where your department stands.</h2>
-    <p>Upload your incident export and FireInsight runs a field-by-field NERIS compliance audit — showing which modules are failing and what to fix first.</p>
+    <p>Upload your incident export and 5AlarmData runs a field-by-field NERIS compliance audit — showing which modules are failing and what to fix first.</p>
   </div>
   <div class="cta-band-actions">
-    <a href="/app" class="btn-band-white">Run Compliance Check →</a>
+    <a href="/sign-in?next=/app" class="btn-band-white">Run Compliance Check →</a>
     <a href="/resources" class="btn-band-ghost">Browse Resources</a>
   </div>
 </div>
 
 <footer>
-  <span>&copy; 2026 FireInsight — Built for the fire service</span>
-  <a href="/app" class="btn btn-sm btn-primary">Try Free</a>
+  <span>&copy; 2026 5AlarmData — Built for the fire service</span>
+  <a href="/sign-up?next=/app" class="btn btn-sm btn-primary">Sign Up Free</a>
 </footer>
 
 <script>

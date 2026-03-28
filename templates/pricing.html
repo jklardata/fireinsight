@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing — 5AlarmData</title>
+  <meta name="description" content="Pay per report. No subscription required. Board reports, AFG/SAFER grant narratives, staffing justifications, and ISO evidence packs built from your incident data." />
+  <link rel="canonical" href="https://www.5alarmdata.com/pricing" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:     #F7F4EF;
+      --bg2:    #EDE9E2;
+      --ink:    #0F1A20;
+      --ink2:   #2C3A42;
+      --muted:  #6B7A85;
+      --red:    #C8392B;
+      --red-lt: #FDE8E6;
+      --border: #D8D2C8;
+      --white:  #FFFFFF;
+      --green:  #16A34A;
+      --grn-lt: #F0FDF4;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px;
+      background: rgba(247,244,239,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+    .logo-mark { width: 34px; height: 34px; background: var(--red); border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 17px; height: 17px; fill: #fff; }
+    .nav-logo-text { font-size: 16px; font-weight: 800; letter-spacing: -.3px; }
+    .nav-links { display: flex; align-items: center; gap: 24px; list-style: none; }
+    .nav-links a { font-size: 14px; font-weight: 500; color: var(--muted); transition: color .15s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--ink); }
+    .nav-links a.active { font-weight: 700; }
+    .btn-nav { background: var(--ink); color: #fff; font-size: 13px; font-weight: 700; padding: 9px 20px; border-radius: 25px; text-decoration: none; transition: background .15s; }
+    .btn-nav:hover { background: var(--red); }
+
+    /* PAGE HEADER */
+    .page-header { padding: 72px 48px 56px; text-align: center; border-bottom: 1px solid var(--border); background: var(--white); }
+    .page-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--red); margin-bottom: 14px; }
+    .page-header h1 { font-family: 'Lora', serif; font-size: clamp(32px, 5vw, 52px); font-weight: 600; line-height: 1.1; letter-spacing: -.5px; margin-bottom: 16px; }
+    .page-header p { font-size: 17px; color: var(--muted); max-width: 480px; margin: 0 auto; line-height: 1.65; }
+
+    /* FREE BANNER */
+    .free-banner { background: var(--grn-lt); border-bottom: 1px solid #BBF7D0; padding: 20px 48px; display: flex; align-items: center; justify-content: center; gap: 14px; }
+    .free-banner-icon { width: 36px; height: 36px; background: #DCFCE7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .free-banner-icon svg { width: 18px; height: 18px; stroke: var(--green); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .free-banner-text { font-size: 14px; color: var(--ink2); line-height: 1.5; }
+    .free-banner-text strong { color: var(--green); font-weight: 700; }
+    .free-banner-text a { color: var(--green); font-weight: 700; text-decoration: underline; }
+
+    /* FREE FEATURES */
+    .free-features-section { padding: 48px 48px 0; }
+    .free-features-inner { max-width: 960px; margin: 0 auto; }
+    .free-features-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--green); margin-bottom: 28px; display: flex; align-items: center; gap: 8px; }
+    .free-features-label::before { content: ''; display: inline-block; width: 24px; height: 2px; background: var(--green); }
+    .free-features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .free-feature-card {
+      background: var(--grn-lt); border: 1px solid rgba(22,163,74,.2);
+      border-radius: 16px; padding: 24px;
+    }
+    .free-feature-icon { width: 40px; height: 40px; background: rgba(22,163,74,.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+    .free-feature-icon svg { width: 20px; height: 20px; stroke: var(--green); fill: none; stroke-width: 2; }
+    .free-feature-card h3 { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+    .free-feature-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* DASHBOARD SCREENSHOTS under free */
+    .dash-screenshots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+    .dash-screenshot-card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .dash-screenshot-card:hover { border-color: var(--green); box-shadow: 0 4px 20px rgba(22,163,74,.1); }
+    .dash-screenshot-card img { width: 100%; display: block; border-bottom: 1px solid var(--border); }
+    .dash-screenshot-body { padding: 16px 18px; }
+    .dash-screenshot-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 25px;
+      font-size: 10px; font-weight: 700; letter-spacing: .4px;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .badge-free { background: rgba(22,163,74,.1); color: #15803d; border: 1px solid rgba(22,163,74,.25); }
+    .badge-paid { background: var(--red-lt); color: var(--red); border: 1px solid rgba(200,57,43,.2); }
+    .dash-screenshot-body h4 { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+    .dash-screenshot-body p { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+    @media (max-width: 700px) { .free-features-grid, .dash-screenshots { grid-template-columns: 1fr; } .free-features-section { padding: 32px 20px 0; } }
+
+    /* PRICING GRID */
+    .pricing-section { padding: 64px 48px 80px; }
+    .pricing-inner { max-width: 960px; margin: 0 auto; }
+    .pricing-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 28px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 48px; }
+
+    .price-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px;
+      display: flex; flex-direction: column;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .price-card:hover { border-color: var(--ink2); box-shadow: 0 4px 20px rgba(0,0,0,.07); }
+    .price-card.anchor { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-lt); }
+
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+    .card-icon { width: 44px; height: 44px; background: var(--red-lt); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .card-icon svg { width: 22px; height: 22px; fill: none; stroke: var(--red); stroke-width: 1.5; }
+    .card-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding: 4px 10px; border-radius: 4px; white-space: nowrap; }
+    .badge-anchor { background: var(--red-lt); color: var(--red); }
+    .badge-bundle { background: var(--bg2); color: var(--muted); }
+
+    .card-name { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+    .card-desc { font-size: 13px; color: var(--muted); line-height: 1.65; flex: 1; margin-bottom: 20px; }
+
+    .card-price { display: flex; align-items: baseline; gap: 4px; margin-bottom: 6px; }
+    .price-amount { font-size: 36px; font-weight: 900; letter-spacing: -1.5px; color: var(--ink); }
+    .price-unit { font-size: 13px; color: var(--muted); }
+    .price-time { font-size: 11px; color: var(--muted); margin-bottom: 20px; }
+
+    .card-cta {
+      display: block; text-align: center; background: var(--ink); color: #fff;
+      font-size: 13px; font-weight: 700; padding: 11px 20px; border-radius: 25px;
+      transition: background .15s;
+    }
+    .card-cta:hover { background: var(--red); }
+    .card-cta.outline {
+      background: transparent; color: var(--ink2); border: 1.5px solid var(--border);
+    }
+    .card-cta.outline:hover { background: var(--bg2); border-color: var(--ink2); }
+
+    .card-includes { margin-bottom: 20px; }
+    .card-includes-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 10px; }
+    .include-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--ink2); margin-bottom: 7px; line-height: 1.4; }
+    .include-item::before { content: '✓'; color: var(--green); font-weight: 800; flex-shrink: 0; }
+
+    /* BUNDLE */
+    .bundle-card {
+      background: var(--ink); border-radius: 16px; padding: 32px 36px;
+      display: flex; align-items: center; justify-content: space-between; gap: 32px;
+      flex-wrap: wrap; position: relative; overflow: hidden;
+    }
+    .bundle-card::before {
+      content: '×5'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+      font-size: 120px; font-weight: 900; color: rgba(255,255,255,.04); line-height: 1;
+    }
+    .bundle-left { position: relative; z-index: 1; }
+    .bundle-eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #F87171; margin-bottom: 8px; }
+    .bundle-left h3 { font-family: 'Lora', serif; font-size: 22px; font-weight: 600; color: #fff; line-height: 1.2; margin-bottom: 8px; }
+    .bundle-left p { font-size: 14px; color: rgba(255,255,255,.55); line-height: 1.6; max-width: 400px; }
+    .bundle-right { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0; }
+    .bundle-price { text-align: right; }
+    .bundle-amount { font-size: 42px; font-weight: 900; color: #fff; letter-spacing: -2px; line-height: 1; }
+    .bundle-per { font-size: 13px; color: rgba(255,255,255,.45); margin-top: 2px; }
+    .bundle-saving { font-size: 12px; font-weight: 700; color: #4ADE80; }
+    .btn-bundle { background: #fff; color: var(--ink); font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 25px; text-decoration: none; white-space: nowrap; transition: background .15s; }
+    .btn-bundle:hover { background: var(--bg2); }
+
+    /* FAQ */
+    .faq-section { padding: 0 48px 80px; }
+    .faq-inner { max-width: 680px; margin: 0 auto; }
+    .faq-title { font-family: 'Lora', serif; font-size: 26px; font-weight: 600; margin-bottom: 32px; color: var(--ink); }
+    .faq-item { border-top: 1px solid var(--border); padding: 20px 0; }
+    .faq-item:last-child { border-bottom: 1px solid var(--border); }
+    .faq-q { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .faq-a { font-size: 14px; color: var(--muted); line-height: 1.7; }
+    .faq-a a { color: var(--red); font-weight: 600; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 32px 48px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; background: var(--bg); }
+    .footer-left { display: flex; flex-direction: column; gap: 6px; }
+    .footer-logo { display: flex; align-items: center; gap: 10px; }
+    .footer-logo-text { font-size: 15px; font-weight: 800; color: var(--ink); }
+    footer p { font-size: 13px; color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--muted); transition: color .15s; }
+    .footer-links a:hover { color: var(--ink); }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .page-header { padding: 48px 24px 40px; }
+      .free-banner { padding: 16px 24px; flex-direction: column; text-align: center; }
+      .pricing-section, .faq-section { padding-left: 24px; padding-right: 24px; }
+      .bundle-card { padding: 28px 24px; }
+      .bundle-right { align-items: flex-start; }
+      footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
+    </div>
+    <span class="nav-logo-text">5AlarmData</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/#how-it-works">How It Works</a></li>
+    <li><a href="/#reports">What We Make</a></li>
+    <li><a href="/directory">Directory</a></li>
+    <li><a href="/resources">Resources</a></li>
+    <li><a href="/pricing" class="active">Pricing</a></li>
+    <li><a href="/about">About</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:8px">
+    <a href="/sign-in?next=/app" style="font-size:13px;font-weight:600;color:var(--muted);padding:8px 16px;border-radius:25px;border:1.5px solid var(--border);transition:border-color .15s,color .15s;text-decoration:none">Log In</a>
+    <a href="/sign-up?next=/app" style="font-size:13px;font-weight:700;color:#fff;padding:8px 18px;border-radius:25px;background:var(--red);text-decoration:none">Sign Up Free</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-eyebrow">Pricing</div>
+  <h1>Pay per report.<br />No subscription.</h1>
+  <p>Every report is built from your department's own incident data. Pay only for what you need, when you need it.</p>
+</div>
+
+<!-- FREE BANNER -->
+<div class="free-banner">
+  <div class="free-banner-icon">
+    <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+  </div>
+  <div class="free-banner-text">
+    <strong>NERIS Compliance Check is always free.</strong> Run it before your first report to see exactly where your records stand. <a href="/start?type=compliance">Run it now</a>
+  </div>
+</div>
+
+<!-- FREE FEATURES -->
+<section class="free-features-section">
+  <div class="free-features-inner">
+    <div class="free-features-label">Free with any account</div>
+    <div class="free-features-grid">
+
+      <div class="free-feature-card">
+        <div class="free-feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>NERIS Compliance Check</h3>
+        <p>Check all 6 mandatory NERIS modules against your data and get a plain-English report on exactly what's missing. Runs in under 30 seconds.</p>
+      </div>
+
+      <div class="free-feature-card">
+        <div class="free-feature-icon">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h3>Trend Analysis (Sample Data)</h3>
+        <p>Run a full incident trend analysis against a real anonymized fire department dataset. See what the tool does before uploading your own data.</p>
+      </div>
+
+      <div class="free-feature-card">
+        <div class="free-feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>All Sample Reports</h3>
+        <p>Try every report type — board reports, staffing justifications, ISO evidence, peer benchmarks — using sample data. Edit and download any of them.</p>
+      </div>
+
+    </div>
+
+    <!-- Dashboard screenshots -->
+    <div class="dash-screenshots">
+      <div class="dash-screenshot-card">
+        <img src="/static/img/neris_compliance.png" alt="NERIS Compliance Check" loading="lazy" />
+        <div class="dash-screenshot-body">
+          <div class="dash-screenshot-badge badge-free">Free</div>
+          <h4>NERIS Compliance Check</h4>
+          <p>See which of the 6 mandatory modules have gaps — plain English, not codes.</p>
+        </div>
+      </div>
+      <div class="dash-screenshot-card">
+        <img src="/static/img/trend_analysis.png" alt="Trend Analysis" loading="lazy" />
+        <div class="dash-screenshot-body">
+          <div class="dash-screenshot-badge badge-paid">Paid</div>
+          <h4>Incident Trend Analysis</h4>
+          <p>Call volume drivers, response time trends — visualized and explained for your board.</p>
+        </div>
+      </div>
+      <div class="dash-screenshot-card">
+        <img src="/static/img/peer_benchmark.png" alt="Peer Benchmark" loading="lazy" />
+        <div class="dash-screenshot-body">
+          <div class="dash-screenshot-badge badge-paid">Paid</div>
+          <h4>Peer Benchmark</h4>
+          <p>Compare response times, call volume, and staffing against similar departments in your region.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:28px">
+      <a href="/sign-up?next=/app" style="display:inline-block;padding:13px 32px;background:var(--green);color:#fff;border-radius:25px;font-size:15px;font-weight:700;text-decoration:none;transition:background .15s">Create Free Account →</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING GRID -->
+<section class="pricing-section">
+  <div class="pricing-inner">
+
+    <div class="pricing-label">Reports</div>
+    <div class="pricing-grid">
+
+      <!-- Board Report -->
+      <div class="price-card">
+        <div class="card-top">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+        </div>
+        <div class="card-name">Monthly Board Report</div>
+        <div class="card-desc">A complete narrative your board can read: incident counts, response times, call trends, and what they mean. Ready in under 2 minutes.</div>
+        <div class="card-price">
+          <span class="price-amount">$19</span>
+          <span class="price-unit">/ report</span>
+        </div>
+        <div class="price-time">Ready in &lt; 2 minutes</div>
+        <a href="/start" class="card-cta">Get This Report →</a>
+      </div>
+
+      <!-- Trend Summary -->
+      <div class="price-card">
+        <div class="card-top">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zm0 11h7v7H3zm11-11h7v7h-7zm4 11v3m0 3v-3m0 0h-3m3 0h3"/></svg>
+          </div>
+        </div>
+        <div class="card-name">Incident Trend Summary</div>
+        <div class="card-desc">What's driving your call volume? Where are response times getting worse? Explained in clear sentences your board can act on.</div>
+        <div class="card-price">
+          <span class="price-amount">$19</span>
+          <span class="price-unit">/ report</span>
+        </div>
+        <div class="price-time">Ready in &lt; 2 minutes</div>
+        <a href="/start" class="card-cta">Get This Report →</a>
+      </div>
+
+      <!-- Staffing -->
+      <div class="price-card">
+        <div class="card-top">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+          </div>
+        </div>
+        <div class="card-name">Staffing Justification</div>
+        <div class="card-desc">We find every simultaneous call, measure the response time impact, and write a budget presentation your council can't dismiss. Hard numbers, not gut feel.</div>
+        <div class="card-price">
+          <span class="price-amount">$59</span>
+          <span class="price-unit">/ report</span>
+        </div>
+        <div class="price-time">Ready in &lt; 3 minutes</div>
+        <a href="/start" class="card-cta">Get This Report →</a>
+      </div>
+
+      <!-- ISO -->
+      <div class="price-card">
+        <div class="card-top">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+          </div>
+        </div>
+        <div class="card-name">ISO Rating Evidence Pack</div>
+        <div class="card-desc">A one-point improvement in your ISO rating lowers insurance premiums for every homeowner in your district. We compute your numbers and write the evidence narrative.</div>
+        <div class="card-price">
+          <span class="price-amount">$59</span>
+          <span class="price-unit">/ report</span>
+        </div>
+        <div class="price-time">Ready in &lt; 3 minutes</div>
+        <a href="/start" class="card-cta">Get This Report →</a>
+      </div>
+
+      <!-- Grant — anchor card -->
+      <div class="price-card anchor">
+        <div class="card-top">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <span class="card-badge badge-anchor">Highest ROI</span>
+        </div>
+        <div class="card-name">AFG &amp; SAFER Grant Narrative</div>
+        <div class="card-desc">A won AFG grant can be worth $500,000 or more. We write your narrative using your real incident numbers: response times, call volume, community risk. The strongest possible case for your FEMA application.</div>
+        <div class="card-includes">
+          <div class="card-includes-label">Includes</div>
+          <div class="include-item">Full narrative written to FEMA guidelines</div>
+          <div class="include-item">Your actual incident stats woven in</div>
+          <div class="include-item">AFG or SAFER format, your choice</div>
+          <div class="include-item">Ready to copy into the application portal</div>
+        </div>
+        <div class="card-price">
+          <span class="price-amount">$129</span>
+          <span class="price-unit">/ narrative</span>
+        </div>
+        <div class="price-time">Ready in &lt; 5 minutes</div>
+        <a href="/start" class="card-cta">Get This Report →</a>
+      </div>
+
+    </div>
+
+    <!-- Bundle -->
+    <div class="bundle-card">
+      <div class="bundle-left">
+        <div class="bundle-eyebrow">Best Value</div>
+        <h3>Buy 5 reports, get one free.</h3>
+        <p>Mix and match any reports. Works across your whole department. Credits never expire.</p>
+      </div>
+      <div class="bundle-right">
+        <div class="bundle-price">
+          <div class="bundle-amount">$99</div>
+          <div class="bundle-per">6 report credits</div>
+          <div class="bundle-saving">Save ~$20 vs. buying individually</div>
+        </div>
+        <a href="/start" class="btn-bundle">Buy Credit Pack →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="faq-inner">
+    <div class="faq-title">Common questions</div>
+
+    <div class="faq-item">
+      <div class="faq-q">What data do I need to get started?</div>
+      <div class="faq-a">An incident export from your RMS: ESO, ImageTrend, FIREHOUSE, FirstDue, or a NERIS export. If your department is already in our system from NFIRS 2024, you may not need to upload anything at all. <a href="/start">Check your department</a>.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">How does the NERIS Compliance Check work?</div>
+      <div class="faq-a">It's free and takes about 30 seconds. We check your records against all 6 mandatory NERIS modules and tell you exactly which fields are missing or incomplete, in plain English. No technical knowledge required.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">What format are the reports delivered in?</div>
+      <div class="faq-a">A formatted document emailed directly to you, ready to present. Board reports are formatted for reading aloud or sharing as a PDF. Grant narratives are formatted to copy directly into the FEMA application portal.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Can I use report credits for any report type?</div>
+      <div class="faq-a">Yes. The $99 credit pack gives you 6 credits usable on any report. A Board Report or Trend Summary costs 1 credit. Staffing Justification and ISO Evidence Pack cost 3 credits each. A Grant Narrative costs 5 credits.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Do credits expire?</div>
+      <div class="faq-a">No. Use them whenever you need them — budget season, grant cycles, board meetings. There's no expiration date.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Is there a subscription option?</div>
+      <div class="faq-a">Not currently. Pay-per-report works better for most departments that generate reports a few times per year, not every week. If your department needs monthly reports regularly, <a href="mailto:justin@klardata.com">email us</a> and we'll work something out.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <div class="footer-logo">
+      <div class="logo-mark" style="width:28px;height:28px;border-radius:7px">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0012 0C18 9.5 15 6.5 12 2z"/></svg>
+      </div>
+      <span class="footer-logo-text">5AlarmData</span>
+    </div>
+    <p>&copy; 2026 5AlarmData. All rights reserved.</p>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Questions? <a href="mailto:justin@klardata.com" style="color:var(--muted)">Contact us</a></p>
+  </div>
+  <div class="footer-links">
+    <a href="/start">Get Started</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/directory">Directory</a>
+    <a href="/resources">Resources</a>
+    <a href="/about">About</a>
+    <a href="mailto:justin@klardata.com">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>

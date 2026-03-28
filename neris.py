@@ -17,9 +17,10 @@ def fetch_incidents(
     neris_id: str,
     start: datetime | None = None,
     end: datetime | None = None,
+    max_incidents: int = 5000,
     **kwargs,
 ) -> list[dict]:
-    """Fetch all incidents for a department, handling pagination."""
+    """Fetch incidents for a department, handling pagination up to max_incidents."""
     client = get_client()
     incidents = []
     cursor = None
@@ -30,19 +31,35 @@ def fetch_incidents(
             cursor=cursor,
             call_create_start=start,
             call_create_end=end,
+            page_size=200,
             **kwargs,
         )
+        # The SDK returns a requests.Response on HTTP errors (falsy when status >= 400)
+        import requests as _requests
+        if isinstance(result, _requests.Response):
+            raise RuntimeError(
+                f"NERIS API error {result.status_code} for entity '{neris_id}'. "
+                f"Check that the NERIS ID is correct and your credentials have access to this department."
+            )
+
         if not result:
             break
 
+        # Surface API-level errors (e.g. error key in JSON body)
+        if isinstance(result, dict) and result.get("error"):
+            raise RuntimeError(f"NERIS API error: {result.get('error')} — {result.get('message', '')}")
+
         batch = result.get("data", [])
         incidents.extend(batch)
+
+        if len(incidents) >= max_incidents:
+            break
 
         cursor = result.get("next_cursor")
         if not cursor:
             break
 
-    return incidents
+    return incidents[:max_incidents]
 
 
 def fetch_entity(neris_id: str) -> dict:

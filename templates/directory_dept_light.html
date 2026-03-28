@@ -4,13 +4,12 @@
   <meta charset="UTF-8" />
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ dept.name }} — Incident Data & Community Risk Profile | 5AlarmData</title>
-  <meta name="description" content="{{ dept.name }} responded to {{ dept.total_incidents }} fire and hazmat incidents in 2024. View demographics, disaster history, housing risk, and community vulnerability data." />
+  <title>{{ dept.name }} — Community Risk Profile | 5AlarmData</title>
+  <meta name="description" content="{{ dept.name }} fire department profile. View community demographics, hazard risk, disaster history, and request a full NERIS-powered report." />
   <link rel="canonical" href="https://www.5alarmdata.com/directory/{{ dept.state|lower }}/{{ dept.fdid }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
@@ -89,20 +88,25 @@
     .breadcrumb a { color: var(--red); font-weight: 500; }
 
     /* PAGE HEADER */
-    .page-header { margin-bottom: 36px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+    .page-header { margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
     .page-header h1 { font-family: 'Lora', serif; font-size: clamp(22px, 3vw, 36px); font-weight: 600; line-height: 1.1; margin-bottom: 10px; }
     .page-header-meta { font-size: 13px; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; }
     .page-header-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--red); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
     .page-header-eyebrow::before { content: ''; display: block; width: 18px; height: 2px; background: var(--red); border-radius: 1px; }
 
-    /* KEY METRICS ROW */
-    .kpi-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 32px; }
-    .kpi { background: var(--white); padding: 20px 22px; }
-    .kpi-val { font-size: 26px; font-weight: 900; letter-spacing: -1px; margin-bottom: 3px; }
-    .kpi-val.red { color: var(--red); }
-    .kpi-val.gold { color: var(--gold); }
-    .kpi-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-    .kpi-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    /* DATA SPARSE NOTICE */
+    .data-notice { background: #FFFBF0; border: 1px solid #F0D9A8; border-radius: 12px; padding: 20px 24px; margin-bottom: 32px; display: flex; gap: 16px; align-items: flex-start; }
+    .data-notice-icon { flex-shrink: 0; width: 36px; height: 36px; background: var(--gold-lt); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .data-notice-icon svg { width: 18px; height: 18px; fill: var(--gold); }
+    .data-notice-title { font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
+    .data-notice-text { font-size: 12px; color: var(--ink2); line-height: 1.6; }
+    .data-notice-text a { color: var(--red); font-weight: 600; text-decoration: underline; }
+
+    /* STAFFING CARD */
+    .staffing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 32px; }
+    .staffing-cell { background: var(--white); padding: 20px 22px; }
+    .staffing-val { font-size: 26px; font-weight: 900; letter-spacing: -1px; margin-bottom: 3px; }
+    .staffing-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 
     /* SECTION */
     .section { margin-bottom: 44px; scroll-margin-top: 72px; }
@@ -115,23 +119,19 @@
     /* CARD */
     .card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
     .card-pad { padding: 22px 24px; }
-
-    /* DATA CARD HEADER */
     .card-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
     .card-header-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
     .card-header-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--bg2); color: var(--muted); }
 
-    /* TWO COLUMN SECTION CONTENT */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    /* KPI ROW (for demographics) */
+    .kpi-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 32px; }
+    .kpi { background: var(--white); padding: 20px 22px; }
+    .kpi-val { font-size: 26px; font-weight: 900; letter-spacing: -1px; margin-bottom: 3px; }
+    .kpi-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+    .kpi-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
 
-    /* TYPE LIST */
-    .type-list { display: flex; flex-direction: column; gap: 11px; }
-    .type-row { display: flex; align-items: center; gap: 8px; }
-    .type-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-    .type-label { width: 145px; font-size: 12px; color: var(--ink2); flex-shrink: 0; font-weight: 500; }
-    .type-bar-bg { flex: 1; height: 5px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
-    .type-bar-fill { height: 100%; border-radius: 3px; }
-    .type-count { width: 38px; text-align: right; font-size: 12px; font-weight: 700; }
+    /* TWO COLUMN */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
     /* VULN */
     .vuln-list { display: flex; flex-direction: column; }
@@ -185,25 +185,14 @@
     .disaster-title { font-size: 13px; font-weight: 600; flex: 1; }
     .disaster-date { font-size: 11px; color: var(--muted); }
 
-    /* PEER */
-    .peer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-    .peer-card { background: var(--white); padding: 20px 22px; }
-    .peer-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
-    .peer-val { font-size: 24px; font-weight: 900; letter-spacing: -1px; margin-bottom: 4px; }
-    .peer-vs { font-size: 12px; color: var(--muted); }
-    .peer-vs strong { font-weight: 700; }
-    .peer-vs.up strong { color: var(--green); }
-    .peer-vs.down strong { color: var(--red); }
-
     /* MAP */
-    #dept-map-v4 { height: 360px; width: 100%; }
+    #dept-map-light { height: 360px; width: 100%; }
     .map-footer { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 8px; background: var(--white); }
     .map-legend { display: flex; align-items: center; gap: 12px; margin-left: auto; }
     .map-legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--muted); }
     .legend-poly { width: 12px; height: 8px; border: 2px solid var(--red); background: rgba(200,57,43,.1); border-radius: 1px; }
     .legend-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
-    .legend-station { width: 8px; height: 8px; background: var(--ink); border-radius: 2px; }
-    .map-status-v4 { font-size: 10px; color: var(--muted); font-style: italic; }
+    .map-status-light { font-size: 10px; color: var(--muted); font-style: italic; }
 
     /* CTA */
     .cta-section { background: var(--ink); border-radius: 16px; padding: 36px 40px; color: #fff; position: relative; overflow: hidden; margin-top: 40px; }
@@ -229,6 +218,7 @@
     @media (max-width: 640px) {
       .two-col { grid-template-columns: 1fr; }
       .kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .staffing-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
   <script defer src="/_vercel/insights/script.js"></script>
@@ -248,7 +238,7 @@
     <li><a href="/resources">Resources</a></li>
     <li><a href="/">App</a></li>
   </ul>
-  <a href="/start" class="btn-nav">Generate Report →</a>
+  <a href="/start" class="btn-nav">Find Your Department →</a>
 </div>
 
 <div class="layout">
@@ -265,10 +255,6 @@
     </div>
 
     <div class="sb-stats">
-      <div class="sb-stat">
-        <span class="sb-stat-label">Incidents 2024</span>
-        <span class="sb-stat-val red">{{ "{:,}".format(dept.total_incidents) }}</span>
-      </div>
       {% if dept.num_stations %}
       <div class="sb-stat">
         <span class="sb-stat-label">Stations</span>
@@ -301,22 +287,10 @@
         <svg class="sb-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 0C6.13 0 3 3.13 3 7c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 10 4.5a2.5 2.5 0 0 1 0 5z"/></svg>
         Department Location
       </a>
-      <a href="#incidents">
-        <svg class="sb-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-5zm6-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V7zm6-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V4z"/></svg>
-        Incident Activity
-      </a>
       {% if census %}
       <a href="#demographics">
         <svg class="sb-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm8 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-4.07 11c.046-.327.07-.66.07-1a6.97 6.97 0 0 0-1.5-4.33A5 5 0 0 1 19 16v1h-6.07zM6 11a5 5 0 0 1 5 5v1H1v-1a5 5 0 0 1 5-5z"/></svg>
         Demographics
-      </a>
-      <a href="#vulnerability">
-        <svg class="sb-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0zm-7 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-1-9a1 1 0 0 0-1 1v4a1 1 0 1 0 2 0V6a1 1 0 0 0-1-1z" clip-rule="evenodd"/></svg>
-        Vulnerability
-      </a>
-      <a href="#housing">
-        <svg class="sb-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 0 0-1.414 0l-7 7a1 1 0 0 0 1.414 1.414L4 10.414V17a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-6.586l.293.293a1 1 0 0 0 1.414-1.414l-7-7z"/></svg>
-        Housing Risk
       </a>
       {% endif %}
       {% if nri %}
@@ -331,16 +305,10 @@
         Disaster History
       </a>
       {% endif %}
-      {% if peers and peers.peer_count %}
-      <a href="#peers">
-        <svg class="sb-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 0 0 0 2h11a1 1 0 1 0 0-2H3zm0 4a1 1 0 0 0 0 2h5a1 1 0 0 0 0-2H3zm0 4a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2H3zm10-4a1 1 0 1 0 2 0 1 1 0 0 0-2 0zm.707 6.293a1 1 0 0 0-1.414 0L11 14.586l-.293-.293a1 1 0 0 0-1.414 1.414l1 1a1 1 0 0 0 1.414 0l3-3a1 1 0 0 0 0-1.414z"/></svg>
-        Peer Comparison
-      </a>
-      {% endif %}
     </div>
 
     <div class="sb-cta">
-      <a href="/start" class="sb-btn">Generate Report →</a>
+      <a href="/start" class="sb-btn">Get Your Full Report →</a>
       <div class="sb-btn-sub">Free · No account required</div>
     </div>
   </aside>
@@ -361,23 +329,49 @@
       </div>
     </div>
 
-    <!-- KEY METRICS -->
-    <div class="kpi-row">
-      <div class="kpi"><div class="kpi-val red">{{ "{:,}".format(dept.total_incidents) }}</div><div class="kpi-lbl">Incidents 2024</div></div>
-      {% if fire_count %}
-      <div class="kpi"><div class="kpi-val">{{ fire_count }}</div><div class="kpi-lbl">Fire Calls</div><div class="kpi-sub">{{ (fire_count / dept.total_incidents * 100) | round | int }}% of total</div></div>
-      <div class="kpi"><div class="kpi-val">{{ non_fire_count }}</div><div class="kpi-lbl">Non-Fire</div><div class="kpi-sub">{{ (non_fire_count / dept.total_incidents * 100) | round | int }}% of total</div></div>
+    <!-- DATA NOTICE -->
+    <div class="data-notice">
+      <div class="data-notice-icon">
+        <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0zm-7 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-1-9a1 1 0 0 0-1 1v4a1 1 0 1 0 2 0V6a1 1 0 0 0-1-1z" clip-rule="evenodd"/></svg>
+      </div>
+      <div>
+        <div class="data-notice-title">Limited Incident Data Available</div>
+        <div class="data-notice-text">
+          This department reported fewer than 10 incidents in the 2024 NFIRS dataset. Incident charts and response metrics are not shown. Community risk data (demographics, hazard scores, and FEMA history) is still available below.
+          <br />Want to add your department's full incident history? <a href="/start">Request your report</a> — we'll work with your data directly.
+        </div>
+      </div>
+    </div>
+
+    <!-- STAFFING (if available) -->
+    {% if dept.num_stations or total_ff %}
+    <div class="staffing-grid">
+      {% if dept.num_stations %}
+      <div class="staffing-cell">
+        <div class="staffing-val">{{ dept.num_stations }}</div>
+        <div class="staffing-lbl">Fire Stations</div>
+      </div>
       {% endif %}
-      {% if incidents_per_ff is not none %}
-      <div class="kpi"><div class="kpi-val">{{ incidents_per_ff }}</div><div class="kpi-lbl">Inc / Firefighter</div><div class="kpi-sub">{{ total_ff }} staff</div></div>
+      {% if dept.num_ff_career %}
+      <div class="staffing-cell">
+        <div class="staffing-val">{{ dept.num_ff_career }}</div>
+        <div class="staffing-lbl">Career Firefighters</div>
+      </div>
       {% endif %}
-      {% if incident_rate_per_1k is not none %}
-      <div class="kpi"><div class="kpi-val">{{ incident_rate_per_1k }}</div><div class="kpi-lbl">Per 1K Residents</div></div>
+      {% if dept.num_ff_volunteer %}
+      <div class="staffing-cell">
+        <div class="staffing-val">{{ dept.num_ff_volunteer }}</div>
+        <div class="staffing-lbl">Volunteer Firefighters</div>
+      </div>
       {% endif %}
-      {% if incidents_per_station is not none %}
-      <div class="kpi"><div class="kpi-val">{{ incidents_per_station }}</div><div class="kpi-lbl">Per Station</div></div>
+      {% if total_ff %}
+      <div class="staffing-cell">
+        <div class="staffing-val">{{ total_ff }}</div>
+        <div class="staffing-lbl">Total Personnel</div>
+      </div>
       {% endif %}
     </div>
+    {% endif %}
 
     <!-- MAP -->
     <div class="section" id="map-section">
@@ -387,89 +381,15 @@
         <div class="sec-subtitle">NERIS Public · Updated quarterly</div>
       </div>
       <div class="card" style="overflow:hidden;">
-        <div id="dept-map-v4"></div>
+        <div id="dept-map-light"></div>
         <div class="map-footer">
-          <span class="map-status-v4" id="map-status-v4">Loading boundary data…</span>
+          <span class="map-status-light" id="map-status-light">Loading boundary data…</span>
           <div class="map-legend">
             <div class="map-legend-item"><div class="legend-dot"></div> HQ</div>
-            <div class="map-legend-item"><div class="legend-station"></div> Station</div>
             <div class="map-legend-item"><div class="legend-poly"></div> Jurisdiction</div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- INCIDENT ACTIVITY -->
-    <div class="section" id="incidents">
-      <div class="sec-head">
-        <div class="sec-icon"><svg viewBox="0 0 20 20"><path d="M2 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-5zm6-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V7zm6-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V4z"/></svg></div>
-        <div class="sec-title">Incident Activity — 2024</div>
-      </div>
-
-      <div class="two-col" style="margin-bottom:20px;">
-        {% if monthly_labels %}
-        <div class="card">
-          <div class="card-header"><span class="card-header-title">Monthly Volume</span><span class="card-header-badge">2024</span></div>
-          <div style="padding:18px;">
-            <canvas id="monthlyChart_v4" height="110"></canvas>
-          </div>
-        </div>
-        {% endif %}
-
-        {% if incident_types %}
-        {% set type_colors = {
-          'structure_fire': '#C8392B',
-          'vehicle_fire':   '#D4620A',
-          'wildland_fire':  '#B8900A',
-          'hazmat':         '#7B3FA8',
-          'rescue_ems':     '#1565C0',
-          'false_alarm':    '#6B7A85',
-          'other_fire':     '#C8396B',
-          'other':          '#8A9BA8'
-        } %}
-        <div class="card">
-          <div class="card-header"><span class="card-header-title">Incident Types</span><span class="card-header-badge">{{ dept.total_incidents }} total</span></div>
-          <div style="padding:18px;display:grid;grid-template-columns:130px 1fr;gap:16px;align-items:center;">
-            <div style="position:relative;">
-              <canvas id="donutChart_v4" width="130" height="130"></canvas>
-              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                <div style="font-size:18px;font-weight:900;letter-spacing:-1px;">{{ dept.total_incidents }}</div>
-                <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--muted);">Total</div>
-              </div>
-            </div>
-            <div class="type-list">
-              {% for t in incident_types %}
-              <div class="type-row">
-                <div class="type-dot" style="background:{{ type_colors.get(t.key, '#8A9BA8') }};"></div>
-                <div class="type-label">{{ t.label }}</div>
-                <div class="type-bar-bg"><div class="type-bar-fill" style="width:{{ t.pct }}%;background:{{ type_colors.get(t.key, '#8A9BA8') }};"></div></div>
-                <div class="type-count">{{ t.count }}</div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-        {% endif %}
-      </div>
-
-      {% if peak_month_name %}
-      <div class="two-col">
-        <div class="card" style="display:flex;align-items:center;gap:20px;padding:20px;background:var(--gold-lt);border-color:#F0D9A8;">
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);">Peak Month</div>
-            <div style="font-size:36px;font-weight:900;letter-spacing:-1.5px;color:var(--gold);line-height:1;">{{ peak_month_count }}</div>
-            <div style="font-size:14px;font-weight:600;color:var(--ink2);">{{ peak_month_name }}</div>
-          </div>
-          <div style="flex:1;font-size:11px;color:var(--muted);line-height:1.6;">Highest single-month incident volume in 2024. Seasonal patterns can inform staffing and resource allocation decisions.</div>
-        </div>
-        <div class="card">
-          <div class="card-header"><span class="card-header-title">Incidents by Season</span></div>
-          <div style="padding:18px;">
-            <canvas id="seasonChart_v4" height="90"></canvas>
-          </div>
-        </div>
-      </div>
-      {% endif %}
     </div>
 
     {% if census %}
@@ -486,69 +406,85 @@
         {% if census.median_home_value %}<div class="kpi"><div class="kpi-val" style="font-size:18px;">${{ "{:,}".format(census.median_home_value) }}</div><div class="kpi-lbl">Median Home</div></div>{% endif %}
         {% if census.age_65_plus_pct %}<div class="kpi"><div class="kpi-val">{{ census.age_65_plus_pct }}%</div><div class="kpi-lbl">Age 65+</div><div class="kpi-sub">EMS demand driver</div></div>{% endif %}
       </div>
-    </div>
 
-    <!-- VULNERABILITY -->
-    <div class="section" id="vulnerability">
-      <div class="sec-head">
-        <div class="sec-icon"><svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0zm-7 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-1-9a1 1 0 0 0-1 1v4a1 1 0 1 0 2 0V6a1 1 0 0 0-1-1z" clip-rule="evenodd"/></svg></div>
-        <div class="sec-title">Social Vulnerability Indicators</div>
-      </div>
+      {% if census.vulnerability_score is not none or census.poverty_pct is not none %}
       <div class="two-col">
         <div class="card">
-          <div class="card-header"><span class="card-header-title">Vulnerability</span></div>
+          <div class="card-header"><span class="card-header-title">Vulnerability Indicators</span></div>
           <div class="card-pad">
             <div class="vuln-list">
-              {% if census.poverty_rate is not none %}
-              {% set p = census.poverty_rate %}
-              <div class="vuln-row"><div class="vuln-label">Poverty Rate</div><div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if p > 15 else 'mid' if p > 8 else 'low' }}" style="width:{{ [p * 3.5, 100]|min }}%"></div></div><div class="vuln-val">{{ p }}%</div><span class="vuln-badge {{ 'badge-high' if p > 15 else 'badge-mid' if p > 8 else 'badge-low' }}">{{ 'High' if p > 15 else 'Mod' if p > 8 else 'Low' }}</span></div>
+              {% if census.poverty_pct is not none %}
+              <div class="vuln-row">
+                <div class="vuln-label">Below Poverty</div>
+                <div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if census.poverty_pct > 20 else 'mid' if census.poverty_pct > 10 else 'low' }}" style="width:{{ [census.poverty_pct * 2, 100] | min }}%"></div></div>
+                <div class="vuln-val">{{ census.poverty_pct }}%</div>
+              </div>
               {% endif %}
-              {% if census.disability_rate is not none %}
-              {% set d = census.disability_rate %}
-              <div class="vuln-row"><div class="vuln-label">Disability Rate</div><div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if d > 16 else 'mid' if d > 10 else 'low' }}" style="width:{{ [d * 3.5, 100]|min }}%"></div></div><div class="vuln-val">{{ d }}%</div><span class="vuln-badge {{ 'badge-high' if d > 16 else 'badge-mid' if d > 10 else 'badge-low' }}">{{ 'High' if d > 16 else 'Mod' if d > 10 else 'Low' }}</span></div>
+              {% if census.uninsured_pct is not none %}
+              <div class="vuln-row">
+                <div class="vuln-label">Uninsured</div>
+                <div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if census.uninsured_pct > 15 else 'mid' if census.uninsured_pct > 8 else 'low' }}" style="width:{{ [census.uninsured_pct * 3, 100] | min }}%"></div></div>
+                <div class="vuln-val">{{ census.uninsured_pct }}%</div>
+              </div>
               {% endif %}
-              {% if census.age_65_plus_pct is not none %}
-              {% set a = census.age_65_plus_pct %}
-              <div class="vuln-row"><div class="vuln-label">Population 65+</div><div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if a > 20 else 'mid' if a > 14 else 'low' }}" style="width:{{ [a * 3.5, 100]|min }}%"></div></div><div class="vuln-val">{{ a }}%</div><span class="vuln-badge {{ 'badge-high' if a > 20 else 'badge-mid' if a > 14 else 'badge-low' }}">{{ 'High' if a > 20 else 'Mod' if a > 14 else 'Low' }}</span></div>
+              {% if census.renter_pct is not none %}
+              <div class="vuln-row">
+                <div class="vuln-label">Renters</div>
+                <div class="vuln-bar-bg"><div class="vuln-bar-fill mid" style="width:{{ [census.renter_pct, 100] | min }}%"></div></div>
+                <div class="vuln-val">{{ census.renter_pct }}%</div>
+              </div>
               {% endif %}
             </div>
           </div>
         </div>
-        <div class="card" id="housing">
-          <div class="card-header"><span class="card-header-title">Housing Risk</span></div>
+        <div class="card">
+          <div class="card-header"><span class="card-header-title">Housing Stock</span></div>
           <div class="card-pad">
             <div class="vuln-list">
-              {% if census.vacancy_rate is not none %}
-              {% set v = census.vacancy_rate %}
-              <div class="vuln-row"><div class="vuln-label">Vacancy Rate</div><div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if v > 15 else 'mid' if v > 8 else 'low' }}" style="width:{{ [v * 4, 100]|min }}%"></div></div><div class="vuln-val">{{ v }}%</div><span class="vuln-badge {{ 'badge-high' if v > 15 else 'badge-mid' if v > 8 else 'badge-low' }}">{{ 'High' if v > 15 else 'Mod' if v > 8 else 'Low' }}</span></div>
+              {% if census.housing_units is not none %}
+              <div class="vuln-row">
+                <div class="vuln-label">Total Housing Units</div>
+                <div class="vuln-bar-bg"><div class="vuln-bar-fill low" style="width:100%"></div></div>
+                <div class="vuln-val" style="width:auto;font-size:11px;">{{ "{:,}".format(census.housing_units) }}</div>
+              </div>
+              {% endif %}
+              {% if census.vacant_pct is not none %}
+              <div class="vuln-row">
+                <div class="vuln-label">Vacant Units</div>
+                <div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if census.vacant_pct > 15 else 'mid' if census.vacant_pct > 8 else 'low' }}" style="width:{{ [census.vacant_pct * 3, 100] | min }}%"></div></div>
+                <div class="vuln-val">{{ census.vacant_pct }}%</div>
+              </div>
               {% endif %}
               {% if census.pre1980_pct is not none %}
-              {% set pr = census.pre1980_pct %}
-              <div class="vuln-row"><div class="vuln-label">Pre-1980 Housing</div><div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if pr > 50 else 'mid' if pr > 30 else 'low' }}" style="width:{{ [pr, 100]|min }}%"></div></div><div class="vuln-val">{{ pr }}%</div><span class="vuln-badge {{ 'badge-high' if pr > 50 else 'badge-mid' if pr > 30 else 'badge-low' }}">{{ 'High' if pr > 50 else 'Mod' if pr > 30 else 'Low' }}</span></div>
-              {% endif %}
-              {% if census.renter_pct is not none %}
-              {% set rp = census.renter_pct %}
-              <div class="vuln-row"><div class="vuln-label">Renter-Occupied</div><div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if rp > 50 else 'mid' if rp > 35 else 'low' }}" style="width:{{ [rp, 100]|min }}%"></div></div><div class="vuln-val">{{ rp }}%</div><span class="vuln-badge {{ 'badge-high' if rp > 50 else 'badge-mid' if rp > 35 else 'badge-low' }}">{{ 'High' if rp > 50 else 'Mod' if rp > 35 else 'Low' }}</span></div>
+              <div class="vuln-row">
+                <div class="vuln-label">Built Before 1980</div>
+                <div class="vuln-bar-bg"><div class="vuln-bar-fill {{ 'high' if census.pre1980_pct > 40 else 'mid' if census.pre1980_pct > 20 else 'low' }}" style="width:{{ [census.pre1980_pct, 100] | min }}%"></div></div>
+                <div class="vuln-val">{{ census.pre1980_pct }}%</div>
+              </div>
               {% endif %}
             </div>
           </div>
         </div>
       </div>
+      {% endif %}
     </div>
     {% endif %}
 
     {% if nri %}
+    <!-- HAZARD RISK -->
     <div class="section" id="hazard-risk">
       <div class="sec-head">
         <div class="sec-icon"><svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-1-8a1 1 0 0 0-1 1v3a1 1 0 0 0 2 0V6a1 1 0 0 0-1-1z" clip-rule="evenodd"/></svg></div>
-        <div class="sec-title">Natural Hazard Risk — FEMA NRI</div>
+        <div class="sec-title">FEMA National Risk Index</div>
+        <div class="sec-subtitle">{{ nri.county_name or census.county_name or dept.state }}</div>
       </div>
+      {% if nri.composite_score is not none %}
       <div class="kpi-row" style="margin-bottom:16px;">
-        {% if nri.risk_score is not none %}<div class="kpi"><div class="kpi-val" style="color:{{ 'var(--red)' if nri.risk_rating in ('Very High','Relatively High') else 'var(--gold)' if nri.risk_rating == 'Relatively Moderate' else 'var(--green)' }}">{{ nri.risk_score }}</div><div class="kpi-lbl">Risk Score</div><div class="kpi-sub">{{ nri.risk_rating }}</div></div>{% endif %}
-        {% if nri.eal_total is not none %}<div class="kpi"><div class="kpi-val" style="font-size:16px;">${{ "{:,.0f}".format(nri.eal_total / 1000000) }}M</div><div class="kpi-lbl">Exp. Annual Loss</div></div>{% endif %}
-        {% if nri.sovi_score is not none %}<div class="kpi"><div class="kpi-val">{{ nri.sovi_score }}</div><div class="kpi-lbl">Soc. Vulnerability</div><div class="kpi-sub">{{ nri.sovi_rating }}</div></div>{% endif %}
-        {% if nri.resl_score is not none %}<div class="kpi"><div class="kpi-val">{{ nri.resl_score }}</div><div class="kpi-lbl">Resilience</div><div class="kpi-sub">{{ nri.resl_rating }}</div></div>{% endif %}
+        <div class="kpi"><div class="kpi-val {{ 'red' if nri.composite_score > 60 else '' }}">{{ nri.composite_score }}</div><div class="kpi-lbl">Composite Score</div></div>
+        {% if nri.composite_rating %}<div class="kpi"><div class="kpi-val" style="font-size:14px;font-weight:700;">{{ nri.composite_rating }}</div><div class="kpi-lbl">Risk Rating</div></div>{% endif %}
+        {% if nri.expected_annual_loss %}<div class="kpi"><div class="kpi-val" style="font-size:18px;">${{ "{:,.0f}".format(nri.expected_annual_loss / 1000) }}K</div><div class="kpi-lbl">Expected Annual Loss</div></div>{% endif %}
       </div>
+      {% endif %}
       {% if nri.hazards %}
       {% set buckets = [('high','Very High Risk',['Very High','Relatively High']),('mid','Moderate Risk',['Relatively Moderate']),('low','Low Risk',['Relatively Low']),('vlow','Very Low / N/A',['Very Low'])] %}
       {% for tier, tier_label, ratings in buckets %}
@@ -565,6 +501,7 @@
     {% endif %}
 
     {% if disasters and disasters.recent %}
+    <!-- DISASTER HISTORY -->
     <div class="section" id="disasters">
       <div class="sec-head">
         <div class="sec-icon"><svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2V6h10a2 2 0 0 0-2-2H4zm2 6a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H6z" clip-rule="evenodd"/></svg></div>
@@ -582,39 +519,11 @@
     </div>
     {% endif %}
 
-    {% if peers and peers.peer_count %}
-    <div class="section" id="peers">
-      <div class="sec-head">
-        <div class="sec-icon"><svg viewBox="0 0 20 20"><path d="M3 3a1 1 0 0 0 0 2h11a1 1 0 1 0 0-2H3z"/></svg></div>
-        <div class="sec-title">Peer Comparison</div>
-        <div class="sec-subtitle">{{ peers.peer_count }} similar departments in {{ dept.state }}</div>
-      </div>
-      <div class="peer-grid">
-        <div class="peer-card">
-          <div class="peer-lbl">Annual Incidents</div>
-          <div class="peer-val">{{ "{:,}".format(peers.dept_incidents) }}</div>
-          {% if peers.incidents_vs_peers is not none %}
-          <div class="peer-vs {{ 'up' if peers.incidents_vs_peers > 0 else 'down' if peers.incidents_vs_peers < 0 else '' }}">
-            <strong>{{ '+' if peers.incidents_vs_peers > 0 else '' }}{{ peers.incidents_vs_peers }}%</strong> vs. peer avg {{ "{:,}".format(peers.avg_incidents) }}
-          </div>
-          {% endif %}
-        </div>
-        {% if peers.avg_stations %}
-        <div class="peer-card">
-          <div class="peer-lbl">Stations</div>
-          <div class="peer-val">{{ dept.num_stations or '—' }}</div>
-          <div class="peer-vs">Peer avg: <strong>{{ peers.avg_stations }}</strong> stations</div>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-    {% endif %}
-
     <!-- CTA -->
     <div class="cta-section">
-      <div class="cta-eyebrow">This Profile Is the Starting Point</div>
-      <h2>This profile is the starting point.</h2>
-      <p>5AlarmData turns this data into finished documents your department actually needs — board reports, grant narratives, ISO evidence packs, and staffing justifications.<br /><br />No file upload. No software to learn. Your department's data is already here.</p>
+      <div class="cta-eyebrow">Unlock Your Full Profile</div>
+      <h2>Your department's data belongs here.</h2>
+      <p>This profile shows what's publicly available. To unlock incident analytics, response time breakdowns, peer comparisons, and grant-ready reports — we'll work directly with your department's NFIRS or NERIS export.<br /><br />No software to install. No long onboarding. Just answers your department actually needs.</p>
       <a href="/start" class="btn-light">Get Your Full Report →</a>
       <div class="pills">
         <span class="pill">Board Reports</span>
@@ -644,14 +553,13 @@
   const zip      = {{ (dept.zip   or '') | tojson }};
   const deptName = {{ dept.name | tojson }};
   const NERIS = 'https://services5.arcgis.com/lPbcyJOcoLyZmvo6/arcgis/rest/services/NERIS%20Public%20Fire%20Departments/FeatureServer';
-  const statusEl = document.getElementById('map-status-v4');
-  const map = L.map('dept-map-v4', { zoomControl: true, scrollWheelZoom: false });
+  const statusEl = document.getElementById('map-status-light');
+  const map = L.map('dept-map-light', { zoomControl: true, scrollWheelZoom: false });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd', maxZoom: 19,
   }).addTo(map);
   const hqIcon = L.divIcon({ html: '<div style="width:14px;height:14px;border-radius:50%;background:#C8392B;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4)"></div>', iconSize: [14,14], iconAnchor: [7,7], className: '' });
-  const stationIcon = L.divIcon({ html: '<div style="width:11px;height:11px;background:#0F1A20;border:2px solid #fff;border-radius:3px;box-shadow:0 1px 5px rgba(0,0,0,.35)"></div>', iconSize: [11,11], iconAnchor: [5,5], className: '' });
   function nameKeywords(name) { return name.replace(/\b(fire|department|dept|district|volunteer|vfd|county|city|township|municipal|authority|protection|service|co\.?|no\.?\s*\d+)\b/gi,' ').trim().split(/\s+/).filter(w=>w.length>2).slice(0,4); }
   function esc(s) { return s.replace(/'/g,"''"); }
   function geocodeFallback() {
@@ -664,18 +572,6 @@
       L.circle([lat,lon],{radius:8047,color:'#C8392B',weight:1.5,dashArray:'5 5',fillColor:'#C8392B',fillOpacity:0.07}).addTo(map);
       statusEl.textContent='Approximate 5-mile radius';
     }).catch(()=>{map.setView([38,-97],4);statusEl.textContent='Map unavailable';});
-  }
-  function loadStations(nerisId) {
-    const p=new URLSearchParams({where:`department_neris_id='${esc(nerisId)}'`,outFields:'station_name,address_line_1,city,unit_count',f:'geojson'});
-    fetch(`${NERIS}/1/query?${p}`).then(r=>r.json()).then(gj=>{
-      if(!gj.features||!gj.features.length)return;
-      L.geoJSON(gj,{pointToLayer:(feat,latlng)=>L.marker(latlng,{icon:stationIcon}),onEachFeature:(feat,layer)=>{
-        const a=feat.properties;const lines=[`<strong>${a.station_name||'Fire Station'}</strong>`];
-        if(a.address_line_1)lines.push(a.address_line_1+(a.city?', '+a.city:''));
-        if(a.unit_count)lines.push(a.unit_count+' unit'+(a.unit_count!==1?'s':''));
-        layer.bindPopup(lines.join('<br>'));
-      }}).addTo(map);
-    }).catch(()=>{});
   }
   const keywords=nameKeywords(deptName);
   if(!keywords.length){geocodeFallback();}else{
@@ -699,31 +595,12 @@
         map.fitBounds(bl.getBounds(),{padding:[48,48]});
         const center=bl.getBounds().getCenter();
         L.marker(center,{icon:hqIcon}).addTo(map).bindPopup('<strong>'+deptName+'</strong><br>'+[city,state].filter(Boolean).join(', '));
-        loadStations(nerisId);
-        statusEl.textContent='Boundary and station data from NERIS Public · Updated quarterly';
+        statusEl.textContent='Boundary data from NERIS Public · Updated quarterly';
       }).catch(()=>geocodeFallback());
     }).catch(()=>geocodeFallback());
   }
 })();
 </script>
-
-{% if peak_month_name %}
-<script>
-new Chart(document.getElementById('seasonChart_v4'),{type:'bar',data:{labels:['Q1 (Jan–Mar)','Q2 (Apr–Jun)','Q3 (Jul–Sep)','Q4 (Oct–Dec)'],datasets:[{data:[{{ quarters.Q1 }},{{ quarters.Q2 }},{{ quarters.Q3 }},{{ quarters.Q4 }}],backgroundColor:(()=>{const vals=[{{ quarters.Q1 }},{{ quarters.Q2 }},{{ quarters.Q3 }},{{ quarters.Q4 }}];const max=Math.max(...vals);return vals.map(v=>v===max?'#C8392B':'rgba(200,57,43,.35)');})(),borderRadius:5,borderWidth:0}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.raw} incidents`}}},scales:{x:{ticks:{color:'#6B7A85',font:{size:10,family:'Geist'}},grid:{display:false}},y:{ticks:{color:'#6B7A85',font:{size:10,family:'Geist'}},grid:{color:'rgba(0,0,0,.04)'},beginAtZero:true}}}});
-</script>
-{% endif %}
-
-{% if incident_types %}
-<script>
-new Chart(document.getElementById('donutChart_v4'),{type:'doughnut',data:{labels:{{ incident_types | map(attribute='label') | list | tojson }},datasets:[{data:{{ incident_types | map(attribute='count') | list | tojson }},backgroundColor:(()=>{const colors={'structure_fire':'#C8392B','vehicle_fire':'#D4620A','wildland_fire':'#B8900A','hazmat':'#7B3FA8','rescue_ems':'#1565C0','false_alarm':'#6B7A85','other_fire':'#C8396B','other':'#8A9BA8'};const keys={{ incident_types | map(attribute='key') | list | tojson }};return keys.map(k=>colors[k]||'#8A9BA8');})(),borderWidth:2,borderColor:'#F7F4EF',hoverOffset:6}]},options:{cutout:'68%',responsive:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.raw} (${Math.round(ctx.raw/ctx.dataset.data.reduce((a,b)=>a+b,0)*100)}%)`}}}}});
-</script>
-{% endif %}
-
-{% if monthly_labels %}
-<script>
-new Chart(document.getElementById('monthlyChart_v4'),{type:'bar',data:{labels:{{ monthly_labels | tojson }},datasets:[{label:'Incidents',data:{{ monthly_values | tojson }},backgroundColor:'rgba(200,57,43,.75)',borderColor:'#C8392B',borderWidth:1,borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#6B7A85',font:{size:10,family:'Geist'}},grid:{color:'rgba(0,0,0,.04)'}},y:{ticks:{color:'#6B7A85',font:{size:10,family:'Geist'}},grid:{color:'rgba(0,0,0,.04)'},beginAtZero:true}}}});
-</script>
-{% endif %}
 
 </body>
 </html>

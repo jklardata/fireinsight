@@ -1,5 +1,5 @@
 """
-FireInsight CLI — NERIS-powered analytics for fire departments.
+5AlarmData CLI — NERIS-powered analytics for fire departments.
 
 Usage:
   python3 main.py trends  [neris_id] [--period "..."] [--start YYYY-MM-DD] [--end YYYY-MM-DD] [--output file.md] [--mock]
@@ -93,7 +93,7 @@ def cmd_grant(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="FireInsight — AI analytics for fire departments")
+    parser = argparse.ArgumentParser(description="5AlarmData — AI analytics for fire departments")
     sub = parser.add_subparsers(dest="command", required=True)
 
     shared = argparse.ArgumentParser(add_help=False)

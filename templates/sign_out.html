@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signing Out — 5AlarmData</title>
+  <style>
+    body {
+      font-family: 'Geist', system-ui, sans-serif;
+      background: #0F1A20; color: #fff;
+      min-height: 100vh; display: flex;
+      align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 2px solid rgba(255,255,255,.1);
+      border-top-color: #D63737; border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    p { font-size: 15px; color: #8A9BA8; }
+  </style>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+  <div>
+    <div class="spinner"></div>
+    <p>Signing you out...</p>
+  </div>
+
+  <script>
+    const CLERK_KEY = '{{ clerk_key }}';
+
+    (async () => {
+      try {
+        function clerkCdnUrl(key) {
+          const b64 = key.replace(/^pk_(test|live)_/, '');
+          const padded = b64 + '='.repeat((4 - b64.length % 4) % 4);
+          const host = atob(padded).replace(/\$$/, '');
+          return `https://${host}/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
+        }
+
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = clerkCdnUrl(CLERK_KEY);
+          s.setAttribute('data-clerk-publishable-key', CLERK_KEY);
+          s.onload = resolve; s.onerror = reject;
+          document.head.appendChild(s);
+        });
+
+        if (window.__clerk_init) await window.__clerk_init;
+        const clerk = window.Clerk;
+        if (!clerk.loaded) await clerk.load({ publishableKey: CLERK_KEY });
+
+        if (clerk.user) await clerk.signOut();
+      } catch (e) {
+        // Ignore errors — just redirect
+      }
+      window.location.href = '/';
+    })();
+  </script>
+</body>
+</html>

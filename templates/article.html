@@ -2,22 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ article.title }} — FireInsight</title>
+  <title>{{ article.title }} — 5AlarmData</title>
   <meta name="description" content="{{ article.excerpt }}" />
-  <link rel="canonical" href="https://fireinsight.app/resources/{{ article.slug }}" />
+  <link rel="canonical" href="https://www.5alarmdata.com/resources/{{ article.slug }}" />
   <meta property="og:type" content="article" />
-  <meta property="og:site_name" content="FireInsight" />
-  <meta property="og:title" content="{{ article.title }} — FireInsight" />
+  <meta property="og:site_name" content="5AlarmData" />
+  <meta property="og:title" content="{{ article.title }} — 5AlarmData" />
   <meta property="og:description" content="{{ article.excerpt }}" />
-  <meta property="og:url" content="https://fireinsight.app/resources/{{ article.slug }}" />
+  <meta property="og:url" content="https://www.5alarmdata.com/resources/{{ article.slug }}" />
   <meta property="og:image" content="https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="{{ article.title }}" />
   <meta name="twitter:description" content="{{ article.excerpt }}" />
   <meta name="twitter:image" content="https://images.pexels.com/photos/5965215/pexels-photo-5965215.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Article","headline":"{{ article.title }}","description":"{{ article.excerpt }}","publisher":{"@type":"Organization","name":"FireInsight","url":"https://fireinsight.app"},"url":"https://fireinsight.app/resources/{{ article.slug }}"}
+  {"@context":"https://schema.org","@type":"Article","headline":"{{ article.title }}","description":"{{ article.excerpt }}","publisher":{"@type":"Organization","name":"5AlarmData","url":"https://www.5alarmdata.com"},"url":"https://www.5alarmdata.com/resources/{{ article.slug }}"}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -247,6 +248,7 @@
       footer { flex-direction: column; gap: 14px; align-items: flex-start; }
     }
   </style>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
@@ -263,8 +265,8 @@
     <li><a href="/neris">NERIS Guide</a></li>
   </ul>
   <div class="nav-cta">
-    <a href="/app" class="btn btn-sm btn-ghost">Open App</a>
-    <a href="/app" class="btn btn-sm btn-primary">Try Free</a>
+    <a href="/sign-in?next=/app" class="btn btn-sm btn-ghost">Log In</a>
+    <a href="/sign-up?next=/app" class="btn btn-sm btn-primary">Sign Up Free</a>
   </div>
   <button class="nav-hamburger" onclick="this.closest('nav').nextElementSibling.classList.toggle('open')" aria-label="Open menu">
     <span></span><span></span><span></span>
@@ -275,7 +277,7 @@
   <a href="/resources">Resources</a>
   <a href="/neris">NERIS Guide</a>
   <div class="mobile-cta">
-    <a href="/app" class="btn btn-primary" style="background:var(--ink);color:#fff">Open App</a>
+    <a href="/sign-in?next=/app" class="btn btn-primary" style="background:var(--ink);color:#fff">Log In</a>
   </div>
 </div>
 
@@ -321,9 +323,9 @@
   <aside class="sidebar">
     <div class="sidebar-cta">
       <div class="sidebar-cta-eyebrow">Use it live</div>
-      <h3>Try {{ article.category }} tools in FireInsight</h3>
+      <h3>Try {{ article.category }} tools in 5AlarmData</h3>
       <p>Run a live analysis on your department's data — no migration, no setup.</p>
-      <a href="/app" class="btn-cta-white">Open FireInsight →</a>
+      <a href="/sign-in?next=/app" class="btn-cta-white">Open 5AlarmData →</a>
     </div>
 
     {% if prev_article or next_article %}
@@ -359,8 +361,8 @@
 </div>
 
 <footer>
-  <span>&copy; 2026 FireInsight</span>
-  <a href="/app" class="btn btn-sm btn-primary">Try FireInsight Free</a>
+  <span>&copy; 2026 5AlarmData</span>
+  <a href="/sign-up?next=/app" class="btn btn-sm btn-primary">Sign Up Free</a>
 </footer>
 
 </body>

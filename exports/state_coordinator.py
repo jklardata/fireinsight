@@ -124,6 +124,48 @@ STATE_CONFIGS = {
             "dollar_loss_property": "fire_loss",
         },
     },
+    "NY": {
+        "name": "New York",
+        "coordinator": "NY State Office of Fire Prevention and Control",
+        "filename": "ny-neris-export.csv",
+        "fields": [
+            "neris_id_incident", "call_create", "arrival_time", "clear_time",
+            "incident_type", "property_use", "structure_type",
+            "latitude", "longitude", "county",
+            "injuries_firefighter", "injuries_civilian",
+            "fatalities_firefighter", "fatalities_civilian",
+            "apparatus_count", "personnel_count",
+            "dollar_loss_property", "dollar_loss_contents",
+            "aid_given_received",
+        ],
+        "renames": {
+            "neris_id_incident":    "ny_incident_id",
+            "call_create":          "alarm_datetime",
+            "dollar_loss_property": "prop_loss",
+            "dollar_loss_contents": "cont_loss",
+        },
+    },
+    "CO": {
+        "name": "Colorado",
+        "coordinator": "CO Division of Fire Prevention and Control",
+        "filename": "co-neris-export.csv",
+        "fields": [
+            "neris_id_incident", "call_create", "arrival_time", "clear_time",
+            "incident_type", "property_use", "structure_type",
+            "latitude", "longitude", "county",
+            "injuries_firefighter", "injuries_civilian",
+            "fatalities_firefighter", "fatalities_civilian",
+            "apparatus_count", "personnel_count",
+            "dollar_loss_property", "dollar_loss_contents",
+            "suppression_type", "aid_given_received",
+            "wildland_acres",
+        ],
+        "renames": {
+            "neris_id_incident": "co_incident_id",
+            "call_create":       "alarm_datetime",
+            "wildland_acres":    "acres_burned",
+        },
+    },
 }
 
 SUPPORTED_STATES = list(STATE_CONFIGS.keys())

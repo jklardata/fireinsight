@@ -1,15 +1,57 @@
 from datetime import datetime
 from fastapi import FastAPI, Request, Form, UploadFile, File
-from fastapi.responses import HTMLResponse, PlainTextResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import Optional
-import httpx
+import httpx, uuid, os, json as _json_mod, io, csv as _csv_mod
+
+# ── User uploaded data (session-cookie + /tmp) ──────────────────────────────
+_UD_DIR = "/tmp/5alarmdata_uploads"
+os.makedirs(_UD_DIR, exist_ok=True)
+
+def _ud_cookie(request: Request) -> str | None:
+    return request.cookies.get("ud_id")
+
+def load_user_data(request: Request):
+    """Return (incidents, dept_name) from user-uploaded data, or (None, None)."""
+    uid = _ud_cookie(request)
+    if not uid:
+        return None, None
+    path = os.path.join(_UD_DIR, f"{uid}.json")
+    if not os.path.exists(path):
+        return None, None
+    try:
+        with open(path) as f:
+            d = _json_mod.load(f)
+        return d["incidents"], d["dept_name"]
+    except Exception:
+        return None, None
+
+def has_user_data(request: Request) -> bool:
+    uid = _ud_cookie(request)
+    if not uid:
+        return False
+    return os.path.exists(os.path.join(_UD_DIR, f"{uid}.json"))
+
+def user_data_summary(request: Request) -> dict | None:
+    uid = _ud_cookie(request)
+    if not uid:
+        return None
+    path = os.path.join(_UD_DIR, f"{uid}.json")
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path) as f:
+            d = _json_mod.load(f)
+        return {"dept_name": d["dept_name"], "count": len(d["incidents"])}
+    except Exception:
+        return None
 
 # In-memory NERIS API credential store (per server process)
 _neris_creds: dict = {"client_id": None, "client_secret": None, "connected": False, "entity": None}
 
-from config import RESEND_API_KEY, DEMO_EMAIL_TO, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY
+from config import RESEND_API_KEY, DEMO_EMAIL_TO, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, NERIS_CLIENT_ID, NERIS_CLIENT_SECRET
 from analytics import summarize_incidents
 from insights.trends import generate_trend_summary
 from insights.report import generate_chiefs_report
@@ -47,6 +89,11 @@ async def clerk_auth_middleware(request: Request, call_next):
     return await call_next(request)
 
 
+def has_neris_credentials() -> bool:
+    """True when server-level NERIS API credentials are configured."""
+    return bool(NERIS_CLIENT_ID and NERIS_CLIENT_SECRET)
+
+
 def load_incidents(neris_id: str, use_mock: bool, start: str, end: str):
     start_dt = datetime.strptime(start, "%Y-%m-%d") if start else None
     end_dt   = datetime.strptime(end,   "%Y-%m-%d") if end   else None
@@ -58,10 +105,28 @@ def load_incidents(neris_id: str, use_mock: bool, start: str, end: str):
     else:
         from neris import fetch_incidents, fetch_entity
         incidents = fetch_incidents(neris_id, start=start_dt, end=end_dt)
-        entity    = fetch_entity(neris_id)
-        dept_name = entity.get("name", neris_id)
+        try:
+            entity    = fetch_entity(neris_id)
+            dept_name = entity.get("name", neris_id)
+        except Exception:
+            dept_name = neris_id
 
     return incidents, dept_name
+
+
+def resolve_incidents(request: Request, neris_id: str, use_mock: bool, start: str, end: str):
+    """
+    Unified data resolution:
+      1. User-uploaded session data (highest priority, when not using mock)
+      2. Live NERIS API (when credentials configured and not using mock)
+      3. Mock/sample data fallback
+    """
+    user_incidents, user_dept = load_user_data(request)
+    if user_incidents and not use_mock:
+        return user_incidents, user_dept
+    if not use_mock and has_neris_credentials():
+        return load_incidents(neris_id, False, start, end)
+    return load_incidents(neris_id, True, start, end)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -88,22 +153,119 @@ def clerk_sign_in_url(publishable_key: str, redirect_url: str = "") -> str:
         return "/app"
 
 
-@app.get("/sign-in")
+@app.get("/sign-in", response_class=HTMLResponse)
 async def sign_in(request: Request):
-    import os
-    clerk_key = (
-        os.environ.get("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY") or
-        os.environ.get("CLERK_PUBLISHABLE_KEY") or ""
-    )
     next_path = request.query_params.get("next", "/app")
-    base = str(request.base_url).rstrip('/')
-    redirect_url = base + next_path
-    return RedirectResponse(clerk_sign_in_url(clerk_key, redirect_url), status_code=302)
+    return templates.TemplateResponse("sign_in.html", {
+        "request": request,
+        "clerk_key": CLERK_PUBLISHABLE_KEY,
+        "next": next_path,
+    })
+
+
+@app.get("/sign-up", response_class=HTMLResponse)
+async def sign_up(request: Request):
+    next_path = request.query_params.get("next", "/app")
+    return templates.TemplateResponse("sign_up.html", {
+        "request": request,
+        "clerk_key": CLERK_PUBLISHABLE_KEY,
+        "next": next_path,
+    })
+
+
+@app.get("/sign-out", response_class=HTMLResponse)
+async def sign_out(request: Request):
+    return templates.TemplateResponse("sign_out.html", {
+        "request": request,
+        "clerk_key": CLERK_PUBLISHABLE_KEY,
+    })
 
 
 @app.get("/app", response_class=HTMLResponse)
-async def index(request: Request):
-    return RedirectResponse(url="/", status_code=302)
+async def app_dashboard(request: Request):
+    return templates.TemplateResponse("index.html", {
+        "request":         request,
+        "clerk_key":       CLERK_PUBLISHABLE_KEY,
+        "active_tab":      "home",
+        "user_data":       user_data_summary(request),
+        "neris_api_ready": has_neris_credentials(),
+        "home_tab":        request.query_params.get("tab", "upload"),
+        "connect_error":   request.query_params.get("connect_error", ""),
+    })
+
+
+@app.get("/debug-neris")
+async def debug_neris(request: Request, neris_id: str = "FD05005639"):
+    """Temporary debug endpoint — remove after diagnosis."""
+    from fastapi.responses import JSONResponse
+    out = {
+        "neris_id": neris_id,
+        "has_credentials": has_neris_credentials(),
+        "client_id_prefix": (NERIS_CLIENT_ID or "")[:8] or "NOT SET",
+        "base_url": str(__import__("config").NERIS_BASE_URL),
+    }
+    if not has_neris_credentials():
+        return JSONResponse(out)
+    try:
+        from neris import get_client
+        client = get_client()
+        out["client_created"] = True
+        result = client.list_incidents(neris_id_entity=neris_id, page_size=5)
+        out["result_type"] = str(type(result).__name__)
+        try:
+            out["result_status"] = result.status_code
+            out["result_body"] = result.text[:300]
+        except Exception:
+            pass
+        if isinstance(result, dict):
+            out["data_count"] = len(result.get("data", []))
+            out["keys"] = list(result.keys())
+    except Exception as e:
+        out["error"] = str(e)
+        out["error_type"] = type(e).__name__
+    return JSONResponse(out)
+
+
+@app.post("/connect-neris")
+async def connect_neris(
+    request:  Request,
+    neris_id: str = Form(...),
+    start:    str = Form(""),
+    end:      str = Form(""),
+):
+    import asyncio
+    from fastapi.concurrency import run_in_threadpool
+
+    if not has_neris_credentials():
+        return RedirectResponse(
+            "/app?tab=neris&connect_error=NERIS+API+credentials+not+configured+on+server",
+            status_code=303,
+        )
+    try:
+        incidents, dept_name = await asyncio.wait_for(
+            run_in_threadpool(load_incidents, neris_id.strip(), False, start, end),
+            timeout=25.0,
+        )
+        if not incidents:
+            return RedirectResponse(
+                f"/app?tab=neris&connect_error=No+incidents+found+for+{neris_id}",
+                status_code=303,
+            )
+        uid = str(uuid.uuid4())
+        path = os.path.join(_UD_DIR, f"{uid}.json")
+        with open(path, "w") as f:
+            _json_mod.dump({"incidents": incidents, "dept_name": dept_name or neris_id}, f)
+        response = RedirectResponse("/app?uploaded=1", status_code=303)
+        response.set_cookie("ud_id", uid, max_age=86400 * 7, httponly=True, samesite="lax")
+        return response
+    except asyncio.TimeoutError:
+        return RedirectResponse(
+            "/app?tab=neris&connect_error=Request+timed+out+after+25s.+Check+your+NERIS+ID+and+credentials.",
+            status_code=303,
+        )
+    except Exception as e:
+        err = str(e)[:120].replace("&", "and").replace("#", "")
+        return RedirectResponse(f"/app?tab=neris&connect_error={err}", status_code=303)
 
 
 @app.post("/generate", response_class=HTMLResponse)
@@ -122,7 +284,7 @@ async def generate(
     result = None
 
     try:
-        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        incidents, dept_name = resolve_incidents(request, neris_id, use_mock, start, end)
 
         if not incidents:
             error = "No incidents found for the given parameters."
@@ -152,6 +314,7 @@ async def generate(
         "request": request,
         "result": result,
         "error": error,
+        "user_data": user_data_summary(request),
         "form": {
             "report_type": report_type,
             "neris_id": neris_id,
@@ -177,7 +340,7 @@ async def trends_data(
     error  = None
     trends = None
     try:
-        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        incidents, dept_name = resolve_incidents(request, neris_id, use_mock, start, end)
         if not incidents:
             error = "No incidents found for the given parameters."
         else:
@@ -221,7 +384,44 @@ async def trends_data(
         "trends_data": trends,
         "error":       error,
         "active_tab":  "trends",
+        "user_data":   user_data_summary(request),
     })
+
+
+@app.post("/upload-data")
+async def upload_data(request: Request, incident_file: UploadFile = File(...)):
+    try:
+        raw = await incident_file.read()
+        dept_name = incident_file.filename.rsplit(".", 1)[0].replace("_", " ").title()
+        try:
+            text = raw.decode("utf-8-sig")
+            reader = _csv_mod.DictReader(io.StringIO(text))
+            incidents = [row for row in reader]
+        except Exception:
+            incidents = _json_mod.loads(raw)
+        if not incidents:
+            return RedirectResponse("/app?upload_error=empty", status_code=303)
+        uid = str(uuid.uuid4())
+        path = os.path.join(_UD_DIR, f"{uid}.json")
+        with open(path, "w") as f:
+            _json_mod.dump({"incidents": incidents, "dept_name": dept_name}, f)
+        response = RedirectResponse("/app?uploaded=1", status_code=303)
+        response.set_cookie("ud_id", uid, max_age=86400 * 7, httponly=True, samesite="lax")
+        return response
+    except Exception as e:
+        return RedirectResponse(f"/app?upload_error={str(e)[:60]}", status_code=303)
+
+
+@app.get("/clear-data")
+async def clear_data(request: Request):
+    uid = _ud_cookie(request)
+    if uid:
+        path = os.path.join(_UD_DIR, f"{uid}.json")
+        if os.path.exists(path):
+            os.remove(path)
+    response = RedirectResponse("/app", status_code=303)
+    response.delete_cookie("ud_id")
+    return response
 
 
 @app.get("/start", response_class=HTMLResponse)
@@ -240,6 +440,49 @@ async def download(content: str = Form(...), filename: str = Form("5alarmdata-re
         content,
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
         media_type="text/markdown",
+    )
+
+
+@app.post("/download-docx")
+async def download_docx(content: str = Form(...), filename: str = Form("5alarmdata-report")):
+    from docx import Document
+    from docx.shared import Pt, RGBColor
+    import re as _re
+
+    doc = Document()
+    # Style the default paragraph font
+    style = doc.styles["Normal"]
+    style.font.name = "Calibri"
+    style.font.size = Pt(11)
+
+    for line in content.splitlines():
+        line = line.rstrip()
+        if line.startswith("### "):
+            p = doc.add_heading(line[4:], level=3)
+        elif line.startswith("## "):
+            p = doc.add_heading(line[3:], level=2)
+        elif line.startswith("# "):
+            p = doc.add_heading(line[2:], level=1)
+        elif line.startswith("- ") or line.startswith("* "):
+            doc.add_paragraph(line[2:], style="List Bullet")
+        elif _re.match(r"^\d+\. ", line):
+            doc.add_paragraph(_re.sub(r"^\d+\. ", "", line), style="List Number")
+        elif line == "---" or line == "***":
+            doc.add_paragraph("─" * 60)
+        elif line:
+            doc.add_paragraph(line)
+        else:
+            doc.add_paragraph("")
+
+    buf = io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    fname = f"{filename}.docx"
+    from fastapi.responses import StreamingResponse
+    return StreamingResponse(
+        buf,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{fname}"'},
     )
 
 
@@ -309,7 +552,7 @@ async def quality_score(
     ai_narrative = None
 
     try:
-        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        incidents, dept_name = resolve_incidents(request, neris_id, use_mock, start, end)
 
         if not incidents:
             error = "No incidents found for the given parameters."
@@ -324,6 +567,7 @@ async def quality_score(
     return templates.TemplateResponse("index.html", {
         "request": request,
         "active_tab": "quality",
+        "user_data": user_data_summary(request),
         "quality": {
             "dept_name": dept_name if not error else "",
             "report": report,
@@ -337,13 +581,15 @@ async def quality_score(
 
 @app.get("/map-data")
 async def map_data(
+    request: Request,
     neris_id: str = "MOCK-001",
     use_mock: str = "true",
     start: str = "",
     end: str = "",
 ):
     try:
-        incidents, dept_name = load_incidents(neris_id, use_mock.lower() == "true", start, end)
+        _use_mock_bool = use_mock.lower() == "true"
+        incidents, dept_name = resolve_incidents(request, neris_id, _use_mock_bool, start, end)
         features = []
         for inc in incidents:
             lat = inc.get("latitude") or inc.get("lat")
@@ -379,7 +625,7 @@ async def ev_analysis(
 
     try:
         from ev.detector import analyze_ev_incidents
-        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        incidents, dept_name = resolve_incidents(request, neris_id, use_mock, start, end)
         if not incidents:
             error = "No incidents found for the given parameters."
         else:
@@ -390,6 +636,7 @@ async def ev_analysis(
     return templates.TemplateResponse("index.html", {
         "request":    request,
         "active_tab": "ev",
+        "user_data":  user_data_summary(request),
         "ev": {
             "dept_name": dept_name,
             "report":    report,
@@ -459,7 +706,7 @@ async def benchmark(
         from benchmark.engine import run_benchmark
         from insights.benchmark_narrative import generate_benchmark_narrative
 
-        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        incidents, dept_name = resolve_incidents(request, neris_id, use_mock, start, end)
 
         if not incidents:
             error = "No incidents found for the given parameters."
@@ -481,6 +728,7 @@ async def benchmark(
     return templates.TemplateResponse("index.html", {
         "request": request,
         "active_tab": "benchmark",
+        "user_data": user_data_summary(request),
         "benchmark": {
             "result":    result,
             "narrative": ai_narrative,
@@ -498,11 +746,9 @@ async def benchmark(
 
 @app.post("/compliance", response_class=HTMLResponse)
 async def compliance_check(
-    request:  Request,
-    neris_id: str  = Form("MOCK-001"),
-    use_mock: bool = Form(False),
-    start:    str  = Form(""),
-    end:      str  = Form(""),
+    request:       Request,
+    use_mock:      bool       = Form(False),
+    incident_file: UploadFile = File(None),
 ):
     error     = None
     report    = None
@@ -510,9 +756,21 @@ async def compliance_check(
 
     try:
         from compliance.checker import check_compliance
-        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        if not use_mock and incident_file and incident_file.filename:
+            raw = await incident_file.read()
+            dept_name = incident_file.filename.rsplit(".", 1)[0]
+            try:
+                text = raw.decode("utf-8-sig")
+                reader = _csv_mod.DictReader(io.StringIO(text))
+                incidents = [row for row in reader]
+            except Exception:
+                incidents = _json_mod.loads(raw)
+        elif not use_mock:
+            incidents, dept_name = resolve_incidents(request, "MOCK-001", False, "", "")
+        else:
+            incidents, dept_name = load_incidents("MOCK-001", True, "", "")
         if not incidents:
-            error = "No incidents found for the given parameters."
+            error = "No incidents found in the uploaded file."
         else:
             report = check_compliance(incidents)
     except Exception as e:
@@ -521,11 +779,13 @@ async def compliance_check(
     return templates.TemplateResponse("index.html", {
         "request":    request,
         "active_tab": "compliance",
+        "user_data":  user_data_summary(request),
         "compliance": {
             "dept_name": dept_name,
             "report":    report,
             "error":     error,
         },
+        "clerk_key": CLERK_PUBLISHABLE_KEY,
     })
 
 
@@ -548,7 +808,7 @@ async def iso_evidence(
 
     try:
         from insights.iso_narrative import compute_iso_metrics, generate_iso_narrative
-        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        incidents, dept_name = resolve_incidents(request, neris_id, use_mock, start, end)
         if not incidents:
             error = "No incidents found for the given parameters."
         else:
@@ -563,6 +823,7 @@ async def iso_evidence(
     return templates.TemplateResponse("index.html", {
         "request":    request,
         "active_tab": "iso",
+        "user_data":  user_data_summary(request),
         "iso": {
             "dept_name":   dept_name,
             "iso_metrics": iso_metrics,
@@ -591,7 +852,7 @@ async def staffing_report(
     try:
         from staffing.analyzer import analyze_staffing
         from insights.staffing_narrative import generate_staffing_narrative
-        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        incidents, dept_name = resolve_incidents(request, neris_id, use_mock, start, end)
         if not incidents:
             error = "No incidents found for the given parameters."
         else:
@@ -604,6 +865,7 @@ async def staffing_report(
     return templates.TemplateResponse("index.html", {
         "request":    request,
         "active_tab": "staffing",
+        "user_data":  user_data_summary(request),
         "staffing": {
             "dept_name": dept_name,
             "report":    report,
@@ -627,7 +889,7 @@ async def neris_pre_validate(
     error    = None
     pre_val  = None
     try:
-        incidents, dept_name = load_incidents(neris_id, use_mock, start, end)
+        incidents, dept_name = resolve_incidents(request, neris_id, use_mock, start, end)
         if not incidents:
             error = "No incidents found for the given parameters."
         else:
@@ -642,6 +904,7 @@ async def neris_pre_validate(
         "pre_val":    pre_val,
         "error":      error,
         "active_tab": "submit",
+        "user_data":  user_data_summary(request),
     })
 
 
@@ -821,6 +1084,22 @@ async def neris_education(request: Request):
     })
 
 
+@app.get("/pricing", response_class=HTMLResponse)
+async def pricing_page(request: Request):
+    return templates.TemplateResponse("pricing.html", {"request": request})
+
+
+@app.get("/report", response_class=HTMLResponse)
+async def report_editor(request: Request, d: str = ""):
+    import base64 as _b64, json as _json2, zlib as _zlib
+    try:
+        _raw = _b64.urlsafe_b64decode(d.encode() + b"==")  # pad tolerance
+        data = _json2.loads(_zlib.decompress(_raw).decode())
+    except Exception:
+        data = {"type": "report", "dept": "Your Department", "chief": "Chief", "subject": "Report", "content": ""}
+    return templates.TemplateResponse("report_editor.html", {"request": request, "data": data})
+
+
 @app.get("/resources/{slug}", response_class=HTMLResponse)
 async def resource_article(request: Request, slug: str):
     from articles import get_article, ARTICLES
@@ -879,6 +1158,29 @@ def _load_dept(path: _Path) -> dict:
         return _json.loads(path.read_text())
     except Exception:
         return {}
+
+
+@app.get("/api/dept-search")
+async def dept_search(q: str = "", limit: int = 8):
+    q_lower = q.strip().lower()
+    if len(q_lower) < 2:
+        return []
+    results = []
+    for f in _DEPT_DIR.glob("*.json"):
+        d = _load_dept(f)
+        name = d.get("name", "")
+        city = d.get("city", "")
+        if q_lower in name.lower() or q_lower in city.lower():
+            results.append({
+                "name": name,
+                "city": city,
+                "state": d.get("state", "").lower(),
+                "fdid": d.get("fdid", ""),
+            })
+        if len(results) >= limit * 4:
+            break
+    results.sort(key=lambda x: (not x["name"].lower().startswith(q_lower), x["name"].lower()))
+    return results[:limit]
 
 
 @app.get("/directory", response_class=HTMLResponse)
@@ -1013,6 +1315,8 @@ async def directory_dept(request: Request, state_code: str, fdid: str):
     layout = request.query_params.get("v", "")
     template_map = {"1":"directory_dept_v1.html","2":"directory_dept_v2.html","3":"directory_dept_v3.html","4":"directory_dept_v4.html","5":"directory_dept_v5.html"}
     template_name = template_map.get(layout, "directory_dept.html")
+    if dept.get("total_incidents", 0) < 10:
+        template_name = "directory_dept_light.html"
 
     return templates.TemplateResponse(template_name, {
         "request": request,
@@ -1051,7 +1355,7 @@ async def convert_download(
 
 # ── Generate & Email Report ───────────────────────────────────────────────────
 
-def _markdown_to_html(md: str) -> str:
+def _markdown_to_html(md: str) -> str:  # also registered as Jinja2 filter below
     """Very lightweight markdown → HTML for email bodies."""
     import re
     lines = md.split("\n")
@@ -1071,6 +1375,9 @@ def _markdown_to_html(md: str) -> str:
             line = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", line)
             out.append(f"<p style='margin:6px 0;line-height:1.6'>{line}</p>")
     return "\n".join(out)
+
+
+templates.env.filters["markdown_to_html"] = _markdown_to_html
 
 
 def _load_sample_incidents():
@@ -1194,10 +1501,11 @@ Use plain language. No jargon. Be direct about any critical gaps."""}],
     <p style="font-size:16px;color:#333;line-height:1.6;margin:0 0 28px">
       Hi {chief},<br/><br/>
       Here is your <strong>{report_type.replace("_"," ").title()}</strong> for <strong>{dept}</strong>.
-      This report was built from a sample dataset of real fire department incidents.
-      When you are ready, upload your own data at
-      <a href="https://5alarmdata.com/start" style="color:#D63737">5alarmdata.com/start</a>
-      for a report based on your actual numbers.
+      This sample was built from a real fire department dataset so you can see exactly what the finished product looks like.
+      To get a report built from your department's own numbers, create a free account and connect your data.
+    </p>
+    <p style="margin:0 0 28px">
+      <a href="https://www.5alarmdata.com/sign-in" style="display:inline-block;padding:12px 24px;background:#D63737;color:#fff;border-radius:6px;font-size:15px;font-weight:700;text-decoration:none;font-family:Georgia,serif">Create Your Free Account →</a>
     </p>
     <div style="background:#fff;border:1px solid #ddd;border-radius:6px;padding:28px 32px;line-height:1.7">
       {_markdown_to_html(result)}
@@ -1208,6 +1516,19 @@ Use plain language. No jargon. Be direct about any critical gaps."""}],
     </p>
   </div>
 </div>"""
+
+        # Build report URL (compressed + base64-encoded content, no DB needed)
+        import base64 as _b64, json as _json2, zlib as _zlib
+        _report_data = _json2.dumps({
+            "type":    report_type,
+            "dept":    dept,
+            "chief":   chief,
+            "subject": subject,
+            "content": result,
+        })
+        _compressed = _zlib.compress(_report_data.encode(), level=9)
+        _encoded = _b64.urlsafe_b64encode(_compressed).decode()
+        report_url = f"/report?d={_encoded}"
 
         # Save lead to Supabase
         _save_lead(name, email, dept_name, dept_state, report_type, "onboarding")
@@ -1238,7 +1559,7 @@ Use plain language. No jargon. Be direct about any critical gaps."""}],
             timeout=10,
         )
 
-        return JSONResponse({"ok": True})
+        return JSONResponse({"ok": True, "report_url": report_url})
 
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
@@ -1463,15 +1784,7 @@ async def archive_analysis(
             raise ValueError("Could not decode file. Please export as UTF-8 or Latin-1 CSV.")
 
         # Load current NERIS data for comparison baseline
-        current_incidents = []
-        if use_mock:
-            from mock_data import generate_incidents
-            current_incidents = generate_incidents()
-            dept_name = DEPT["name"]
-        else:
-            from neris import fetch_incidents, fetch_entity
-            current_incidents = fetch_incidents(neris_id)
-            dept_name = fetch_entity(neris_id).get("name", neris_id)
+        current_incidents, dept_name = resolve_incidents(request, "MOCK-001", use_mock, "", "")
 
         result = analyze_nfirs_archive(csv_text, current_incidents, dept_name)
 
@@ -1488,3 +1801,41 @@ async def archive_analysis(
             "error":     error,
         },
     })
+
+
+@app.get("/sitemap.xml")
+async def sitemap():
+    from articles import ARTICLES
+    base = "https://www.5alarmdata.com"
+    static_urls = [
+        ("", "weekly", "1.0"),
+        ("/about", "monthly", "0.8"),
+        ("/resources", "weekly", "0.9"),
+        ("/neris", "monthly", "0.8"),
+        ("/directory", "monthly", "0.7"),
+        ("/start", "monthly", "0.6"),
+    ]
+    urls = []
+    for path, changefreq, priority in static_urls:
+        urls.append(
+            f"  <url>\n"
+            f"    <loc>{base}{path}</loc>\n"
+            f"    <changefreq>{changefreq}</changefreq>\n"
+            f"    <priority>{priority}</priority>\n"
+            f"  </url>"
+        )
+    for article in ARTICLES:
+        urls.append(
+            f"  <url>\n"
+            f"    <loc>{base}/resources/{article['slug']}</loc>\n"
+            f"    <changefreq>monthly</changefreq>\n"
+            f"    <priority>0.7</priority>\n"
+            f"  </url>"
+        )
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "\n".join(urls)
+        + "\n</urlset>"
+    )
+    return Response(content=xml, media_type="application/xml")

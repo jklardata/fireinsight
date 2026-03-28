@@ -1,5 +1,5 @@
 """
-FireInsight Resource Library
+5AlarmData Resource Library
 
 Article definitions: metadata + full HTML content.
 Each article is a dict consumed by /resources and /resources/{slug}.
@@ -441,7 +441,7 @@ ARTICLES = [
   <li>Note in your data documentation that converted records used the NFIRS FDID <em>[your state]-[your FDID]</em> prior to conversion</li>
   <li>Do not submit converted records without a valid NERIS ID — the API will reject them</li>
 </ul>
-<p>FireInsight's NFIRS-to-NERIS converter automatically prompts for your NERIS ID and populates the correct field in converted records.</p>
+<p>5AlarmData's NFIRS-to-NERIS converter automatically prompts for your NERIS ID and populates the correct field in converted records.</p>
 
 <h2>What If Your Department Isn't Registered Yet?</h2>
 <p>If your department hasn't obtained a NERIS ID, you are not submitting NERIS-compliant data — even if your RMS has a NERIS module installed. Registration is required before any data can be submitted to the national NERIS API.</p>
@@ -660,7 +660,7 @@ FIRE / STRUCTURE_FIRE / STRUCTURAL_INVOLVEMENT_FIRE
 <h2>Practical Questions</h2>
 
 <h3>How do I know if our NERIS data is actually compliant?</h3>
-<p>Run a compliance check against the six mandatory module fields for a sample of your recent incidents. For each incident, verify that Core Incident (alarm, dispatch, arrival, cleared times + incident type), Location (address + GPS coordinates), Life Safety Outcomes (all four injury/fatality fields present, even if zero), Actions &amp; Tactics (primary action), Fire Module (for fire incidents), and Aid Classification fields are populated. FireInsight's compliance checker automates this audit against your incident export.</p>
+<p>Run a compliance check against the six mandatory module fields for a sample of your recent incidents. For each incident, verify that Core Incident (alarm, dispatch, arrival, cleared times + incident type), Location (address + GPS coordinates), Life Safety Outcomes (all four injury/fatality fields present, even if zero), Actions &amp; Tactics (primary action), Fire Module (for fire incidents), and Aid Classification fields are populated. 5AlarmData's compliance checker automates this audit against your incident export.</p>
 
 <h3>What are the most common NERIS data quality problems?</h3>
 <ul>
@@ -675,7 +675,7 @@ FIRE / STRUCTURE_FIRE / STRUCTURAL_INVOLVEMENT_FIRE
 <p>Training alone is rarely enough. The most effective approach combines three things: (1) configure your RMS to require mandatory fields before submission — make incomplete records un-submissible, (2) run a monthly data quality report and share it with company officers so crews see the gaps, and (3) tie completion rates to performance feedback rather than treating it as an IT problem. Crew-level ownership of record quality is the single biggest driver of improvement.</p>
 
 <h3>Is there a NERIS education program for firefighters?</h3>
-<p>FSRI and USFA have published guidance documentation and training materials on the NERIS portal. Many state fire training organizations are incorporating NERIS record-keeping into their officer development curricula. For a practical starting point, the FireInsight resource library covers the mandatory modules, common gaps, and actionable fixes in language that works for company officers as well as data administrators.</p>
+<p>FSRI and USFA have published guidance documentation and training materials on the NERIS portal. Many state fire training organizations are incorporating NERIS record-keeping into their officer development curricula. For a practical starting point, the 5AlarmData resource library covers the mandatory modules, common gaps, and actionable fixes in language that works for company officers as well as data administrators.</p>
 
 <div class="article-callout">
 <strong>Where to start:</strong> If you are unsure where your department stands, run a quick compliance audit on your last 90 days of incident data. Look at completeness rates for the six mandatory modules. Identify the two or three fields with the lowest completion rates. Fix those first — typically GPS coordinates, cleared time, and primary action — and you will capture the majority of the compliance improvement available.

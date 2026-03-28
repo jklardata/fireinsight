@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ dept.name }} — Incident Data & Community Risk Profile | 5AlarmData</title>
   <meta name="description" content="{{ dept.name }} responded to {{ dept.total_incidents }} fire and hazmat incidents in 2024. View demographics, disaster history, housing risk, and community vulnerability data." />
-  <link rel="canonical" href="https://5alarmdata.com/directory/{{ dept.state|lower }}/{{ dept.fdid }}" />
+  <link rel="canonical" href="https://www.5alarmdata.com/directory/{{ dept.state|lower }}/{{ dept.fdid }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
@@ -229,6 +230,7 @@
       .ed-title { font-size: 28px; }
     }
   </style>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
@@ -578,12 +580,13 @@
   <!-- CTA -->
   <div class="cta-editorial">
     <div class="cta-left">
-      <div class="cta-kicker">AI-Powered Reports</div>
-      <h2>Get the Full Report<br>for {{ dept.name }}</h2>
-      <p>Upload your incident data and receive a board report, grant narrative, or compliance check — delivered to your inbox in minutes.</p>
+      <div class="cta-kicker">This Profile Is the Starting Point</div>
+      <h2>This profile is<br>the starting point.</h2>
+      <p>5AlarmData turns this data into finished documents your department actually needs — board reports, grant narratives, ISO evidence packs, and staffing justifications.</p>
     </div>
     <div class="cta-right">
-      <a href="/" class="btn-ed-filled">Generate My Report — Free →</a>
+      <a href="/start" class="btn-ed-filled">Get Your Full Report →</a>
+      <p style="font-size:12px;color:var(--muted,#888);margin-top:8px;">No file upload. No software to learn.<br>Your department's data is already here.</p>
       <div class="pills">
         <span class="pill">Board Reports</span>
         <span class="pill">AFG & SAFER Grants</span>
@@ -595,7 +598,8 @@
   </div>
 
   <div class="source-note">
-    Incident data: NFIRS 2024 Public Data Release (FEMA/USFA), fire and hazmat incidents only. Department boundaries and station locations: NERIS Public (FSRI), updated approximately quarterly. Demographics: U.S. Census Bureau ACS 5-Year Estimates (2023). Disaster declarations: FEMA OpenFEMA API. Natural hazard risk: FEMA National Risk Index v1.2 (December 2025). FDID: {{ dept.fdid }}. Last updated: March 2026.
+    <img src="/static/img/NERIS_Data_Exchange_Compatible__SealV1.png" alt="NERIS Data Exchange Compatible" style="height:32px;vertical-align:middle;margin-right:8px;" onerror="this.style.display='none'" />
+    NERIS Data Exchange Compatible &nbsp;&middot;&nbsp; Data: NFIRS 2024 &nbsp;&middot;&nbsp; Census ACS 2023 &nbsp;&middot;&nbsp; FEMA NRI &nbsp;&middot;&nbsp; OpenFEMA &nbsp;&middot;&nbsp; FDID: {{ dept.fdid }}. Last updated: March 2026.
   </div>
 </div>
 

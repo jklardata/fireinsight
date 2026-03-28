@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Get Your Report — 5AlarmData</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -237,6 +238,88 @@
     .success-cta a.btn-signup:hover { background: #EDE9E2; }
     .success-cta-fine { font-size: 12px; color: rgba(255,255,255,.35); text-align: center; margin-top: 10px; position: relative; z-index: 1; }
 
+    /* ── DATA PATH CARDS ── */
+    .data-path-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px;
+    }
+    .data-path-card {
+      background: var(--white); border: 2px solid var(--border); border-radius: 20px;
+      padding: 32px 28px; cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+      display: flex; flex-direction: column;
+    }
+    .data-path-card:hover { border-color: var(--red); box-shadow: 0 4px 20px rgba(200,57,43,.1); }
+    .data-path-badge {
+      display: inline-block; padding: 4px 12px; border-radius: 100px;
+      font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+      margin-bottom: 20px; width: fit-content;
+    }
+    .badge-free { background: rgba(22,163,74,.1); color: #15803d; border: 1px solid rgba(22,163,74,.25); }
+    .badge-account { background: var(--bg2); color: var(--ink2); border: 1px solid var(--border); }
+    .data-path-card h3 { font-size: 20px; font-weight: 800; color: var(--ink); margin-bottom: 10px; letter-spacing: -.2px; }
+    .data-path-card p { font-size: 15px; color: var(--muted); line-height: 1.6; flex: 1; margin-bottom: 28px; }
+    .btn-path {
+      display: block; width: 100%; padding: 15px; text-align: center;
+      border-radius: 12px; font-size: 16px; font-weight: 800; font-family: inherit;
+      cursor: pointer; border: none; transition: background .15s;
+    }
+    .btn-path-free { background: var(--red); color: #fff; }
+    .btn-path-free:hover { background: var(--red-dk); }
+    .btn-path-own { background: var(--ink); color: #fff; }
+    .btn-path-own:hover { background: #1e2e38; }
+
+    /* ── SIGN-IN WALL MODAL ── */
+    .signin-wall {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(15,26,32,.7); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    .signin-wall.open { display: flex; }
+    .signin-wall-box {
+      background: var(--white); border-radius: 24px; padding: 48px 40px;
+      max-width: 480px; width: 100%; position: relative;
+      text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,.2);
+    }
+    .signin-wall-close {
+      position: absolute; top: 16px; right: 20px;
+      background: none; border: none; font-size: 22px; color: var(--muted);
+      cursor: pointer; line-height: 1; padding: 4px 8px;
+    }
+    .signin-wall-close:hover { color: var(--ink); }
+    .signin-wall-icon { font-size: 40px; margin-bottom: 16px; }
+    .signin-wall-box h2 {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 26px; font-weight: 600; color: var(--ink);
+      margin-bottom: 12px; letter-spacing: -.2px;
+    }
+    .signin-wall-box > p { font-size: 16px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+    .signin-wall-features {
+      background: var(--bg); border-radius: 12px; padding: 18px 20px;
+      text-align: left; margin-bottom: 28px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .signin-wall-features div { font-size: 14px; color: var(--ink2); font-weight: 500; }
+    .signin-wall-features span { color: var(--green); font-weight: 700; margin-right: 8px; }
+    .btn-wall-primary {
+      display: block; width: 100%; padding: 16px;
+      background: var(--red); color: #fff; border-radius: 12px;
+      font-size: 16px; font-weight: 800; text-decoration: none;
+      transition: background .15s; margin-bottom: 10px;
+    }
+    .btn-wall-primary:hover { background: var(--red-dk); }
+    .btn-wall-secondary {
+      display: block; width: 100%; padding: 14px;
+      background: var(--bg2); color: var(--ink2); border-radius: 12px;
+      font-size: 15px; font-weight: 700; text-decoration: none;
+      transition: background .15s; margin-bottom: 18px;
+    }
+    .btn-wall-secondary:hover { background: var(--border); }
+    .btn-wall-sample {
+      background: none; border: none; font-size: 14px; color: var(--muted);
+      cursor: pointer; font-family: inherit; text-decoration: underline;
+    }
+    .btn-wall-sample:hover { color: var(--ink); }
+
     @media (max-width: 900px) {
       .choice-grid { grid-template-columns: 1fr 1fr; }
     }
@@ -246,11 +329,14 @@
       .step-label { display: none; }
       .main { padding: 40px 20px 80px; }
       .choice-grid { grid-template-columns: 1fr; }
+      .data-path-grid { grid-template-columns: 1fr; }
       .step-nav { flex-direction: column; }
       .btn-next { width: 100%; }
       .btn-back { width: 100%; text-align: center; }
+      .signin-wall-box { padding: 36px 24px; }
     }
   </style>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
@@ -262,7 +348,7 @@
     5AlarmData
   </a>
   <div class="header-contact">
-    Questions? <a href="mailto:info@5alarmdata.com">info@5alarmdata.com</a>
+    Questions? <a href="mailto:justin@klardata.com">Contact us</a>
   </div>
 </div>
 
@@ -280,7 +366,7 @@
     <div class="step-connector" id="conn-2"></div>
     <div class="progress-step">
       <div class="step-dot" id="dot-3"><span>3</span></div>
-      <div class="step-label" id="label-3">Upload data</div>
+      <div class="step-label" id="label-3">Your data</div>
     </div>
     <div class="step-connector" id="conn-3"></div>
     <div class="progress-step">
@@ -294,8 +380,19 @@
 
   <!-- STEP 1 -->
   <div class="step-panel active" id="step-1">
-    <h1 class="step-heading">What do you need today?</h1>
-    <p class="step-sub">Pick the one that's most useful right now. You can always come back for the others.</p>
+
+    <!-- NERIS Compliance Check — free, standalone CTA -->
+    <div style="background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:16px;padding:24px 28px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#16A34A;margin-bottom:6px">Free With Sign Up</div>
+        <div style="font-size:18px;font-weight:800;color:#0F1A20;margin-bottom:6px">✅ NERIS Compliance Check</div>
+        <div style="font-size:14px;color:#4B7A5A;line-height:1.5">See exactly which NERIS fields you're missing — field by field, in plain English. Takes under 30 seconds.</div>
+      </div>
+      <a href="/sign-in?next=/app" style="display:inline-flex;align-items:center;gap:6px;background:#16A34A;color:#fff;font-size:14px;font-weight:700;padding:12px 24px;border-radius:25px;text-decoration:none;white-space:nowrap;flex-shrink:0">Run Free Check →</a>
+    </div>
+
+    <h1 class="step-heading">Or generate a sample report</h1>
+    <p class="step-sub">Pick a report type and we'll generate it using sample fire department data.</p>
     <div class="choice-grid">
       <label class="choice-card" onclick="selectChoice(this, 'board_report')">
         <input type="radio" class="choice-radio" name="report_type" value="board_report" />
@@ -319,14 +416,6 @@
         <div class="choice-text">
           <h4>ISO Rating Evidence Pack</h4>
           <p>Your ISO performance number and a narrative ready for your PPC review.</p>
-        </div>
-      </label>
-      <label class="choice-card" onclick="selectChoice(this, 'compliance')">
-        <input type="radio" class="choice-radio" name="report_type" value="compliance" />
-        <div class="choice-icon">✅</div>
-        <div class="choice-text">
-          <h4>NERIS Compliance Check</h4>
-          <p>Find out exactly which NERIS fields you're missing — in plain English.</p>
         </div>
       </label>
       <label class="choice-card" onclick="selectChoice(this, 'staffing')">
@@ -389,33 +478,54 @@
     </div>
     <div class="step-nav">
       <button class="btn-back" onclick="goTo(1)">← Back</button>
-      <button class="btn-next" onclick="goTo(3)">Next: Upload Your Data →</button>
+      <button class="btn-next" onclick="goTo(3)">Next: Choose Your Data →</button>
     </div>
   </div>
 
   <!-- STEP 3 -->
   <div class="step-panel" id="step-3">
-    <h1 class="step-heading">Upload your incident data.</h1>
-    <p class="step-sub">Export from whatever system you use — NERIS, NFIRS, ESO, FIREHOUSE, or ImageTrend. Drop it here. No special format needed.</p>
-    <div class="upload-zone" id="upload-zone"
-         onclick="document.getElementById('file-input').click()"
-         ondragover="handleDragOver(event)"
-         ondrop="handleDrop(event)"
-         ondragleave="handleDragLeave(event)">
-      <div class="upload-icon">📂</div>
-      <div class="file-chosen" id="file-chosen-name">✓ File selected</div>
-      <h3>Drag your file here</h3>
-      <p>or click to browse your computer</p>
-      <span class="upload-browse">Browse Files</span>
-      <input type="file" id="file-input" style="display:none" accept=".csv,.xlsx,.xls,.json,.xml"
-             onchange="handleFileSelect(this)" />
+    <h1 class="step-heading">Which data should we use?</h1>
+    <p class="step-sub">Start free with a sample to see the finished product, or sign in to run a report from your department's actual incident data.</p>
+
+    <div class="data-path-grid">
+      <!-- Option A: Sample data (free) -->
+      <div class="data-path-card">
+        <div class="data-path-badge badge-free">Free — No account needed</div>
+        <h3>Sample Department Data</h3>
+        <p>We'll build your report from a real anonymized fire department dataset. Exact same format as a paid report — just not your numbers yet.</p>
+        <button class="btn-path btn-path-free" onclick="chooseSampleData()">Use Sample Data →</button>
+      </div>
+
+      <!-- Option B: Own data (requires account) -->
+      <div class="data-path-card">
+        <div class="data-path-badge badge-account">Account required</div>
+        <h3>Your Department's Data</h3>
+        <p>Upload an export from your RMS — NERIS, NFIRS, ESO, FIREHOUSE, or ImageTrend. Your numbers, your department name, your report.</p>
+        <button class="btn-path btn-path-own" onclick="chooseOwnData()">Sign In to Upload →</button>
+      </div>
     </div>
-    <p class="upload-skip">
-      Don't have your file handy? <a onclick="skipUpload()">Use sample data instead</a> — we'll build your report from a real department's anonymized data so you can see exactly what it looks like.
-    </p>
-    <div class="step-nav" style="margin-top:32px">
+
+    <div class="step-nav">
       <button class="btn-back" onclick="goTo(2)">← Back</button>
-      <button class="btn-next" id="next-3" onclick="goTo(4)">Next: Where to Send It →</button>
+    </div>
+  </div>
+
+  <!-- Sign-in wall modal -->
+  <div class="signin-wall" id="signin-wall">
+    <div class="signin-wall-box">
+      <button class="signin-wall-close" onclick="closeSigninWall()">✕</button>
+      <div class="signin-wall-icon">🏛️</div>
+      <h2>Create a free account to upload your data.</h2>
+      <p>A free account lets you upload your department's incident data and run reports based on your actual numbers.</p>
+      <div class="signin-wall-features">
+        <div><span>✓</span>Upload from NERIS, NFIRS, ESO, FIREHOUSE, or ImageTrend</div>
+        <div><span>✓</span>Reports with your department name and real call data</div>
+        <div><span>✓</span>NERIS compliance check is free with any account</div>
+        <div><span>✓</span>Edit and download every report you generate</div>
+      </div>
+      <a href="/sign-in" class="btn-wall-primary">Create Free Account →</a>
+      <a href="/sign-in" class="btn-wall-secondary">Already have an account? Sign in</a>
+      <button class="btn-wall-sample" onclick="closeSigninWall(); chooseSampleData()">Not ready? Use sample data instead →</button>
     </div>
   </div>
 
@@ -444,8 +554,13 @@
     <div class="success-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
     </div>
-    <h2>Your report is on its way.</h2>
-    <p>Check your inbox in the next few minutes. If you don't see it, check your spam folder.</p>
+    <h2>Your report is ready.</h2>
+    <p>A copy is on its way to your inbox. You can also open and edit it here before you use it.</p>
+
+    <div style="margin-top:28px;margin-bottom:16px;">
+      <a id="btn-edit-report" href="#" style="display:inline-block;padding:14px 32px;background:var(--red);color:#fff;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;">Open &amp; Edit Your Report →</a>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:32px;">Edit any section, then copy or download as a text file.</p>
 
     <div class="success-cta">
       <div class="success-cta-eyebrow">Free Access — Beta</div>
@@ -463,7 +578,7 @@
     <div style="margin-top:24px;">
       <a href="/" style="display:inline-block;padding:11px 26px;background:var(--white);border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:600;color:var(--muted)">← Back to Home</a>
     </div>
-    <p class="success-note">Questions? Email us at <a href="mailto:info@5alarmdata.com">info@5alarmdata.com</a></p>
+    <p class="success-note">Questions? <a href="mailto:justin@klardata.com">Contact us</a></p>
   </div>
 
 </div>
@@ -505,26 +620,26 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
-  function handleDragLeave() { document.getElementById('upload-zone').classList.remove('drag-over'); }
-  function handleDrop(e) {
-    e.preventDefault();
-    document.getElementById('upload-zone').classList.remove('drag-over');
-    const f = e.dataTransfer.files[0]; if (f) setFile(f);
+  function chooseSampleData() {
+    usingSample = true;
+    uploadedFile = null;
+    goTo(4);
   }
-  function handleFileSelect(input) { if (input.files[0]) setFile(input.files[0]); }
-  function setFile(f) {
-    uploadedFile = f; usingSample = false;
-    const zone = document.getElementById('upload-zone');
-    zone.classList.add('has-file');
-    document.getElementById('file-chosen-name').textContent = '✓ ' + f.name;
+
+  function chooseOwnData() {
+    document.getElementById('signin-wall').classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
-  function skipUpload() {
-    usingSample = true; uploadedFile = null;
-    const zone = document.getElementById('upload-zone');
-    zone.classList.add('has-file');
-    document.getElementById('file-chosen-name').textContent = '✓ Using sample data';
+
+  function closeSigninWall() {
+    document.getElementById('signin-wall').classList.remove('open');
+    document.body.style.overflow = '';
   }
+
+  // Close modal on backdrop click
+  document.getElementById('signin-wall').addEventListener('click', function(e) {
+    if (e.target === this) closeSigninWall();
+  });
 
   async function submitReport() {
     const emailEl = document.getElementById('email');
@@ -547,7 +662,13 @@
     fd.append('grant_request', document.getElementById('grant_request').value.trim());
     if (uploadedFile) fd.append('file', uploadedFile);
 
-    try { await fetch('/generate-email', { method: 'POST', body: fd }); } catch {}
+    try {
+      const res  = await fetch('/generate-email', { method: 'POST', body: fd });
+      const json = await res.json().catch(() => ({}));
+      if (json.report_url) {
+        document.getElementById('btn-edit-report').href = json.report_url;
+      }
+    } catch {}
 
     document.querySelector('.main > .step-panel.active, .main > #step-4').style.display = 'none';
     document.getElementById('screen-success').style.display = 'block';

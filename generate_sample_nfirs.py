@@ -1,5 +1,5 @@
 """
-Generate a sample NFIRS Basic Module CSV for testing the FireInsight converter.
+Generate a sample NFIRS Basic Module CSV for testing the 5AlarmData converter.
 Produces sample_nfirs.csv in the current directory.
 
 Usage: python3 generate_sample_nfirs.py

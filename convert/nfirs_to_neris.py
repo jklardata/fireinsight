@@ -3,7 +3,7 @@ NFIRS → NERIS Converter
 
 Reads NFIRS Basic Module CSV exports and maps fields to NERIS-compatible
 incident records. Outputs a list of dicts matching the schema used throughout
-FireInsight (same shape as mock_data.py / neris.py).
+5AlarmData (same shape as mock_data.py / neris.py).
 
 NFIRS field references:
   https://www.nfirs.fema.gov/documentation/reference/
@@ -320,7 +320,7 @@ def convert_nfirs_csv(csv_text: str) -> tuple[list[dict], list[str]]:
 
     Returns:
         (incidents, warnings)
-        incidents  — list of dicts matching FireInsight's internal schema
+        incidents  — list of dicts matching 5AlarmData's internal schema
         warnings   — list of human-readable warnings about unparseable rows
     """
     incidents: list[dict] = []

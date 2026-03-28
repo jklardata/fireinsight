@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>U.S. Fire Department Directory — NFIRS 2024 Data | 5AlarmData</title>
   <meta name="description" content="Explore incident data, call volume, and risk profiles for fire departments across all 50 U.S. states. Free data from NFIRS 2024." />
-  <link rel="canonical" href="https://5alarmdata.com/directory" />
+  <link rel="canonical" href="https://www.5alarmdata.com/directory" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
@@ -133,6 +134,7 @@
       footer { flex-direction: column; gap: 14px; }
     }
   </style>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
@@ -149,7 +151,7 @@
     <li><a href="/">App</a></li>
   </ul>
   <div class="nav-cta">
-    <a href="/start" class="btn btn-sm btn-primary">Generate Report →</a>
+    <a href="/directory" class="btn btn-sm btn-primary">Find Your Department →</a>
   </div>
   <button class="nav-hamburger" onclick="document.querySelector('.mobile-nav').classList.toggle('open')">
     <span></span><span></span><span></span>
@@ -197,12 +199,12 @@
 
   <div class="spotlight">
     <div class="spotlight-left">
-      <div class="spotlight-eyebrow">AI-Powered Reports</div>
-      <h2>Get a Full Report for Your Department</h2>
-      <p>Upload your incident data and get a board report, grant narrative, or NERIS compliance check — delivered to your inbox in minutes.</p>
+      <div class="spotlight-eyebrow">Your Data Is Already Here</div>
+      <h2>Your department's data is already here.</h2>
+      <p>5AlarmData has built profiles for every department in this directory using NFIRS 2024 public data. Find your department, see your incident history, risk profile, and community data — then get a finished report with one click. No file upload. No software to learn.</p>
     </div>
     <div class="spotlight-right">
-      <a href="/start" class="btn-light">Generate Report →</a>
+      <a href="/directory" class="btn-light">Find Your Department →</a>
       <a href="/resources" class="btn-dark-outline">View Resources</a>
     </div>
   </div>
@@ -210,7 +212,7 @@
 
 <footer>
   <span>© 2026 5AlarmData. Data: NFIRS 2024 Public Data Release (FEMA/USFA).</span>
-  <a href="/" style="color: var(--red); font-weight: 600;">Generate Your Report →</a>
+  <a href="/directory" style="color: var(--red); font-weight: 600;">Find Your Department →</a>
 </footer>
 
 <script>
@@ -220,6 +222,16 @@ function filterStates() {
     card.style.display = card.dataset.name.includes(q) ? '' : 'none';
   });
 }
+// Pre-fill search from ?q= param (from landing page hero search)
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get('q');
+  if (q) {
+    const input = document.getElementById('search');
+    input.value = q;
+    filterStates();
+  }
+})();
 </script>
 </body>
 </html>

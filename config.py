@@ -6,7 +6,7 @@ load_dotenv()
 CLERK_PUBLISHABLE_KEY = os.getenv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY") or os.getenv("CLERK_PUBLISHABLE_KEY", "")
 CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY", "")
 
-NERIS_BASE_URL = os.getenv("NERIS_BASE_URL", "https://api-test.neris.fsri.org/v1")
+NERIS_BASE_URL = os.getenv("NERIS_BASE_URL", "https://api.neris.fsri.org/v1")
 NERIS_CLIENT_ID = os.getenv("NERIS_CLIENT_ID")
 NERIS_CLIENT_SECRET = os.getenv("NERIS_CLIENT_SECRET")
 

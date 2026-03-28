@@ -1,10 +1,12 @@
 """
 Mock NERIS incident data for local development without API credentials.
-Simulates a mid-size volunteer department (~400 calls/year).
+Loads from sample_nfirs_large.csv (1,012 incidents, full calendar year 2024)
+via the NFIRS→NERIS converter so the schema matches exactly what the API returns.
 """
 
-from datetime import datetime, timedelta
+import os
 import random
+from datetime import datetime
 
 random.seed(42)
 
@@ -14,66 +16,67 @@ DEPT = {
     "state": "VA",
 }
 
-INCIDENT_TYPES = [
-    ("EMS - Medical Emergency", 38),
-    ("EMS - Motor Vehicle Accident", 12),
-    ("Fire - Structure Fire", 8),
-    ("Fire - Vehicle Fire", 5),
-    ("Fire - EV Battery Fire", 4),
-    ("Hazmat - Lithium Battery", 2),
-    ("Fire - Brush/Grass Fire", 6),
-    ("Hazmat - Carbon Monoxide", 7),
-    ("Service Call - Public Assist", 10),
-    ("False Alarm - System Malfunction", 9),
-    ("Rescue - Water", 3),
-    ("Other", 2),
-]
+# Centre of the department's response area (Chesterfield County, VA)
+_LAT_CENTER  =  37.378
+_LON_CENTER  = -77.506
+_LAT_SPREAD  =  0.08
+_LON_SPREAD  =  0.10
 
-_pool = []
-for label, weight in INCIDENT_TYPES:
-    _pool.extend([label] * weight)
+_CSV_PATH = os.path.join(os.path.dirname(__file__), "sample_nfirs_large.csv")
 
-HOUR_WEIGHTS = [1,1,1,1,1,2,3,4,5,6,6,6,6,6,6,6,6,7,7,6,5,4,3,2]
+# Cache so we only parse the CSV once per process
+_INCIDENT_CACHE: list[dict] | None = None
 
 
-def _random_timestamp(start: datetime, end: datetime) -> datetime:
-    delta = end - start
-    return start + timedelta(seconds=random.randint(0, int(delta.total_seconds())))
+def _load_from_csv() -> list[dict]:
+    from convert.nfirs_to_neris import convert_nfirs_csv
 
+    with open(_CSV_PATH, "r", encoding="utf-8") as f:
+        csv_text = f.read()
 
-def _weighted_hour() -> int:
-    return random.choices(range(24), weights=HOUR_WEIGHTS, k=1)[0]
+    incidents, _ = convert_nfirs_csv(csv_text)
+
+    rng = random.Random(99)  # separate seed so lat/lon is stable
+    enriched = []
+    for i, inc in enumerate(incidents):
+        inc["neris_id_incident"] = f"MOCK-INC-{i+1:04d}"
+        inc["neris_id_entity"]   = DEPT["neris_id"]
+        inc["status"]            = "APPROVED"
+        # Scatter incidents across a realistic response area
+        inc["latitude"]  = round(_LAT_CENTER + rng.uniform(-_LAT_SPREAD, _LAT_SPREAD), 6)
+        inc["longitude"] = round(_LON_CENTER + rng.uniform(-_LON_SPREAD, _LON_SPREAD), 6)
+        enriched.append(inc)
+
+    return enriched
 
 
 def generate_incidents(
-    n: int = 380,
+    n: int | None = None,
     start: datetime | None = None,
     end: datetime | None = None,
 ) -> list[dict]:
-    start = start or datetime(2024, 2, 1, 0, 0, 0)
-    end = end or datetime(2025, 1, 31, 23, 59, 59)
-    incidents = []
+    global _INCIDENT_CACHE
+    if _INCIDENT_CACHE is None:
+        _INCIDENT_CACHE = _load_from_csv()
 
-    for i in range(n):
-        call_dt = _random_timestamp(start, end)
-        call_dt = call_dt.replace(hour=_weighted_hour())
+    incidents = _INCIDENT_CACHE
 
-        response_secs = max(60, int(random.gauss(420, 120)))
-        arrival_dt = call_dt + timedelta(seconds=response_secs)
+    # Apply date filter when requested
+    if start or end:
+        def _in_range(inc: dict) -> bool:
+            ts = inc.get("call_create")
+            if not ts:
+                return True
+            try:
+                dt = datetime.fromisoformat(ts.replace("Z", "+00:00")).replace(tzinfo=None)
+                if start and dt < start:
+                    return False
+                if end and dt > end:
+                    return False
+            except ValueError:
+                pass
+            return True
 
-        incidents.append({
-            "neris_id_incident": f"MOCK-INC-{i+1:04d}",
-            "neris_id_entity": DEPT["neris_id"],
-            "incident_type": random.choice(_pool),
-            "call_create": call_dt.isoformat(),
-            "arrival_time": arrival_dt.isoformat(),
-            "status": "APPROVED",
-            "latitude": round(37.5 + random.uniform(-0.1, 0.1), 6),
-            "longitude": round(-77.4 + random.uniform(-0.1, 0.1), 6),
-        })
+        incidents = [i for i in incidents if _in_range(i)]
 
-    # Filter to date range (handles cases where random dates fall outside when range is narrow)
-    return [
-        inc for inc in incidents
-        if start <= datetime.fromisoformat(inc["call_create"]) <= end
-    ]
+    return incidents
