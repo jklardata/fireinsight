@@ -1125,6 +1125,27 @@ from pathlib import Path as _Path
 
 _DEPT_DIR = _Path(__file__).parent / "data" / "departments"
 
+# ── Department index (one file, loaded once at startup) ───────────────────────
+_INDEX_PATH = _Path(__file__).parent / "data" / "departments_index.json"
+try:
+    _DEPT_INDEX: list[dict] = _json.loads(_INDEX_PATH.read_text())
+except Exception:
+    _DEPT_INDEX = []
+
+# Lazy per-request cache for full dept data (individual files loaded on demand)
+_DEPT_CACHE: dict[str, dict] = {}
+
+def _load_dept(path: _Path) -> dict:
+    stem = path.stem
+    if stem in _DEPT_CACHE:
+        return _DEPT_CACHE[stem]
+    try:
+        d = _json.loads(path.read_text())
+        _DEPT_CACHE[stem] = d
+        return d
+    except Exception:
+        return {}
+
 STATE_NAMES = {
     "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
     "CA": "California", "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware",
@@ -1153,32 +1174,20 @@ INCIDENT_TYPE_LABELS = {
 }
 
 
-def _load_dept(path: _Path) -> dict:
-    try:
-        return _json.loads(path.read_text())
-    except Exception:
-        return {}
-
-
 @app.get("/api/dept-search")
 async def dept_search(q: str = "", limit: int = 8):
     q_lower = q.strip().lower()
     if len(q_lower) < 2:
         return []
     results = []
-    for f in _DEPT_DIR.glob("*.json"):
-        d = _load_dept(f)
-        name = d.get("name", "")
-        city = d.get("city", "")
-        if q_lower in name.lower() or q_lower in city.lower():
+    for entry in _DEPT_INDEX:
+        if q_lower in entry["name"].lower() or q_lower in entry["city"].lower():
             results.append({
-                "name": name,
-                "city": city,
-                "state": d.get("state", "").lower(),
-                "fdid": d.get("fdid", ""),
+                "name":  entry["name"],
+                "city":  entry["city"],
+                "state": entry["state"].lower(),
+                "fdid":  entry["fdid"],
             })
-        if len(results) >= limit * 4:
-            break
     results.sort(key=lambda x: (not x["name"].lower().startswith(q_lower), x["name"].lower()))
     return results[:limit]
 
@@ -1186,27 +1195,28 @@ async def dept_search(q: str = "", limit: int = 8):
 @app.get("/directory", response_class=HTMLResponse)
 async def directory_index(request: Request):
     states = {}
-    for f in _DEPT_DIR.glob("*.json"):
-        d = _load_dept(f)
-        code = d.get("state", "").upper()
+    for entry in _DEPT_INDEX:
+        code = entry.get("state", "").upper()
         if not code:
             continue
         if code not in states:
             states[code] = {"code": code, "name": STATE_NAMES.get(code, code), "dept_count": 0, "incident_count": 0}
         states[code]["dept_count"] += 1
-        states[code]["incident_count"] += d.get("total_incidents", 0)
+        states[code]["incident_count"] += entry.get("total_incidents", 0)
 
     state_list = sorted(states.values(), key=lambda s: s["name"])
     total_depts = sum(s["dept_count"] for s in state_list)
     total_incidents = sum(s["incident_count"] for s in state_list)
 
-    return templates.TemplateResponse("directory_index.html", {
+    response = templates.TemplateResponse("directory_index.html", {
         "request": request,
         "states": state_list,
         "total_depts": f"{total_depts:,}",
         "total_incidents": f"{total_incidents:,}",
         "total_states": len(state_list),
     })
+    response.headers["Cache-Control"] = "public, max-age=3600, s-maxage=86400"
+    return response
 
 
 @app.get("/directory/{state_code}", response_class=HTMLResponse)
@@ -1214,19 +1224,18 @@ async def directory_state(request: Request, state_code: str):
     state_code = state_code.upper()
     state_name = STATE_NAMES.get(state_code, state_code)
 
+    prefix = f"{state_code.lower()}-"
     departments = []
     max_incidents = 1
-    for f in _DEPT_DIR.glob(f"{state_code.lower()}-*.json"):
-        d = _load_dept(f)
-        if not d:
-            continue
-        inc = d.get("total_incidents", 0)
-        max_incidents = max(max_incidents, inc)
-        top_type = ""
-        if d.get("incident_types"):
-            top_key = max(d["incident_types"], key=lambda k: d["incident_types"][k])
-            top_type = INCIDENT_TYPE_LABELS.get(top_key, top_key)
-        departments.append({**d, "top_type": top_type})
+    for entry in _DEPT_INDEX:
+        if entry.get("stem", "").startswith(prefix) or entry.get("state", "").upper() == state_code:
+            inc = entry.get("total_incidents", 0)
+            max_incidents = max(max_incidents, inc)
+            top_type = ""
+            if entry.get("incident_types"):
+                top_key = max(entry["incident_types"], key=lambda k: entry["incident_types"][k])
+                top_type = INCIDENT_TYPE_LABELS.get(top_key, top_key)
+            departments.append({**entry, "top_type": top_type})
 
     departments.sort(key=lambda d: d.get("total_incidents", 0), reverse=True)
 
@@ -1236,7 +1245,7 @@ async def directory_state(request: Request, state_code: str):
     total_incidents = sum(d.get("total_incidents", 0) for d in departments)
     with_data = sum(1 for d in departments if d.get("total_incidents", 0) > 0)
 
-    return templates.TemplateResponse("directory_state.html", {
+    response = templates.TemplateResponse("directory_state.html", {
         "request": request,
         "state_code": state_code.lower(),
         "state_name": state_name,
@@ -1246,13 +1255,15 @@ async def directory_state(request: Request, state_code: str):
         "with_data": with_data,
         "max_incidents": max_incidents,
     })
+    response.headers["Cache-Control"] = "public, max-age=3600, s-maxage=86400"
+    return response
 
 
 @app.get("/directory/{state_code}/{fdid}", response_class=HTMLResponse)
 async def directory_dept(request: Request, state_code: str, fdid: str):
     state_code = state_code.upper()
-    path = _DEPT_DIR / f"{state_code.lower()}-{fdid}.json"
-    dept = _load_dept(path)
+    stem = f"{state_code.lower()}-{fdid}"
+    dept = _DEPT_CACHE.get(stem) or _load_dept(_DEPT_DIR / f"{stem}.json")
     if not dept:
         return HTMLResponse("<h1>Department not found</h1>", status_code=404)
 
@@ -1318,7 +1329,7 @@ async def directory_dept(request: Request, state_code: str, fdid: str):
     if dept.get("total_incidents", 0) < 10:
         template_name = "directory_dept_light.html"
 
-    return templates.TemplateResponse(template_name, {
+    response = templates.TemplateResponse(template_name, {
         "request": request,
         "dept": dept,
         "state_name": STATE_NAMES.get(state_code, state_code),
@@ -1339,6 +1350,8 @@ async def directory_dept(request: Request, state_code: str, fdid: str):
         "peers": dept.get("peers"),
         "nri": dept.get("nri"),
     })
+    response.headers["Cache-Control"] = "public, max-age=3600, s-maxage=86400"
+    return response
 
 
 @app.post("/convert/download")

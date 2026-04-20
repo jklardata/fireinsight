@@ -1,7 +1,7 @@
 {
   "builds": [
     { "src": "static/**", "use": "@vercel/static" },
-    { "src": "web.py", "use": "@vercel/python", "config": { "maxLambdaSize": "50mb", "maxDuration": 60 } }
+    { "src": "web.py", "use": "@vercel/python", "config": { "maxLambdaSize": "50mb", "maxDuration": 30 } }
   ],
   "routes": [
     { "src": "/static/(.*)", "dest": "/static/$1" },
