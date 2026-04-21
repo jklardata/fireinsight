@@ -1133,15 +1133,21 @@ except Exception:
     _DEPT_INDEX = []
 
 # Lazy per-request cache for full dept data (individual files loaded on demand)
-_DEPT_CACHE: dict[str, dict] = {}
+# Capped at 256 entries to avoid OOM under bot traffic spikes.
+from collections import OrderedDict as _OrderedDict
+_DEPT_CACHE: _OrderedDict[str, dict] = _OrderedDict()
+_DEPT_CACHE_MAX = 256
 
 def _load_dept(path: _Path) -> dict:
     stem = path.stem
     if stem in _DEPT_CACHE:
+        _DEPT_CACHE.move_to_end(stem)
         return _DEPT_CACHE[stem]
     try:
         d = _json.loads(path.read_text())
         _DEPT_CACHE[stem] = d
+        if len(_DEPT_CACHE) > _DEPT_CACHE_MAX:
+            _DEPT_CACHE.popitem(last=False)
         return d
     except Exception:
         return {}

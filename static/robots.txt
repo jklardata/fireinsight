@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+User-agent: GPTBot
+Crawl-delay: 10
+
+User-agent: OAI-SearchBot
+Crawl-delay: 10
+
+User-agent: CCBot
+Crawl-delay: 10
+
+Sitemap: https://www.5alarmdata.com/sitemap.xml
